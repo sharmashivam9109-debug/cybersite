@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, abort, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -16,6 +16,8 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(hours=8)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+SUPPORTED_LANGUAGES = ['en', 'hi', 'es', 'fr', 'de', 'zh', 'ar', 'pt', 'ru', 'ja']
 
 db = SQLAlchemy(app)
 
@@ -122,6 +124,38 @@ def record_visit(card_id=None):
     db.session.add(pv)
     db.session.commit()
 
+def get_current_language():
+    """Get current language from session, cookie, or default to 'en'."""
+    lang = session.get('language') or request.cookies.get('language', 'en')
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'en'
+    return lang
+
+# ─── Language Route ────────────────────────────────────────────────────────────
+
+@app.route('/set-language', methods=['POST'])
+def set_language():
+    """Set language preference via POST. Saves to session + cookie."""
+    lang = request.form.get('language', 'en')
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'en'
+    
+    # Save in session
+    session['language'] = lang
+    
+    # Redirect back to where user came from
+    next_url = request.form.get('next') or request.referrer or url_for('index')
+    
+    # Also save in cookie (persists across sessions)
+    response = make_response(redirect(next_url))
+    response.set_cookie('language', lang, max_age=60*60*24*365, samesite='Lax', httponly=True)
+    return response
+
+@app.route('/get-language')
+def get_language():
+    """API endpoint to get current language."""
+    return jsonify({'language': get_current_language()})
+
 # ─── Public Routes ─────────────────────────────────────────────────────────────
 
 @app.route('/')
@@ -161,7 +195,10 @@ def index():
             if v:  # only override if guest has set something
                 site_settings[k] = v
 
-    return render_template('index.html', cards=cards, site_settings=site_settings)
+    current_language = get_current_language()
+
+    return render_template('index.html', cards=cards, site_settings=site_settings,
+                           current_language=current_language)
 
 @app.route('/api/card/<int:card_id>')
 def get_card(card_id):
@@ -267,9 +304,12 @@ def admin_dashboard():
     # Guest list (owner only)
     guests = Admin.query.filter_by(role='guest').all() if role == 'owner' else []
 
+    current_language = get_current_language()
+
     return render_template('admin_dashboard.html',
         cards=cards, role=role, username=username,
-        analytics=analytics, settings=settings, guests=guests
+        analytics=analytics, settings=settings, guests=guests,
+        current_language=current_language
     )
 
 # ─── Site Settings ─────────────────────────────────────────────────────────────
