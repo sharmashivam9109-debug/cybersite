@@ -3,145 +3,577 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard — Cyber Hub</title>
+  <title>Admin — Cyber Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #020408; --deep: #050b14; --neon-blue: #00b4ff; --neon-purple: #9b59ff;
-      --neon-cyan: #00f5ff; --glass: rgba(255,255,255,0.04);
-      --glass-border: rgba(255,255,255,0.08); --text: #e8eaf0; --muted: rgba(232,234,240,0.5);
+      --black: #020408; --deep: #050b14; --panel: #080f1c;
+      --neon-blue: #00b4ff; --neon-purple: #9b59ff; --neon-cyan: #00f5ff;
+      --neon-green: #00ff9d; --neon-red: #ff4466;
+      --glass: rgba(255,255,255,0.03); --glass-border: rgba(255,255,255,0.07);
+      --text: #e8eaf0; --muted: rgba(232,234,240,0.45);
+      --sidebar-w: 220px;
     }
-    body { background: var(--black); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
+    body { background: var(--black); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; }
+
+    /* ── Sidebar ── */
     .sidebar {
-      position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
-      background: rgba(5,11,20,0.95); border-right: 1px solid var(--glass-border);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 8px;
+      position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
+      background: var(--panel); border-right: 1px solid var(--glass-border);
+      padding: 28px 18px; display: flex; flex-direction: column; gap: 4px; z-index: 100;
     }
     .sidebar-logo {
-      font-family: 'DM Mono', monospace; font-size: 11px;
+      font-family: 'DM Mono', monospace; font-size: 10px;
       letter-spacing: 4px; color: var(--neon-cyan); text-transform: uppercase;
-      padding-bottom: 24px; border-bottom: 1px solid var(--glass-border); margin-bottom: 16px;
+      padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
     }
+    .sidebar-logo .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
     .nav-item {
-      display: block; padding: 10px 14px; border-radius: 6px;
-      font-size: 13px; font-weight: 600; text-decoration: none;
-      color: var(--muted); letter-spacing: 1px; transition: all 0.2s;
+      display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; text-decoration: none;
+      color: var(--muted); letter-spacing: .5px; transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
     }
-    .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text); }
-    .nav-item.danger { margin-top: auto; color: rgba(255,100,100,0.6); }
-    .nav-item.danger:hover { color: #ff6b6b; background: rgba(255,100,100,0.08); }
-    .main { margin-left: 240px; padding: 40px; }
-    .page-header { margin-bottom: 40px; }
-    .page-header h1 { font-size: 32px; font-weight: 800; }
-    .page-header p { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; margin-top: 6px; }
-    .flash-msg {
-      padding: 12px 16px; border-radius: 6px; margin-bottom: 24px;
-      font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1px;
+    .nav-item:hover { background: var(--glass); color: var(--text); }
+    .nav-item.active { background: rgba(0,180,255,0.08); color: var(--neon-blue); }
+    .nav-spacer { flex: 1; }
+    .nav-item.danger { color: rgba(255,68,102,0.6); }
+    .nav-item.danger:hover { color: var(--neon-red); background: rgba(255,68,102,0.08); }
+    .role-badge {
+      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px;
+      padding: 3px 8px; border-radius: 3px; text-transform: uppercase; margin-bottom: 8px;
     }
-    .flash-msg.success { background: rgba(0,200,100,0.1); border: 1px solid rgba(0,200,100,0.3); color: #4ade80; }
-    .flash-msg.error { background: rgba(220,50,50,0.1); border: 1px solid rgba(220,50,50,0.3); color: #ff6b6b; }
-    .action-bar { display: flex; justify-content: flex-end; margin-bottom: 24px; }
-    .btn-add {
-      padding: 12px 28px;
-      background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-      border: none; border-radius: 6px; color: #fff;
-      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-      letter-spacing: 1px; cursor: pointer; text-decoration: none;
-      transition: opacity 0.2s, transform 0.2s;
+    .role-badge.owner { background: rgba(155,89,255,0.15); color: var(--neon-purple); border: 1px solid rgba(155,89,255,0.3); }
+    .role-badge.guest { background: rgba(0,180,255,0.1); color: var(--neon-blue); border: 1px solid rgba(0,180,255,0.25); }
+
+    /* ── Main ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px; min-height: 100vh; }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 36px; border-bottom: 1px solid var(--glass-border); padding-bottom: 0; }
+    .tab {
+      padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      cursor: pointer; border: none; background: none; color: var(--muted);
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s; text-transform: uppercase;
     }
-    .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--neon-cyan); border-bottom-color: var(--neon-cyan); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Flash ── */
+    .flash { padding: 11px 16px; border-radius: 6px; margin-bottom: 24px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .5px; }
+    .flash.success { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.25); color: var(--neon-green); }
+    .flash.error { background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.25); color: var(--neon-red); }
+
+    /* ── Section header ── */
+    .sec-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
+    .sec-title { font-size: 22px; font-weight: 800; }
+    .sec-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Cards table ── */
+    .table-wrap { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; overflow: hidden; }
     table { width: 100%; border-collapse: collapse; }
-    th {
-      text-align: left; padding: 12px 16px;
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      letter-spacing: 3px; color: var(--muted); text-transform: uppercase;
-      border-bottom: 1px solid var(--glass-border);
+    th { padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--glass-border); text-align: left; }
+    td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .card-icon { font-size: 22px; }
+    .card-name { font-weight: 700; font-size: 13px; }
+    .card-cat { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--neon-blue); text-transform: uppercase; margin-top: 2px; }
+    .card-desc { color: var(--muted); font-size: 12px; max-width: 280px; line-height: 1.5; }
+
+    /* ── Buttons ── */
+    .btn { padding: 8px 18px; border-radius: 5px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .5px; cursor: pointer; border: none; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: #fff; }
+    .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+    .btn-edit { background: rgba(0,180,255,0.12); color: var(--neon-blue); }
+    .btn-edit:hover { background: rgba(0,180,255,0.22); }
+    .btn-del { background: rgba(255,68,102,0.1); color: var(--neon-red); }
+    .btn-del:hover { background: rgba(255,68,102,0.2); }
+    .btn-ghost { background: var(--glass); color: var(--muted); border: 1px solid var(--glass-border); }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-green { background: rgba(0,255,157,0.1); color: var(--neon-green); }
+    .btn-green:hover { background: rgba(0,255,157,0.2); }
+    .actions { display: flex; gap: 6px; align-items: center; }
+
+    /* ── Form styles ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.span2 { grid-column: span 2; }
+    label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; }
+    input[type=text], input[type=password], input[type=color], textarea, select {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+      border-radius: 6px; padding: 10px 14px; color: var(--text);
+      font-family: 'DM Mono', monospace; font-size: 12px; outline: none;
+      transition: border-color .2s; width: 100%;
     }
-    td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
-    tr:hover td { background: var(--glass); }
-    .card-icon { font-size: 24px; }
-    .card-name { font-weight: 700; margin-bottom: 4px; }
-    .card-cat {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      letter-spacing: 2px; color: var(--neon-blue); text-transform: uppercase;
+    input[type=color] { padding: 4px 8px; height: 38px; cursor: pointer; }
+    input:focus, textarea:focus, select:focus { border-color: var(--neon-blue); }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    /* ── Panel card ── */
+    .panel-card {
+      background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 24px; margin-bottom: 24px;
     }
-    .card-desc { color: var(--muted); font-size: 13px; max-width: 300px; line-height: 1.5; }
-    .actions { display: flex; gap: 8px; }
-    .btn-edit, .btn-del {
-      padding: 6px 14px; border-radius: 4px;
-      font-family: 'DM Mono', monospace; font-size: 11px;
-      letter-spacing: 1px; cursor: pointer; border: none;
-      text-decoration: none; transition: opacity 0.2s;
+    .panel-card-title { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--neon-cyan); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+    /* ── Analytics ── */
+    .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-box { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 20px 24px; }
+    .stat-val { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+    .stat-box.blue .stat-val { color: var(--neon-blue); }
+    .stat-box.cyan .stat-val { color: var(--neon-cyan); }
+    .stat-box.green .stat-val { color: var(--neon-green); }
+
+    /* Bar chart */
+    .chart-wrap { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+    .chart-title { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+    .bars { display: flex; align-items: flex-end; gap: 12px; height: 120px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; }
+    .bar-track { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+    .bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple)); transition: height .6s ease; min-height: 3px; }
+    .bar-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); }
+    .bar-count { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text); }
+
+    /* Top cards list */
+    .top-card-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--glass-border); }
+    .top-card-row:last-child { border-bottom: none; }
+    .top-card-rank { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); width: 20px; }
+    .top-card-icon { font-size: 18px; }
+    .top-card-name { flex: 1; font-size: 13px; font-weight: 600; }
+    .top-card-views { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--neon-cyan); }
+
+    /* ── Guest section ── */
+    .guest-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 6px; margin-bottom: 8px; }
+    .guest-username { flex: 1; font-weight: 600; font-size: 13px; }
+    .guest-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 3px; background: rgba(0,180,255,0.1); color: var(--neon-blue); }
+
+    /* ── Color preview ── */
+    .color-row { display: flex; align-items: center; gap: 12px; }
+    .color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--glass-border); }
+
+    /* ── Guest notice ── */
+    .guest-notice { background: rgba(0,180,255,0.06); border: 1px solid rgba(0,180,255,0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; color: rgba(0,180,255,0.9); font-family: 'DM Mono', monospace; line-height: 1.6; }
+
+    /* ── Empty ── */
+    .empty-state { text-align: center; padding: 48px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--glass-border); margin: 20px 0; }
+
+    /* ── Password strength ── */
+    .pw-strength { height: 3px; border-radius: 2px; margin-top: 4px; transition: all .3s; background: var(--glass-border); }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 60px; padding: 20px 10px; }
+      .sidebar-logo span, .nav-item span { display: none; }
+      .main { margin-left: 60px; padding: 24px 20px; }
+      .stat-row { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.span2 { grid-column: span 1; }
     }
-    .btn-edit { background: rgba(0,180,255,0.15); color: var(--neon-blue); }
-    .btn-edit:hover { background: rgba(0,180,255,0.25); }
-    .btn-del { background: rgba(255,100,100,0.1); color: #ff6b6b; }
-    .btn-del:hover { background: rgba(255,100,100,0.2); }
-    .empty-state { text-align: center; padding: 60px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 13px; }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div class="sidebar-logo">● Admin Panel</div>
-    <a href="/admin" class="nav-item active">📋 All Cards</a>
-    <a href="/admin/add" class="nav-item">➕ Add Card</a>
-    <a href="/" class="nav-item" target="_blank">🌐 View Site</a>
-    <a href="/admin/logout" class="nav-item danger">⬅ Logout</a>
+
+<!-- ── Sidebar ── -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="dot"></div>
+    <span>Admin Panel</span>
+  </div>
+  <div class="role-badge {{ role }}">{{ role }}</div>
+
+  <button class="nav-item active" onclick="switchTab('cards')">
+    📋 <span>Cards</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('settings')">
+    ⚙️ <span>Settings</span>
+  </button>
+  {% if role == 'owner' %}
+  <button class="nav-item" onclick="switchTab('analytics')">
+    📊 <span>Analytics</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('guests')">
+    👥 <span>Guests</span>
+  </button>
+  {% endif %}
+  <button class="nav-item" onclick="switchTab('account')">
+    🔑 <span>Password</span>
+  </button>
+  <div class="nav-spacer"></div>
+  <a href="/" class="nav-item" target="_blank">🌐 <span>View Site</span></a>
+  <a href="/admin/logout" class="nav-item danger">⬅ <span>Logout</span></a>
+</div>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Tabs nav (hidden, controlled by sidebar) -->
+  <div class="tabs" id="tabNav" style="display:none;">
+    <button class="tab active" data-tab="cards">Cards</button>
+    <button class="tab" data-tab="settings">Settings</button>
+    {% if role == 'owner' %}<button class="tab" data-tab="analytics">Analytics</button>{% endif %}
+    {% if role == 'owner' %}<button class="tab" data-tab="guests">Guests</button>{% endif %}
+    <button class="tab" data-tab="account">Password</button>
   </div>
 
-  <div class="main">
-    <div class="page-header">
-      <h1>Content Cards</h1>
-      <p>{{ cards|length }} total entries</p>
+  <!-- ══ TAB: CARDS ══ -->
+  <div class="tab-panel active" id="tab-cards">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Content Cards</div>
+        <div class="sec-sub">{{ cards|length }} total entries</div>
+      </div>
+      {% if role == 'owner' %}
+      <a href="/admin/add" class="btn btn-primary">+ Add Card</a>
+      {% endif %}
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for cat, msg in messages %}
-        <div class="flash-msg {{ cat }}">{{ msg }}</div>
-      {% endfor %}
-    {% endwith %}
-
-    <div class="action-bar">
-      <a href="/admin/add" class="btn-add">+ Add Card</a>
+    {% if role == 'guest' %}
+    <div class="guest-notice">
+      👀 You are viewing cards in read-only mode. Only the owner can add, edit, or delete cards.
     </div>
+    {% endif %}
 
     {% if cards %}
-    <table>
-      <thead>
-        <tr>
-          <th>Icon</th>
-          <th>Card Info</th>
-          <th>Description</th>
-          <th>Order</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for card in cards %}
-        <tr>
-          <td><div class="card-icon">{{ card.icon }}</div></td>
-          <td>
-            <div class="card-name">{{ card.title }}</div>
-            <div class="card-cat">{{ card.category }}</div>
-          </td>
-          <td><div class="card-desc">{{ card.description[:80] }}...</div></td>
-          <td style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)">{{ card.order_index }}</td>
-          <td>
-            <div class="actions">
-              <a href="/admin/edit/{{ card.id }}" class="btn-edit">Edit</a>
-              <form method="POST" action="/admin/delete/{{ card.id }}" onsubmit="return confirm('Delete this card?')">
-                <button type="submit" class="btn-del">Delete</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Icon</th>
+            <th>Card Info</th>
+            <th>Description</th>
+            <th>Order</th>
+            {% if role == 'owner' %}<th>Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for card in cards %}
+          <tr>
+            <td><div class="card-icon">{{ card.icon }}</div></td>
+            <td>
+              <div class="card-name">{{ card.title }}</div>
+              <div class="card-cat">{{ card.category }}</div>
+            </td>
+            <td><div class="card-desc">{{ card.description[:80] }}{% if card.description|length > 80 %}...{% endif %}</div></td>
+            <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">{{ card.order_index }}</td>
+            {% if role == 'owner' %}
+            <td>
+              <div class="actions">
+                <a href="/admin/edit/{{ card.id }}" class="btn btn-edit">Edit</a>
+                <form method="POST" action="/admin/delete/{{ card.id }}" onsubmit="return confirm('Delete this card?')">
+                  <button type="submit" class="btn btn-del">Delete</button>
+                </form>
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
     <div class="empty-state">No cards yet. Add your first one!</div>
     {% endif %}
   </div>
+
+  <!-- ══ TAB: SETTINGS ══ -->
+  <div class="tab-panel" id="tab-settings">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Site Settings</div>
+        <div class="sec-sub">
+          {% if role == 'owner' %}Changes apply globally to all visitors{% else %}Your personal customizations — only you see these{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if role == 'guest' %}
+    <div class="guest-notice">
+      🎨 <strong>Personal Customization Mode</strong> — Changes you make here are visible <strong>only to you</strong> when logged in. The site stays unchanged for everyone else. Have fun with it!
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/admin/settings">
+      <div class="panel-card">
+        <div class="panel-card-title">🏠 Hero Section</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Hero Title</label>
+            <input type="text" name="hero_title" value="{{ settings.hero_title }}" placeholder="Cyber Hub" />
+          </div>
+          <div class="form-group">
+            <label>Badge Text</label>
+            <input type="text" name="hero_badge" value="{{ settings.hero_badge }}" placeholder="SECURITY KNOWLEDGE BASE" />
+          </div>
+          <div class="form-group span2">
+            <label>Subtitle</label>
+            <input type="text" name="hero_subtitle" value="{{ settings.hero_subtitle }}" placeholder="Your digital safety, simplified." />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-card-title">📖 About Section</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>About Title</label>
+            <input type="text" name="about_title" value="{{ settings.about_title }}" />
+          </div>
+          <div class="form-group span2">
+            <label>About Text</label>
+            <textarea name="about_text">{{ settings.about_text }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-card-title">🎨 Theme Colors</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Accent Color</label>
+            <div class="color-row">
+              <input type="color" name="accent_color" value="{{ settings.accent_color }}" id="accentPick" />
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="accentHex">{{ settings.accent_color }}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Background Color</label>
+            <div class="color-row">
+              <input type="color" name="bg_color" value="{{ settings.bg_color }}" id="bgPick" />
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="bgHex">{{ settings.bg_color }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        {% if role == 'guest' %}
+        <form method="POST" action="/admin/settings/reset" style="margin:0">
+          <button type="submit" class="btn btn-ghost" onclick="return confirm('Reset all your customizations?')">↩ Reset to Default</button>
+        </form>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- ══ TAB: ANALYTICS (owner only) ══ -->
+  {% if role == 'owner' %}
+  <div class="tab-panel" id="tab-analytics">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Analytics</div>
+        <div class="sec-sub">Traffic overview</div>
+      </div>
+    </div>
+
+    {% if analytics %}
+    <!-- Stats row -->
+    <div class="stat-row">
+      <div class="stat-box blue">
+        <div class="stat-val">{{ analytics.unique_today }}</div>
+        <div class="stat-label">Unique Visitors Today</div>
+      </div>
+      <div class="stat-box cyan">
+        <div class="stat-val">{{ analytics.daily[-1].count }}</div>
+        <div class="stat-label">Page Views Today</div>
+      </div>
+      <div class="stat-box green">
+        <div class="stat-val">{{ analytics.total_visits }}</div>
+        <div class="stat-label">Total Visits</div>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="chart-wrap">
+      <div class="chart-title">Daily Visits — Last 7 Days</div>
+      <div class="bars" id="chartBars">
+        {% set max_count = analytics.daily | map(attribute='count') | max %}
+        {% for day in analytics.daily %}
+        <div class="bar-col">
+          <div class="bar-count">{{ day.count }}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="height:{% if max_count > 0 %}{{ (day.count / max_count * 100)|int }}%{% else %}3px{% endif %}"></div>
+          </div>
+          <div class="bar-label">{{ day.date }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Top cards -->
+    <div class="panel-card">
+      <div class="panel-card-title">🏆 Top Cards by Views</div>
+      {% if analytics.top_cards %}
+        {% for card in analytics.top_cards %}
+        <div class="top-card-row">
+          <div class="top-card-rank">#{{ loop.index }}</div>
+          <div class="top-card-icon">{{ card.icon }}</div>
+          <div class="top-card-name">{{ card.title }}</div>
+          <div class="top-card-views">{{ card.views }} views</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state" style="padding:24px">No card views tracked yet.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ══ TAB: GUESTS (owner only) ══ -->
+  {% if role == 'owner' %}
+  <div class="tab-panel" id="tab-guests">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Guest Access</div>
+        <div class="sec-sub">Share limited frontend customization access</div>
+      </div>
+    </div>
+
+    <div class="guest-notice" style="border-color:rgba(0,255,157,0.2);color:var(--neon-green);background:rgba(0,255,157,0.05);">
+      ℹ️ Guests can only customize the <strong>frontend appearance</strong> (hero text, colors, about section) and those changes are <strong>visible only to them</strong> when logged in. They cannot add, edit, or delete cards.
+    </div>
+
+    <!-- Add guest form -->
+    <div class="panel-card">
+      <div class="panel-card-title">➕ Create Guest Account</div>
+      <form method="POST" action="/admin/guests/add">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Guest Username</label>
+            <input type="text" name="guest_username" placeholder="e.g. rahul" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="guest_password" placeholder="Min 6 characters" required minlength="6" />
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <button type="submit" class="btn btn-green">+ Create Guest</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Existing guests -->
+    <div class="panel-card">
+      <div class="panel-card-title">👥 Active Guests</div>
+      {% if guests %}
+        {% for guest in guests %}
+        <div class="guest-row">
+          <div class="guest-username">{{ guest.username }}</div>
+          <div class="guest-tag">GUEST</div>
+          <form method="POST" action="/admin/guests/delete/{{ guest.id }}" onsubmit="return confirm('Remove guest {{ guest.username }}?')">
+            <button type="submit" class="btn btn-del" style="padding:5px 12px;font-size:11px;">Remove</button>
+          </form>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state" style="padding:24px;">No guest accounts yet.</div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ══ TAB: ACCOUNT ══ -->
+  <div class="tab-panel" id="tab-account">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Change Password</div>
+        <div class="sec-sub">Logged in as <span style="color:var(--neon-cyan)">{{ username }}</span></div>
+      </div>
+    </div>
+
+    <div class="panel-card" style="max-width:480px;">
+      <div class="panel-card-title">🔑 Update Password</div>
+      <form method="POST" action="/admin/change-password">
+        <div class="form-grid single">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" name="current_password" required placeholder="Enter current password" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" name="new_password" id="newPw" required placeholder="Min 8 characters" minlength="8" oninput="checkStrength(this.value)" />
+            <div class="pw-strength" id="pwStrength"></div>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" name="confirm_password" required placeholder="Repeat new password" />
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <button type="submit" class="btn btn-primary">🔒 Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+  // ── Tab switching ──
+  const panels = document.querySelectorAll('.tab-panel');
+  const navItems = document.querySelectorAll('.sidebar .nav-item:not(.danger)');
+
+  function switchTab(name) {
+    panels.forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('tab-' + name);
+    if (target) target.classList.add('active');
+    // Update sidebar active
+    navItems.forEach(n => n.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  // ── Color pickers ──
+  const accentPick = document.getElementById('accentPick');
+  const bgPick = document.getElementById('bgPick');
+  if (accentPick) accentPick.addEventListener('input', e => {
+    document.getElementById('accentHex').textContent = e.target.value;
+  });
+  if (bgPick) bgPick.addEventListener('input', e => {
+    document.getElementById('bgHex').textContent = e.target.value;
+  });
+
+  // ── Password strength ──
+  function checkStrength(pw) {
+    const bar = document.getElementById('pwStrength');
+    if (!bar) return;
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const colors = ['#ff4466','#ff8844','#ffcc00','#00ff9d','#00f5ff'];
+    const widths = ['20%','40%','60%','80%','100%'];
+    bar.style.background = colors[score-1] || 'var(--glass-border)';
+    bar.style.width = widths[score-1] || '0%';
+  }
+
+  // ── Auto-hide flash ──
+  setTimeout(() => {
+    document.querySelectorAll('.flash').forEach(f => {
+      f.style.transition = 'opacity .5s';
+      f.style.opacity = '0';
+      setTimeout(() => f.remove(), 500);
+    });
+  }, 3500);
+</script>
+
 </body>
 </html>
