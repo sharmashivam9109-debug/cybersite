@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, abort, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -17,9 +17,11 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(hours=8)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
+SUPPORTED_LANGUAGES = ['en', 'hi', 'es', 'fr', 'de', 'zh', 'ar', 'pt', 'ru', 'ja']
+
 db = SQLAlchemy(app)
 
-# â”€â”€â”€ Models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Models ───────────────────────────────────────────────────────────────────
 
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,7 +42,7 @@ class ContentCard(db.Model):
     full_content = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(60), default='General')
     thumbnail = db.Column(db.String(200), default='')
-    icon = db.Column(db.String(10), default='ðŸ”’')
+    icon = db.Column(db.String(10), default='🔒')
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     order_index = db.Column(db.Integer, default=0)
 
@@ -66,7 +68,7 @@ class PageView(db.Model):
     ip_hash = db.Column(db.String(64), default='')  # hashed for privacy
     card_id = db.Column(db.Integer, db.ForeignKey('content_card.id'), nullable=True)
 
-# â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -122,7 +124,39 @@ def record_visit(card_id=None):
     db.session.add(pv)
     db.session.commit()
 
-# â”€â”€â”€ Public Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+def get_current_language():
+    """Get current language from session, cookie, or default to 'en'."""
+    lang = session.get('language') or request.cookies.get('language', 'en')
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'en'
+    return lang
+
+# ─── Language Route ────────────────────────────────────────────────────────────
+
+@app.route('/set-language', methods=['POST'])
+def set_language():
+    """Set language preference via POST. Saves to session + cookie."""
+    lang = request.form.get('language', 'en')
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = 'en'
+    
+    # Save in session
+    session['language'] = lang
+    
+    # Redirect back to where user came from
+    next_url = request.form.get('next') or request.referrer or url_for('index')
+    
+    # Also save in cookie (persists across sessions)
+    response = make_response(redirect(next_url))
+    response.set_cookie('language', lang, max_age=60*60*24*365, samesite='Lax', httponly=True)
+    return response
+
+@app.route('/get-language')
+def get_language():
+    """API endpoint to get current language."""
+    return jsonify({'language': get_current_language()})
+
+# ─── Public Routes ─────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
@@ -130,8 +164,8 @@ def index():
     record_visit()
 
     # Determine what settings to show
-    # If logged in as guest â†’ use guest customizations (overlay on top of owner settings)
-    # If logged in as owner or not logged in â†’ use owner settings
+    # If logged in as guest → use guest customizations (overlay on top of owner settings)
+    # If logged in as owner or not logged in → use owner settings
     role = session.get('admin_role', None)
     username = session.get('admin_username', None)
 
@@ -161,7 +195,10 @@ def index():
             if v:  # only override if guest has set something
                 site_settings[k] = v
 
-    return render_template('index.html', cards=cards, site_settings=site_settings)
+    current_language = get_current_language()
+
+    return render_template('index.html', cards=cards, site_settings=site_settings,
+                           current_language=current_language)
 
 @app.route('/api/card/<int:card_id>')
 def get_card(card_id):
@@ -178,7 +215,7 @@ def get_card(card_id):
         'created_at': card.created_at.strftime('%B %d, %Y')
     })
 
-# â”€â”€â”€ Admin Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Admin Auth ────────────────────────────────────────────────────────────────
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -203,7 +240,7 @@ def admin_logout():
     session.clear()
     return redirect(url_for('index'))
 
-# â”€â”€â”€ Admin Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Admin Dashboard ───────────────────────────────────────────────────────────
 
 @app.route('/admin')
 @login_required
@@ -267,12 +304,15 @@ def admin_dashboard():
     # Guest list (owner only)
     guests = Admin.query.filter_by(role='guest').all() if role == 'owner' else []
 
+    current_language = get_current_language()
+
     return render_template('admin_dashboard.html',
         cards=cards, role=role, username=username,
-        analytics=analytics, settings=settings, guests=guests
+        analytics=analytics, settings=settings, guests=guests,
+        current_language=current_language
     )
 
-# â”€â”€â”€ Site Settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Site Settings ─────────────────────────────────────────────────────────────
 
 @app.route('/admin/settings', methods=['POST'])
 @login_required
@@ -309,7 +349,7 @@ def admin_reset_guest_settings():
         flash('Your customizations reset to default.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# â”€â”€â”€ Password Change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Password Change ────────────────────────────────────────────────────────────
 
 @app.route('/admin/change-password', methods=['POST'])
 @login_required
@@ -335,7 +375,7 @@ def admin_change_password():
     flash('Password changed successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# â”€â”€â”€ Guest Management (Owner Only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Guest Management (Owner Only) ─────────────────────────────────────────────
 
 @app.route('/admin/guests/add', methods=['POST'])
 @owner_required
@@ -374,7 +414,7 @@ def admin_delete_guest(guest_id):
     flash(f'Guest "{guest.username}" removed.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# â”€â”€â”€ Card Management (Owner Only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Card Management (Owner Only) ──────────────────────────────────────────────
 
 @app.route('/admin/add', methods=['GET', 'POST'])
 @owner_required
@@ -384,7 +424,7 @@ def admin_add():
         description = request.form.get('description', '').strip()
         full_content = request.form.get('full_content', '').strip()
         category = request.form.get('category', 'General').strip()
-        icon = request.form.get('icon', 'ðŸ”’').strip()
+        icon = request.form.get('icon', '🔒').strip()
         order_index = int(request.form.get('order_index', 0))
 
         thumbnail = ''
@@ -416,7 +456,7 @@ def admin_edit(card_id):
         card.description = request.form.get('description', '').strip()
         card.full_content = request.form.get('full_content', '').strip()
         card.category = request.form.get('category', 'General').strip()
-        card.icon = request.form.get('icon', 'ðŸ”’').strip()
+        card.icon = request.form.get('icon', '🔒').strip()
         card.order_index = int(request.form.get('order_index', 0))
 
         if 'thumbnail' in request.files:
@@ -442,7 +482,7 @@ def admin_delete(card_id):
     flash('Card deleted.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# â”€â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Init ──────────────────────────────────────────────────────────────────────
 
 def init_db():
     with app.app_context():
@@ -475,19 +515,19 @@ def init_db():
                     title='WiFi Security Basics',
                     description='Most people leave their WiFi completely exposed. Here\'s what you should actually know.',
                     full_content='''## WiFi Security: What You\'re Missing\n\nYour home WiFi is the front door to your digital life.\n\n**Key Steps:**\n- Always use WPA3 or WPA2 encryption\n- Change default router admin credentials\n- Use a strong, unique WiFi password (16+ chars)\n- Enable guest network for IoT devices\n- Disable WPS\n- Keep router firmware updated''',
-                    category='WiFi Security', icon='ðŸ“¡', order_index=1
+                    category='WiFi Security', icon='📡', order_index=1
                 ),
                 ContentCard(
                     title='Common Phone Threats in 2025',
                     description='Your smartphone holds more personal data than your home.',
                     full_content='''## Phone Security: Modern Threats\n\n**Common Attack Vectors:**\n- Phishing SMS (Smishing)\n- Malicious Apps\n- SIM Swapping\n- Public WiFi MITM\n- Stalkerware''',
-                    category='Mobile Security', icon='ðŸ“±', order_index=2
+                    category='Mobile Security', icon='📱', order_index=2
                 ),
                 ContentCard(
                     title='Privacy Tips That Actually Work',
-                    description='Not paranoia â€” just smart habits that protect your digital footprint.',
+                    description='Not paranoia — just smart habits that protect your digital footprint.',
                     full_content='''## Real Privacy\n\n**Browser Privacy:**\n- Use Firefox with uBlock Origin\n- Enable DNS-over-HTTPS\n\n**Account Security:**\n- Use a password manager\n- Enable 2FA everywhere''',
-                    category='Privacy', icon='ðŸ›¡ï¸', order_index=3
+                    category='Privacy', icon='🛡️', order_index=3
                 ),
             ]
             for c in sample_cards:
