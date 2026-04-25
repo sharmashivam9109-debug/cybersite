@@ -6,9 +6,6 @@
   <title>S.S — Cyber Awareness</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
   <style>
-    /* ═══════════════════════════════════════════════
-       RESET & TOKENS
-    ═══════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -46,7 +43,6 @@
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
       transition: background 0.4s var(--ease), color 0.4s var(--ease);
-      /* Subtle noise texture */
       position: relative;
     }
     body::before {
@@ -63,9 +59,6 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 1px; }
 
-    /* ═══════════════════════════════════════════════
-       CURSOR
-    ═══════════════════════════════════════════════ */
     #cur-dot, #cur-ring {
       position: fixed; top: 0; left: 0;
       pointer-events: none; z-index: 9999;
@@ -87,9 +80,6 @@
     body.cur-hover #cur-ring { width: 56px; height: 56px; border-color: rgba(26,24,20,0.15); }
     @media (hover: none) { #cur-dot, #cur-ring { display: none; } body { cursor: auto; } }
 
-    /* ═══════════════════════════════════════════════
-       SCROLL PROGRESS BAR
-    ═══════════════════════════════════════════════ */
     #progress-bar {
       position: fixed; top: 0; left: 0; z-index: 1000;
       height: 2px; width: 0%;
@@ -105,9 +95,6 @@
     }
     #read-progress.visible { opacity: 1; }
 
-    /* ═══════════════════════════════════════════════
-       LOADING SCREEN
-    ═══════════════════════════════════════════════ */
     #loader {
       position: fixed; inset: 0; z-index: 8000;
       background: var(--bg);
@@ -134,9 +121,6 @@
     @keyframes loaderFade { to { opacity: 1; } }
     @keyframes loaderBar { to { width: 100%; } }
 
-    /* ═══════════════════════════════════════════════
-       NAVBAR
-    ═══════════════════════════════════════════════ */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 500;
       height: 60px;
@@ -166,7 +150,6 @@
     .nav-links a:hover { color: var(--text); }
     .nav-right { display: flex; align-items: center; gap: 16px; }
 
-    /* Dark mode toggle */
     .theme-toggle {
       width: 36px; height: 20px;
       background: var(--border); border-radius: 10px;
@@ -189,9 +172,6 @@
       .nav-links { display: none; }
     }
 
-    /* ═══════════════════════════════════════════════
-       PAGE TRANSITIONS
-    ═══════════════════════════════════════════════ */
     .page { display: none; min-height: 100vh; padding-top: 60px; }
     .page.active { display: block; }
     .page.entering {
@@ -209,9 +189,6 @@
       to   { opacity: 0; transform: translateY(-8px); }
     }
 
-    /* ═══════════════════════════════════════════════
-       HERO
-    ═══════════════════════════════════════════════ */
     .hero {
       min-height: calc(100vh - 60px);
       display: flex; align-items: center;
@@ -230,7 +207,6 @@
     }
     .hero-kicker::before { content: ''; width: 28px; height: 1px; background: var(--border); }
 
-    /* Letter-by-letter hero name */
     .hero-name {
       font-family: var(--fd);
       font-size: clamp(64px, 12vw, 144px);
@@ -309,9 +285,6 @@
     }
     @keyframes slideRule { 0%{left:-100%} 100%{left:100%} }
 
-    /* ═══════════════════════════════════════════════
-       ABOUT
-    ═══════════════════════════════════════════════ */
     .about-strip {
       max-width: 1100px; margin: 0 auto;
       padding: 90px 40px;
@@ -355,9 +328,6 @@
       letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
     }
 
-    /* ═══════════════════════════════════════════════
-       CARDS
-    ═══════════════════════════════════════════════ */
     .cards-section {
       max-width: 1100px; margin: 0 auto;
       padding: 90px 40px;
@@ -451,48 +421,58 @@
       letter-spacing: 3px; color: var(--subtle); text-transform: uppercase;
     }
 
-    /* ═══════════════════════════════════════════════
-       CONNECT
-    ═══════════════════════════════════════════════ */
+    /* ── CONNECT SECTION ── */
     .connect-section {
       background: var(--bg-paper);
       border-top: 1px solid var(--border);
       padding: 110px 40px; text-align: center;
     }
     .connect-inner {
-  max-width: 540px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
     .connect-title {
       font-family: var(--fd);
       font-size: clamp(28px, 5vw, 54px);
       font-weight: 700; letter-spacing: -2px; margin-bottom: 18px;
     }
-    .connect-sub {
-      font-size: 15px; color: var(--muted);
-      line-height: 1.75; margin-bottom: 40px;
-    }
-    .insta-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 14px 32px;
-      background: var(--text); color: var(--bg);
-      border-radius: 2px; text-decoration: none;
-      font-size: 14px; font-weight: 500; letter-spacing: 0.4px;
-      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
-    }
-    .insta-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(26,24,20,0.15);
-    }
-    .insta-icon { width: 18px; height: 18px; }
 
-    /* ═══════════════════════════════════════════════
-       DETAIL PAGE
-    ═══════════════════════════════════════════════ */
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-family: var(--fb);
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: transform 0.2s var(--ease),
+                  box-shadow 0.2s var(--ease),
+                  background 0.2s,
+                  border-color 0.2s;
+      width: 200px;
+      justify-content: center;
+    }
+    .social-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(26,24,20,0.1);
+      background: var(--bg-off);
+      border-color: var(--muted);
+    }
+    [data-theme="dark"] .social-btn:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    .social-btn svg { flex-shrink: 0; }
+
     #page-detail { background: var(--bg); }
     .detail-container {
       max-width: 680px; margin: 0 auto;
@@ -538,9 +518,6 @@
     .detail-body ul { padding-left: 20px; margin: 14px 0 24px; }
     .detail-body li { margin-bottom: 10px; color: var(--muted); }
 
-    /* ═══════════════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════════════ */
     footer {
       border-top: 1px solid var(--border);
       padding: 24px 40px;
@@ -559,9 +536,6 @@
     }
     footer a:hover { color: var(--text); }
 
-    /* ═══════════════════════════════════════════════
-       SCROLL REVEAL
-    ═══════════════════════════════════════════════ */
     .reveal {
       opacity: 0;
       transform: translateY(18px);
@@ -578,9 +552,6 @@
       opacity: 1; transform: none; filter: none;
     }
 
-    /* ═══════════════════════════════════════════════
-       MOBILE
-    ═══════════════════════════════════════════════ */
     @media(max-width:480px){
       .hero { padding: 60px 20px 40px; }
       .cards-section, .about-strip { padding: 60px 20px; }
@@ -591,28 +562,24 @@
 </head>
 <body>
 
-<!-- CUSTOM CURSOR -->
 <div id="cur-dot"></div>
 <div id="cur-ring"></div>
 
-<!-- SCROLL BARS -->
 <div id="progress-bar"></div>
 <div id="read-progress"></div>
 
-<!-- LOADER -->
 <div id="loader">
   <div class="loader-brand">S.S</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
-<!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-left">
     <span class="nav-logo" onclick="navigate('home')">S.S</span>
     <ul class="nav-links">
       <li><a onclick="navigate('home'); goTo('#about-s')">About</a></li>
       <li><a onclick="navigate('home'); goTo('#content-s')">Content</a></li>
-      <li><a href="https://instagram.com/shivam_sharma.01" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a href="https://www.instagram.com/shivam_shrma.01?igsh=MTI3cGZydmV5ZWw3OA==" target="_blank" rel="noopener">Instagram</a></li>
     </ul>
   </div>
   <div class="nav-right">
@@ -645,8 +612,8 @@
     <div class="about-body">
       <div class="section-mono">About</div>
       <h2 class="about-title reveal">Self-taught.<br>Independent.<br>Curious.</h2>
-      <p class="reveal d1">Hey main Shivam Sharma. Ye site maine isliye banayi hai taaki simple tareeke se cyber awareness share kar saku.  
-Koi bakwas nahi — bas wohi cheeze jo actually kaam aaye aur tumhe online safe rakhe.  
+      <p class="reveal d1">Hey main Shivam Sharma. Ye site maine isliye banayi hai taaki simple tareeke se cyber awareness share kar saku.
+Koi bakwas nahi — bas wohi cheeze jo actually kaam aaye aur tumhe online safe rakhe.
 Thoda explore karo… aur kuch samajh na aaye toh Insta ya Telegram pe ping kar dena.</p>
       <p class="reveal d2">Focused on <strong>cyber awareness</strong> — translating complex security topics into knowledge that actually protects people online.</p>
       <p class="reveal d3">Currently exploring the intersection of web development and security education.</p>
@@ -672,40 +639,35 @@ Thoda explore karo… aur kuch samajh na aaye toh Insta ya Telegram pe ping kar 
     </div>
   </section>
 
+  <!-- ── CONNECT ── -->
   <section class="connect-section">
     <div class="connect-inner reveal">
       <div class="section-mono" style="margin-bottom:18px">Connect</div>
       <h2 class="connect-title">Follow along.</h2>
-        
-<a href="https://www.instagram.com/shivam_shrma.01" target="_blank"
-style="display:inline-flex;align-items:center;gap:6px;
-background:#f3f2f0;padding:8px 14px;border-radius:8px;
-border:1px solid #ddd;color:#111;text-decoration:none;margin:auto;">
 
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-<rect x="2" y="2" width="20" height="20" rx="5"></rect>
-<circle cx="12" cy="12" r="4.2"></circle>
-<circle cx="17.6" cy="6.4" r="1.3" fill="currentColor"></circle>
-</svg>
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/shivam_shrma.01?igsh=MTI3cGZydmV5ZWw3OA=="
+         target="_blank" rel="noopener"
+         class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <circle cx="17.6" cy="6.4" r="1.3" fill="currentColor" stroke="none"></circle>
+        </svg>
+        @shivam_shrma.01
+      </a>
 
-<span style="font-size:13px;">@shivam_shrma.01</span>
-</a>
-<a href="https://t.me/mr_s_s01" target="_blank"
-style="display:inline-flex;align-items:center;gap:6px;
-background:#f3f2f0;
-padding:8px 14px;
-border-radius:8px;
-border:1px solid #ddd;
-color:#111;
-text-decoration:none;
-margin-top:10px;"
+      <!-- Telegram -->
+      <a href="https://t.me/mr_s_s01"
+         target="_blank" rel="noopener"
+         class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23.91 3.79L20.3 20.84c-.25 1.21-.98 1.5-2 .94l-5.5-4.07-2.66 2.57c-.3.3-.55.56-1.1.56-.72 0-.6-.27-.84-.95L6.3 13.7l-5.45-1.7c-1.18-.35-1.19-1.16.26-1.75l21.26-8.2c.97-.43 1.9.24 1.53 1.73z"/>
+        </svg>
+        @mr_s_s01
+      </a>
 
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-<path d="M23.91 3.79L20.3 20.84c-.25 1.21-.98 1.5-2 .94l-5.5-4.07-2.66 2.57c-.3.3-.55.56-1.1.56-.72 0-.6-.27-.84-.95L6.3 13.7l-5.45-1.7c-1.18-.35-1.19-1.16.26-1.75l21.26-8.2c.97-.43 1.9.24 1.53 1.73z"/>
-</svg>
-
-<span style="font-size:13px;">@mr_s_s01</span>
-</a>
     </div>
   </section>
 
@@ -738,9 +700,7 @@ window.__CARDS__ = [{% for card in cards %}{id:{{card.id}},title:{{card.title|to
 <script>
 'use strict';
 
-/* ════════════════════════════════════════
-   THEME
-════════════════════════════════════════ */
+/* ── THEME ── */
 (function(){
   const saved = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
@@ -753,13 +713,10 @@ function toggleTheme(){
   localStorage.setItem('theme', next);
 }
 
-/* ════════════════════════════════════════
-   CURSOR
-════════════════════════════════════════ */
+/* ── CURSOR ── */
 const dot  = document.getElementById('cur-dot');
 const ring = document.getElementById('cur-ring');
 let mx=0, my=0, rx=0, ry=0;
-let raf;
 
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 
@@ -768,18 +725,16 @@ function animCursor(){
   rx += (mx - rx) * 0.1;
   ry += (my - ry) * 0.1;
   ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-  raf = requestAnimationFrame(animCursor);
+  requestAnimationFrame(animCursor);
 }
 animCursor();
 
-document.querySelectorAll('a, button, .btn, .card, .nav-logo, .stat-cell, .insta-btn, .theme-toggle, .detail-back, .nav-links a').forEach(el => {
+document.querySelectorAll('a, button, .btn, .card, .nav-logo, .stat-cell, .social-btn, .theme-toggle, .detail-back, .nav-links a').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('cur-hover'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('cur-hover'));
 });
 
-/* ════════════════════════════════════════
-   SCROLL PROGRESS
-════════════════════════════════════════ */
+/* ── SCROLL PROGRESS ── */
 const progBar  = document.getElementById('progress-bar');
 const readProg = document.getElementById('read-progress');
 
@@ -788,22 +743,19 @@ window.addEventListener('scroll', () => {
   const pct   = total > 0 ? (window.scrollY / total) * 100 : 0;
   progBar.style.width = pct + '%';
 
-  // Reading progress (only on detail page)
   if(document.getElementById('page-detail').classList.contains('active')){
     const body = document.getElementById('d-body');
     if(body){
-      const rect = body.getBoundingClientRect();
+      const rect  = body.getBoundingClientRect();
       const bodyH = body.offsetHeight;
       const scrolled = Math.max(0, -rect.top + window.innerHeight * 0.5);
-      const readPct = Math.min(100, (scrolled / bodyH) * 100);
+      const readPct  = Math.min(100, (scrolled / bodyH) * 100);
       readProg.style.width = readPct + '%';
     }
   }
 }, { passive: true });
 
-/* ════════════════════════════════════════
-   LOADER
-════════════════════════════════════════ */
+/* ── LOADER ── */
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('loader').classList.add('done');
@@ -812,23 +764,18 @@ window.addEventListener('load', () => {
   }, 1100);
 });
 
-/* ════════════════════════════════════════
-   HERO NAME — letter reveal
-════════════════════════════════════════ */
+/* ── HERO NAME ── */
 function buildHeroName(){
   const el   = document.getElementById('hero-name');
   const text = 'S.S';
-  const delay_start = 1.25; // seconds after page load
   el.innerHTML = text.split('').map((c, i) => {
     if(c === ' ') return `<span class="spc"> </span>`;
-    const d = (delay_start + i * 0.08).toFixed(2);
+    const d = (1.25 + i * 0.08).toFixed(2);
     return `<span class="char" style="animation-delay:${d}s">${c}</span>`;
   }).join('');
 }
 
-/* ════════════════════════════════════════
-   PAGE NAVIGATION
-════════════════════════════════════════ */
+/* ── PAGE NAVIGATION ── */
 function navigate(name){
   const current = document.querySelector('.page.active');
   const next    = document.getElementById('page-' + name);
@@ -842,7 +789,6 @@ function navigate(name){
     setTimeout(() => {
       next.classList.remove('entering');
       observe();
-      // Toggle read progress bar
       if(name === 'detail'){
         readProg.classList.add('visible');
         readProg.style.width = '0%';
@@ -860,9 +806,7 @@ function goTo(sel){
   }, 60);
 }
 
-/* ════════════════════════════════════════
-   CARDS
-════════════════════════════════════════ */
+/* ── CARDS ── */
 function loadCards(){
   const cards = window.__CARDS__ || [];
   const box   = document.getElementById('cards-container');
@@ -888,7 +832,6 @@ function loadCards(){
     </div>
   `).join('');
 
-  // 3D tilt on cards (desktop only)
   if(window.matchMedia('(hover: hover)').matches){
     box.querySelectorAll('.card').forEach(card => {
       card.addEventListener('mousemove', e => {
@@ -912,9 +855,7 @@ function escHtml(s){
   return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-/* ════════════════════════════════════════
-   DETAIL
-════════════════════════════════════════ */
+/* ── DETAIL ── */
 function parseContent(t){
   if(!t) return '';
   return t
@@ -942,9 +883,7 @@ async function openDetail(id){
   }
 }
 
-/* ════════════════════════════════════════
-   SCROLL REVEAL
-════════════════════════════════════════ */
+/* ── SCROLL REVEAL ── */
 let io;
 function observe(){
   if(io) io.disconnect();
@@ -959,9 +898,7 @@ function observe(){
   document.querySelectorAll('.reveal:not(.vis)').forEach(el => io.observe(el));
 }
 
-/* ════════════════════════════════════════
-   INIT
-════════════════════════════════════════ */
+/* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
   loadCards();
   observe();
@@ -969,4 +906,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
