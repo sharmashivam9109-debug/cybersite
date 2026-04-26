@@ -248,6 +248,43 @@ def get_card(card_id):
         'created_at': card.created_at.strftime('%B %d, %Y')
     })
 
+# ─── Translation API ───────────────────────────────────────────────────────────
+
+@app.route('/api/translate', methods=['POST'])
+def translate_text():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        text = data.get('text', '').strip()
+        target_lang = data.get('target', 'en').strip()
+
+        if not text:
+            return jsonify({'error': 'No text provided'}), 400
+
+        import anthropic
+        api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+        if not api_key:
+            return jsonify({'error': 'Translation service not configured'}), 503
+
+        client = anthropic.Anthropic(api_key=api_key)
+
+        message = client.messages.create(
+            model="claude-opus-4-6",
+            max_tokens=1024,
+            messages=[{
+                "role": "user",
+                "content": f"Translate the following text to {target_lang}. Return only the translated text, nothing else, no explanations:\n\n{text}"
+            }]
+        )
+
+        translated = message.content[0].text
+        return jsonify({'translated': translated, 'status': 'ok'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # ─── Public User Auth ──────────────────────────────────────────────────────────
 
 @app.route('/register', methods=['GET', 'POST'])
