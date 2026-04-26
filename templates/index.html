@@ -261,10 +261,10 @@
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
     .card { background: var(--surface); cursor: pointer; position: relative; display: flex; flex-direction: column; transition: background 0.25s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s; transform-style: preserve-3d; will-change: transform; overflow: hidden; }
     .card:hover { background: var(--bg-off); box-shadow: 0 12px 40px rgba(26,24,20,0.07); z-index: 1; }
-    .card-thumb { width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--bg-paper); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .card-thumb img { width: 100%; height: 100%; object-fit: contain; object-position: center; transition: transform 0.6s var(--ease-out); background: var(--bg-paper); }
-    .card:hover .card-thumb img { transform: scale(1.03); }
-    .card-thumb-placeholder { width: 100%; aspect-ratio: 16/9; background: var(--bg-paper); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+    .card-thumb { width: 100%; height: 200px; overflow: hidden; background: var(--bg-paper); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease-out); display: block; }
+    .card:hover .card-thumb img { transform: scale(1.04); }
+    .card-thumb-placeholder { width: 100%; height: 200px; background: var(--bg-paper); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-bottom: 1px solid var(--border); }
     .card-thumb-placeholder .ph-icon { font-size: 36px; opacity: 0.35; }
     .card-body { padding: 28px 28px 22px; display: flex; flex-direction: column; flex: 1; }
     .card-cat { font-family: var(--fm); font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
@@ -463,11 +463,67 @@
     /* ── POST FEED ── */
     .posts-feed { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
     .post-item {
-      background: var(--surface); padding: 28px 32px;
+      background: var(--surface);
       transition: background 0.2s;
+      overflow: hidden;
     }
     .post-item:hover { background: var(--bg-off); }
-    .post-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+
+    /* Auto gradient banner */
+    .post-banner {
+      width: 100%; height: 160px;
+      display: flex; align-items: flex-end;
+      padding: 18px 24px; position: relative;
+      overflow: hidden; flex-shrink: 0;
+      cursor: default;
+    }
+    .post-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      opacity: 0.15;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 120px;
+      pointer-events: none;
+    }
+    .post-banner-title {
+      font-family: var(--fd); font-size: clamp(16px,4vw,22px);
+      font-weight: 800; line-height: 1.2; letter-spacing: -0.5px;
+      color: #fff; position: relative; z-index: 1;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .post-banner-author {
+      position: absolute; top: 14px; right: 16px; z-index: 1;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .post-banner-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-size: 12px; font-weight: 800; color: #fff;
+      border: 1px solid rgba(255,255,255,0.3); flex-shrink: 0;
+    }
+    .post-banner-username {
+      font-family: var(--fm); font-size: 10px; letter-spacing: 1px;
+      color: rgba(255,255,255,0.8); text-transform: uppercase;
+    }
+
+    /* Image post banner */
+    .post-banner-img {
+      width: 100%; height: 160px; object-fit: cover; object-position: center;
+      display: block; flex-shrink: 0;
+    }
+    .post-banner-img-wrap {
+      position: relative; overflow: hidden;
+    }
+    .post-banner-img-wrap .post-banner-author {
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+      padding: 5px 10px; border-radius: 20px;
+    }
+
+    .post-content { padding: 20px 28px 24px; }
+    .post-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
     .post-author-row { display: flex; align-items: center; gap: 10px; }
     .post-avatar {
       width: 32px; height: 32px; border-radius: 50%; background: var(--text); color: var(--bg);
@@ -476,14 +532,14 @@
     }
     .post-author-name { font-weight: 600; font-size: 14px; }
     .post-date { font-family: var(--fm); font-size: 10px; color: var(--subtle); letter-spacing: 1px; margin-top: 2px; }
-    .post-title { font-family: var(--fd); font-size: 20px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; line-height: 1.25; }
-    .post-body { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; white-space: pre-wrap; word-break: break-word; }
+    .post-title { font-family: var(--fd); font-size: 18px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; line-height: 1.25; }
+    .post-body { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 14px; white-space: pre-wrap; word-break: break-word; }
     .post-file-row {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 8px 16px; border: 1px solid var(--border); border-radius: 4px;
       background: var(--bg-off); text-decoration: none; color: var(--text);
       font-family: var(--fm); font-size: 11px; letter-spacing: 1px;
-      transition: all 0.2s; margin-bottom: 16px;
+      transition: all 0.2s; margin-bottom: 14px;
     }
     .post-file-row:hover { border-color: var(--muted); background: var(--bg-paper); }
     .post-file-icon { font-size: 16px; }
@@ -515,7 +571,7 @@
     .detail-cat { font-family: var(--fm); font-size: 10px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
     .detail-title { font-family: var(--fd); font-size: clamp(28px,5vw,52px); font-weight: 800; line-height: 1.1; letter-spacing: -2px; margin-bottom: 14px; }
     .detail-date { font-family: var(--fm); font-size: 11px; color: var(--subtle); letter-spacing: 2px; margin-bottom: 52px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
-    .detail-hero-img { width: 100%; max-height: 480px; object-fit: contain; object-position: center; border-radius: 4px; margin-bottom: 48px; background: var(--bg-paper); display: block; }
+    .detail-hero-img { width: 100%; max-height: 400px; object-fit: cover; object-position: center; border-radius: 4px; margin-bottom: 48px; display: block; }
     .detail-body { font-size: 16px; line-height: 1.9; color: var(--muted); }
     .detail-body h2 { font-family: var(--fd); font-size: 22px; font-weight: 700; color: var(--text); margin: 44px 0 16px; letter-spacing: -0.5px; }
     .detail-body p { margin-bottom: 20px; }
@@ -868,30 +924,62 @@
     <div class="posts-feed reveal d2" style="margin-top:32px">
       {% for post in posts %}
       <div class="post-item">
-        <div class="post-header">
-          <div class="post-author-row">
-            <div class="post-avatar">{{ post.author.username[0].upper() }}</div>
-            <div>
-              <div class="post-author-name">{{ post.author.username }}</div>
-              <div class="post-date">{{ post.created_at.strftime('%d %b %Y · %H:%M') }}</div>
-            </div>
+
+        {% if post.file_name and post.file_type and post.file_type.startswith('image/') %}
+        <!-- Image attached — show as banner -->
+        <div class="post-banner-img-wrap">
+          <img class="post-banner-img" src="/files/{{ post.file_name }}" alt="{{ post.title }}" loading="lazy" />
+          <div class="post-banner-author">
+            <div class="post-banner-avatar">{{ post.author.username[0].upper() }}</div>
+            <span class="post-banner-username">{{ post.author.username }}</span>
           </div>
-          {% if current_user and current_user.id == post.author_id %}
-          <form method="POST" action="/post/delete/{{ post.id }}" onsubmit="return confirm('Delete this post?')">
-            <button type="submit" class="post-delete-btn">Delete</button>
-          </form>
+        </div>
+        {% else %}
+        <!-- Auto gradient banner -->
+        <div class="post-banner" data-title="{{ post.title }}" data-author="{{ post.author.username }}">
+          <div class="post-banner-author">
+            <div class="post-banner-avatar">{{ post.author.username[0].upper() }}</div>
+            <span class="post-banner-username">{{ post.author.username }}</span>
+          </div>
+          <div class="post-banner-title">{{ post.title }}</div>
+        </div>
+        {% endif %}
+
+        <div class="post-content">
+          <div class="post-header">
+            <div class="post-author-row">
+              <div class="post-avatar">{{ post.author.username[0].upper() }}</div>
+              <div>
+                <div class="post-author-name">{{ post.author.username }}</div>
+                <div class="post-date">{{ post.created_at.strftime('%d %b %Y · %H:%M') }}</div>
+              </div>
+            </div>
+            {% if current_user and current_user.id == post.author_id %}
+            <form method="POST" action="/post/delete/{{ post.id }}" onsubmit="return confirm('Delete this post?')">
+              <button type="submit" class="post-delete-btn">Delete</button>
+            </form>
+            {% endif %}
+          </div>
+          <div class="post-title">{{ post.title }}</div>
+          <div class="post-body">{{ post.body }}</div>
+          {% if post.file_name %}
+          {% if not (post.file_type and post.file_type.startswith('image/')) %}
+          <a href="/files/{{ post.file_name }}" class="post-file-row" download="{{ post.file_original }}">
+            <span class="post-file-icon">📎</span>
+            <span class="post-file-name">{{ post.file_original }}</span>
+            <span class="post-file-size">{{ format_file_size(post.file_size) }}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </a>
+          {% else %}
+          <a href="/files/{{ post.file_name }}" class="post-file-row" download="{{ post.file_original }}">
+            <span class="post-file-icon">🖼️</span>
+            <span class="post-file-name">{{ post.file_original }}</span>
+            <span class="post-file-size">{{ format_file_size(post.file_size) }}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </a>
+          {% endif %}
           {% endif %}
         </div>
-        <div class="post-title">{{ post.title }}</div>
-        <div class="post-body">{{ post.body }}</div>
-        {% if post.file_name %}
-        <a href="/files/{{ post.file_name }}" class="post-file-row" download="{{ post.file_original }}">
-          <span class="post-file-icon">📎</span>
-          <span class="post-file-name">{{ post.file_original }}</span>
-          <span class="post-file-size">{{ format_file_size(post.file_size) }}</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </a>
-        {% endif %}
       </div>
       {% endfor %}
     </div>
@@ -1234,6 +1322,35 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape') closeAuthDrawer();
 });
 
+/* ── POST GRADIENT BANNERS ── */
+function strToHue(str){
+  let hash = 0;
+  for(let i = 0; i < str.length; i++){
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    hash = hash & hash;
+  }
+  return Math.abs(hash) % 360;
+}
+
+const GRADIENT_PALETTES = [
+  (h) => `linear-gradient(135deg, hsl(${h},70%,28%) 0%, hsl(${(h+40)%360},80%,18%) 100%)`,
+  (h) => `linear-gradient(135deg, hsl(${h},60%,20%) 0%, hsl(${(h+60)%360},75%,30%) 100%)`,
+  (h) => `linear-gradient(160deg, hsl(${h},80%,22%) 0%, hsl(${(h+30)%360},60%,15%) 60%, hsl(${(h+80)%360},70%,20%) 100%)`,
+  (h) => `linear-gradient(120deg, hsl(${(h+20)%360},65%,25%) 0%, hsl(${h},80%,15%) 100%)`,
+  (h) => `linear-gradient(145deg, hsl(${h},75%,18%) 0%, hsl(${(h+50)%360},65%,28%) 50%, hsl(${(h+90)%360},70%,22%) 100%)`,
+];
+
+function applyPostBanners(){
+  document.querySelectorAll('.post-banner[data-title]').forEach(banner => {
+    const title  = banner.dataset.title || '';
+    const author = banner.dataset.author || '';
+    const seed   = title + author;
+    const hue    = strToHue(seed);
+    const pick   = Math.abs(strToHue(title)) % GRADIENT_PALETTES.length;
+    banner.style.background = GRADIENT_PALETTES[pick](hue);
+  });
+}
+
 /* ── FILE INPUT ── */
 function showFileName(input){ const span=document.getElementById('file-selected-name'); span.textContent=input.files[0]?input.files[0].name:''; }
 
@@ -1433,8 +1550,12 @@ async function selectLanguage(code){
     toastTimer = setTimeout(hideToast, 2500);
   } catch(err){
     console.error('Translation failed:', err);
-    showToast('Translation failed — check API key');
-    toastTimer = setTimeout(hideToast, 3000);
+    if(err.message && err.message.includes('API key')) {
+      showToast('Set ANTHROPIC_API_KEY on server');
+    } else {
+      showToast('Translation failed — try again');
+    }
+    toastTimer = setTimeout(hideToast, 4000);
   } finally {
     btn?.classList.remove('translating');
     document.body.classList.remove('translating-page');
@@ -1451,7 +1572,7 @@ function initLanguage(){
 }
 
 /* ── INIT ── */
-document.addEventListener('DOMContentLoaded',()=>{ loadCards(); observe(); refreshCursorTargets(); initLanguage(); });
+document.addEventListener('DOMContentLoaded',()=>{ loadCards(); observe(); refreshCursorTargets(); initLanguage(); applyPostBanners(); });
 </script>
 
 </body>
