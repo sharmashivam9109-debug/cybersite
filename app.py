@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os, uuid, datetime, json, mimetypes
+import anthropic
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cyber-hub-ultra-secret-2025-change-me')
@@ -214,7 +215,6 @@ def translate_text():
         if not api_key:
             return jsonify({'error': 'Translation service not configured'}), 503
 
-        import anthropic
         client = anthropic.Anthropic(api_key=api_key)
 
         strings_json = json.dumps(strings, ensure_ascii=False, indent=2)
@@ -226,7 +226,7 @@ Do not translate the keys. Do not add explanation or markdown. Return pure JSON 
 {strings_json}"""
 
         message = client.messages.create(
-            model="claude-opus-4-6",
+            model="claude-haiku-4-5",
             max_tokens=2048,
             messages=[{"role": "user", "content": prompt}]
         )
