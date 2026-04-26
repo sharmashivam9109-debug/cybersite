@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Cyber Hub</title>
+  <title>Admin Dashboard — S.S Cyber Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,63 +17,47 @@
     }
     body { background: var(--black); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; }
 
-    /* ── Sidebar ── */
+    /* ── SIDEBAR ── */
     .sidebar {
       position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
       background: var(--panel); border-right: 1px solid var(--glass-border);
       padding: 28px 18px; display: flex; flex-direction: column; gap: 4px; z-index: 100;
     }
-    .sidebar-logo {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      letter-spacing: 4px; color: var(--neon-cyan); text-transform: uppercase;
-      padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
-    }
+    .sidebar-logo { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 4px; color: var(--neon-cyan); text-transform: uppercase; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
     .sidebar-logo .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px;
-      font-size: 12px; font-weight: 600; text-decoration: none;
-      color: var(--muted); letter-spacing: .5px; transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
-    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; color: var(--muted); letter-spacing: .5px; transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
     .nav-item:hover { background: var(--glass); color: var(--text); }
     .nav-item.active { background: rgba(0,180,255,0.08); color: var(--neon-blue); }
     .nav-spacer { flex: 1; }
     .nav-item.danger { color: rgba(255,68,102,0.6); }
     .nav-item.danger:hover { color: var(--neon-red); background: rgba(255,68,102,0.08); }
-    .role-badge {
-      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px;
-      padding: 3px 8px; border-radius: 3px; text-transform: uppercase; margin-bottom: 8px;
-    }
+    .role-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; margin-bottom: 8px; }
     .role-badge.owner { background: rgba(155,89,255,0.15); color: var(--neon-purple); border: 1px solid rgba(155,89,255,0.3); }
     .role-badge.guest { background: rgba(0,180,255,0.1); color: var(--neon-blue); border: 1px solid rgba(0,180,255,0.25); }
 
-    /* ── Main ── */
+    /* ── MAIN ── */
     .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px; min-height: 100vh; }
 
-    /* ── Tabs ── */
+    /* ── TABS ── */
     .tabs { display: flex; gap: 4px; margin-bottom: 36px; border-bottom: 1px solid var(--glass-border); padding-bottom: 0; }
-    .tab {
-      padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px;
-      cursor: pointer; border: none; background: none; color: var(--muted);
-      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s; text-transform: uppercase;
-    }
+    .tab { padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; border: none; background: none; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s; text-transform: uppercase; }
     .tab:hover { color: var(--text); }
     .tab.active { color: var(--neon-cyan); border-bottom-color: var(--neon-cyan); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Flash ── */
+    /* ── FLASH ── */
     .flash { padding: 11px 16px; border-radius: 6px; margin-bottom: 24px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .5px; }
     .flash.success { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.25); color: var(--neon-green); }
     .flash.error { background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.25); color: var(--neon-red); }
 
-    /* ── Section header ── */
+    /* ── SECTION HEADER ── */
     .sec-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
     .sec-title { font-size: 22px; font-weight: 800; }
     .sec-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 4px; }
 
-    /* ── Cards table ── */
+    /* ── TABLE ── */
     .table-wrap { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; overflow: hidden; }
     table { width: 100%; border-collapse: collapse; }
     th { padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--glass-border); text-align: left; }
@@ -85,7 +69,7 @@
     .card-cat { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--neon-blue); text-transform: uppercase; margin-top: 2px; }
     .card-desc { color: var(--muted); font-size: 12px; max-width: 280px; line-height: 1.5; }
 
-    /* ── Buttons ── */
+    /* ── BUTTONS ── */
     .btn { padding: 8px 18px; border-radius: 5px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .5px; cursor: pointer; border: none; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
     .btn-primary { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: #fff; }
     .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
@@ -97,9 +81,11 @@
     .btn-ghost:hover { color: var(--text); }
     .btn-green { background: rgba(0,255,157,0.1); color: var(--neon-green); }
     .btn-green:hover { background: rgba(0,255,157,0.2); }
-    .actions { display: flex; gap: 6px; align-items: center; }
+    .btn-warn { background: rgba(255,200,0,0.1); color: #ffc800; }
+    .btn-warn:hover { background: rgba(255,200,0,0.2); }
+    .actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
-    /* ── Form styles ── */
+    /* ── FORM ── */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-grid.single { grid-template-columns: 1fr; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -115,22 +101,21 @@
     input:focus, textarea:focus, select:focus { border-color: var(--neon-blue); }
     textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 
-    /* ── Panel card ── */
-    .panel-card {
-      background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 24px; margin-bottom: 24px;
-    }
+    /* ── PANEL CARD ── */
+    .panel-card { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
     .panel-card-title { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--neon-cyan); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
 
-    /* ── Analytics ── */
-    .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 28px; }
-    .stat-box { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 20px 24px; }
-    .stat-val { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    /* ── ANALYTICS ── */
+    .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 28px; }
+    .stat-box { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 18px 20px; }
+    .stat-val { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
     .stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
     .stat-box.blue .stat-val { color: var(--neon-blue); }
     .stat-box.cyan .stat-val { color: var(--neon-cyan); }
     .stat-box.green .stat-val { color: var(--neon-green); }
+    .stat-box.purple .stat-val { color: var(--neon-purple); }
+    .stat-box.red .stat-val { color: var(--neon-red); }
 
-    /* Bar chart */
     .chart-wrap { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
     .chart-title { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
     .bars { display: flex; align-items: flex-end; gap: 12px; height: 120px; }
@@ -140,7 +125,6 @@
     .bar-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); }
     .bar-count { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text); }
 
-    /* Top cards list */
     .top-card-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--glass-border); }
     .top-card-row:last-child { border-bottom: none; }
     .top-card-rank { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); width: 20px; }
@@ -148,32 +132,51 @@
     .top-card-name { flex: 1; font-size: 13px; font-weight: 600; }
     .top-card-views { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--neon-cyan); }
 
-    /* ── Guest section ── */
+    /* ── POSTS TAB ── */
+    .post-row { background: var(--panel); border: 1px solid var(--glass-border); border-radius: 8px; padding: 18px 20px; margin-bottom: 10px; }
+    .post-row-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .post-author-badge { display: inline-flex; align-items: center; gap: 8px; }
+    .post-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(0,180,255,0.2); color: var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+    .post-author-name { font-weight: 700; font-size: 13px; }
+    .post-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .post-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .post-body { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; word-break: break-word; max-height: 120px; overflow: hidden; }
+    .post-file-chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-decoration: none; margin-bottom: 12px; }
+    .post-file-chip:hover { color: var(--text); }
+    .posts-empty-state { text-align: center; padding: 60px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; }
+
+    /* ── USERS TAB ── */
+    .user-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--panel); border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 8px; }
+    .user-avatar-big { width: 38px; height: 38px; border-radius: 50%; background: rgba(0,180,255,0.15); color: var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; }
+    .user-info { flex: 1; }
+    .user-name { font-weight: 700; font-size: 14px; }
+    .user-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .banned-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 3px; background: rgba(255,68,102,0.15); color: var(--neon-red); border: 1px solid rgba(255,68,102,0.3); text-transform: uppercase; }
+    .active-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 3px; background: rgba(0,255,157,0.1); color: var(--neon-green); border: 1px solid rgba(0,255,157,0.25); text-transform: uppercase; }
+    .users-empty-state { text-align: center; padding: 60px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; }
+
+    /* ── GUEST ── */
     .guest-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 6px; margin-bottom: 8px; }
     .guest-username { flex: 1; font-weight: 600; font-size: 13px; }
     .guest-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 3px; background: rgba(0,180,255,0.1); color: var(--neon-blue); }
 
-    /* ── Color preview ── */
+    /* ── COLOR ── */
     .color-row { display: flex; align-items: center; gap: 12px; }
-    .color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--glass-border); }
 
-    /* ── Guest notice ── */
+    /* ── GUEST NOTICE ── */
     .guest-notice { background: rgba(0,180,255,0.06); border: 1px solid rgba(0,180,255,0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; color: rgba(0,180,255,0.9); font-family: 'DM Mono', monospace; line-height: 1.6; }
 
-    /* ── Empty ── */
+    /* ── EMPTY ── */
     .empty-state { text-align: center; padding: 48px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; }
 
-    /* ── Divider ── */
-    .divider { height: 1px; background: var(--glass-border); margin: 20px 0; }
-
-    /* ── Password strength ── */
+    /* ── PW STRENGTH ── */
     .pw-strength { height: 3px; border-radius: 2px; margin-top: 4px; transition: all .3s; background: var(--glass-border); }
 
     @media (max-width: 900px) {
       .sidebar { width: 60px; padding: 20px 10px; }
-      .sidebar-logo span, .nav-item span { display: none; }
+      .sidebar-logo span, .nav-item span, .role-badge { display: none; }
       .main { margin-left: 60px; padding: 24px 20px; }
-      .stat-row { grid-template-columns: 1fr; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .form-group.span2 { grid-column: span 1; }
     }
@@ -181,227 +184,149 @@
 </head>
 <body>
 
-<!-- ── Sidebar ── -->
+<!-- SIDEBAR -->
 <div class="sidebar">
-  <div class="sidebar-logo">
-    <div class="dot"></div>
-    <span>Admin Panel</span>
-  </div>
+  <div class="sidebar-logo"><div class="dot"></div><span>Admin Panel</span></div>
   <div class="role-badge {{ role }}">{{ role }}</div>
 
-  <button class="nav-item active" onclick="switchTab('cards')">
-    📋 <span>Cards</span>
-  </button>
-  <button class="nav-item" onclick="switchTab('settings')">
-    ⚙️ <span>Settings</span>
-  </button>
+  <button class="nav-item active" onclick="switchTab('cards', this)">📋 <span>Cards</span></button>
+  <button class="nav-item" onclick="switchTab('posts', this)">💬 <span>Posts</span></button>
   {% if role == 'owner' %}
-  <button class="nav-item" onclick="switchTab('analytics')">
-    📊 <span>Analytics</span>
-  </button>
-  <button class="nav-item" onclick="switchTab('guests')">
-    👥 <span>Guests</span>
-  </button>
+  <button class="nav-item" onclick="switchTab('users', this)">👥 <span>Users</span></button>
+  <button class="nav-item" onclick="switchTab('analytics', this)">📊 <span>Analytics</span></button>
+  <button class="nav-item" onclick="switchTab('guests', this)">🔑 <span>Guests</span></button>
   {% endif %}
-  <button class="nav-item" onclick="switchTab('account')">
-    🔑 <span>Password</span>
-  </button>
+  <button class="nav-item" onclick="switchTab('settings', this)">⚙️ <span>Settings</span></button>
+  <button class="nav-item" onclick="switchTab('account', this)">🔒 <span>Password</span></button>
   <div class="nav-spacer"></div>
   <a href="/" class="nav-item" target="_blank">🌐 <span>View Site</span></a>
   <a href="/admin/logout" class="nav-item danger">⬅ <span>Logout</span></a>
 </div>
 
-<!-- ── Main ── -->
+<!-- MAIN -->
 <div class="main">
 
-  <!-- Flash messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% for cat, msg in messages %}
       <div class="flash {{ cat }}">{{ msg }}</div>
     {% endfor %}
   {% endwith %}
 
-  <!-- Tabs nav (hidden, controlled by sidebar) -->
-  <div class="tabs" id="tabNav" style="display:none;">
-    <button class="tab active" data-tab="cards">Cards</button>
-    <button class="tab" data-tab="settings">Settings</button>
-    {% if role == 'owner' %}<button class="tab" data-tab="analytics">Analytics</button>{% endif %}
-    {% if role == 'owner' %}<button class="tab" data-tab="guests">Guests</button>{% endif %}
-    <button class="tab" data-tab="account">Password</button>
-  </div>
-
   <!-- ══ TAB: CARDS ══ -->
   <div class="tab-panel active" id="tab-cards">
     <div class="sec-header">
-      <div>
-        <div class="sec-title">Content Cards</div>
-        <div class="sec-sub">{{ cards|length }} total entries</div>
-      </div>
-      {% if role == 'owner' %}
-      <a href="/admin/add" class="btn btn-primary">+ Add Card</a>
-      {% endif %}
+      <div><div class="sec-title">Content Cards</div><div class="sec-sub">{{ cards|length }} total entries</div></div>
+      {% if role == 'owner' %}<a href="/admin/add" class="btn btn-primary">+ Add Card</a>{% endif %}
     </div>
-
-    {% if role == 'guest' %}
-    <div class="guest-notice">
-      👀 You are viewing cards in read-only mode. Only the owner can add, edit, or delete cards.
-    </div>
-    {% endif %}
-
+    {% if role == 'guest' %}<div class="guest-notice">👀 Read-only mode. Only the owner can add, edit, or delete cards.</div>{% endif %}
     {% if cards %}
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Icon</th>
-            <th>Card Info</th>
-            <th>Description</th>
-            <th>Order</th>
-            {% if role == 'owner' %}<th>Actions</th>{% endif %}
-          </tr>
-        </thead>
+        <thead><tr><th>Icon</th><th>Card Info</th><th>Description</th><th>Order</th>{% if role=='owner' %}<th>Actions</th>{% endif %}</tr></thead>
         <tbody>
           {% for card in cards %}
           <tr>
             <td><div class="card-icon">{{ card.icon }}</div></td>
-            <td>
-              <div class="card-name">{{ card.title }}</div>
-              <div class="card-cat">{{ card.category }}</div>
-            </td>
+            <td><div class="card-name">{{ card.title }}</div><div class="card-cat">{{ card.category }}</div></td>
             <td><div class="card-desc">{{ card.description[:80] }}{% if card.description|length > 80 %}...{% endif %}</div></td>
             <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">{{ card.order_index }}</td>
             {% if role == 'owner' %}
-            <td>
-              <div class="actions">
-                <a href="/admin/edit/{{ card.id }}" class="btn btn-edit">Edit</a>
-                <form method="POST" action="/admin/delete/{{ card.id }}" onsubmit="return confirm('Delete this card?')">
-                  <button type="submit" class="btn btn-del">Delete</button>
-                </form>
-              </div>
-            </td>
+            <td><div class="actions">
+              <a href="/admin/edit/{{ card.id }}" class="btn btn-edit">Edit</a>
+              <form method="POST" action="/admin/delete/{{ card.id }}" onsubmit="return confirm('Delete this card?')">
+                <button type="submit" class="btn btn-del">Delete</button>
+              </form>
+            </div></td>
             {% endif %}
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    {% else %}<div class="empty-state">No cards yet. Add your first one!</div>{% endif %}
+  </div>
+
+  <!-- ══ TAB: POSTS ══ -->
+  <div class="tab-panel" id="tab-posts">
+    <div class="sec-header">
+      <div><div class="sec-title">Community Posts</div><div class="sec-sub">{{ all_posts|length }} total posts</div></div>
+    </div>
+    {% if all_posts %}
+      {% for post in all_posts %}
+      <div class="post-row">
+        <div class="post-row-header">
+          <div class="post-author-badge">
+            <div class="post-avatar">{{ post.author.username[0].upper() }}</div>
+            <div>
+              <div class="post-author-name">{{ post.author.username }}</div>
+              <div class="post-date">{{ post.created_at.strftime('%d %b %Y · %H:%M') }}</div>
+            </div>
+          </div>
+          {% if role == 'owner' %}
+          <form method="POST" action="/admin/post/delete/{{ post.id }}" onsubmit="return confirm('Remove this post?')">
+            <button type="submit" class="btn btn-del">Remove</button>
+          </form>
+          {% endif %}
+        </div>
+        <div class="post-title">{{ post.title }}</div>
+        <div class="post-body">{{ post.body }}</div>
+        {% if post.file_name %}
+        <a href="/files/{{ post.file_name }}" class="post-file-chip" download="{{ post.file_original }}">
+          📎 {{ post.file_original }} · {{ format_file_size(post.file_size) }}
+        </a>
+        {% endif %}
+      </div>
+      {% endfor %}
     {% else %}
-    <div class="empty-state">No cards yet. Add your first one!</div>
+    <div class="posts-empty-state">No posts yet from the community.</div>
     {% endif %}
   </div>
 
-  <!-- ══ TAB: SETTINGS ══ -->
-  <div class="tab-panel" id="tab-settings">
+  <!-- ══ TAB: USERS (owner only) ══ -->
+  {% if role == 'owner' %}
+  <div class="tab-panel" id="tab-users">
     <div class="sec-header">
-      <div>
-        <div class="sec-title">Site Settings</div>
-        <div class="sec-sub">
-          {% if role == 'owner' %}Changes apply globally to all visitors{% else %}Your personal customizations — only you see these{% endif %}
-        </div>
-      </div>
+      <div><div class="sec-title">Registered Users</div><div class="sec-sub">{{ public_users|length }} total members</div></div>
     </div>
-
-    {% if role == 'guest' %}
-    <div class="guest-notice">
-      🎨 <strong>Personal Customization Mode</strong> — Changes you make here are visible <strong>only to you</strong> when logged in. The site stays unchanged for everyone else. Have fun with it!
-    </div>
-    {% endif %}
-
-    <form method="POST" action="/admin/settings">
-      <div class="panel-card">
-        <div class="panel-card-title">🏠 Hero Section</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Hero Title</label>
-            <input type="text" name="hero_title" value="{{ settings.hero_title }}" placeholder="Cyber Hub" />
-          </div>
-          <div class="form-group">
-            <label>Badge Text</label>
-            <input type="text" name="hero_badge" value="{{ settings.hero_badge }}" placeholder="SECURITY KNOWLEDGE BASE" />
-          </div>
-          <div class="form-group span2">
-            <label>Subtitle</label>
-            <input type="text" name="hero_subtitle" value="{{ settings.hero_subtitle }}" placeholder="Your digital safety, simplified." />
-          </div>
+    {% if public_users %}
+      {% for user in public_users %}
+      <div class="user-row">
+        <div class="user-avatar-big">{{ user.username[0].upper() }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ user.username }}</div>
+          <div class="user-meta">Joined {{ user.created_at.strftime('%d %b %Y') }} · {{ user.posts|length }} post{% if user.posts|length != 1 %}s{% endif %}</div>
         </div>
-      </div>
-
-      <div class="panel-card">
-        <div class="panel-card-title">📖 About Section</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>About Title</label>
-            <input type="text" name="about_title" value="{{ settings.about_title }}" />
-          </div>
-          <div class="form-group span2">
-            <label>About Text</label>
-            <textarea name="about_text">{{ settings.about_text }}</textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel-card">
-        <div class="panel-card-title">🎨 Theme Colors</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Accent Color</label>
-            <div class="color-row">
-              <input type="color" name="accent_color" value="{{ settings.accent_color }}" id="accentPick" />
-              <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="accentHex">{{ settings.accent_color }}</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Background Color</label>
-            <div class="color-row">
-              <input type="color" name="bg_color" value="{{ settings.bg_color }}" id="bgPick" />
-              <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="bgHex">{{ settings.bg_color }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;">
-        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-        {% if role == 'guest' %}
-        <form method="POST" action="/admin/settings/reset" style="margin:0">
-          <button type="submit" class="btn btn-ghost" onclick="return confirm('Reset all your customizations?')">↩ Reset to Default</button>
-        </form>
+        {% if user.is_banned %}
+          <span class="banned-badge">Banned</span>
+        {% else %}
+          <span class="active-badge">Active</span>
         {% endif %}
+        <form method="POST" action="/admin/user/ban/{{ user.id }}">
+          <button type="submit" class="btn {% if user.is_banned %}btn-green{% else %}btn-warn{% endif %}">
+            {% if user.is_banned %}Unban{% else %}Ban{% endif %}
+          </button>
+        </form>
       </div>
-    </form>
+      {% endfor %}
+    {% else %}
+    <div class="users-empty-state">No registered users yet.</div>
+    {% endif %}
   </div>
 
   <!-- ══ TAB: ANALYTICS (owner only) ══ -->
-  {% if role == 'owner' %}
   <div class="tab-panel" id="tab-analytics">
-    <div class="sec-header">
-      <div>
-        <div class="sec-title">Analytics</div>
-        <div class="sec-sub">Traffic overview</div>
-      </div>
-    </div>
-
+    <div class="sec-header"><div><div class="sec-title">Analytics</div><div class="sec-sub">Traffic overview</div></div></div>
     {% if analytics %}
-    <!-- Stats row -->
     <div class="stat-row">
-      <div class="stat-box blue">
-        <div class="stat-val">{{ analytics.unique_today }}</div>
-        <div class="stat-label">Unique Visitors Today</div>
-      </div>
-      <div class="stat-box cyan">
-        <div class="stat-val">{{ analytics.daily[-1].count }}</div>
-        <div class="stat-label">Page Views Today</div>
-      </div>
-      <div class="stat-box green">
-        <div class="stat-val">{{ analytics.total_visits }}</div>
-        <div class="stat-label">Total Visits</div>
-      </div>
+      <div class="stat-box blue"><div class="stat-val">{{ analytics.unique_today }}</div><div class="stat-label">Unique Today</div></div>
+      <div class="stat-box cyan"><div class="stat-val">{{ analytics.daily[-1].count }}</div><div class="stat-label">Views Today</div></div>
+      <div class="stat-box green"><div class="stat-val">{{ analytics.total_visits }}</div><div class="stat-label">Total Visits</div></div>
+      <div class="stat-box purple"><div class="stat-val">{{ analytics.total_users }}</div><div class="stat-label">Members</div></div>
+      <div class="stat-box red"><div class="stat-val">{{ analytics.total_posts }}</div><div class="stat-label">Posts</div></div>
     </div>
-
-    <!-- Bar chart -->
     <div class="chart-wrap">
       <div class="chart-title">Daily Visits — Last 7 Days</div>
-      <div class="bars" id="chartBars">
+      <div class="bars">
         {% set max_count = analytics.daily | map(attribute='count') | max %}
         {% for day in analytics.daily %}
         <div class="bar-col">
@@ -414,8 +339,6 @@
         {% endfor %}
       </div>
     </div>
-
-    <!-- Top cards -->
     <div class="panel-card">
       <div class="panel-card-title">🏆 Top Cards by Views</div>
       {% if analytics.top_cards %}
@@ -427,49 +350,27 @@
           <div class="top-card-views">{{ card.views }} views</div>
         </div>
         {% endfor %}
-      {% else %}
-        <div class="empty-state" style="padding:24px">No card views tracked yet.</div>
-      {% endif %}
+      {% else %}<div class="empty-state" style="padding:24px">No card views tracked yet.</div>{% endif %}
     </div>
     {% endif %}
   </div>
-  {% endif %}
 
   <!-- ══ TAB: GUESTS (owner only) ══ -->
-  {% if role == 'owner' %}
   <div class="tab-panel" id="tab-guests">
-    <div class="sec-header">
-      <div>
-        <div class="sec-title">Guest Access</div>
-        <div class="sec-sub">Share limited frontend customization access</div>
-      </div>
-    </div>
-
+    <div class="sec-header"><div><div class="sec-title">Guest Access</div><div class="sec-sub">Limited frontend access</div></div></div>
     <div class="guest-notice" style="border-color:rgba(0,255,157,0.2);color:var(--neon-green);background:rgba(0,255,157,0.05);">
-      ℹ️ Guests can only customize the <strong>frontend appearance</strong> (hero text, colors, about section) and those changes are <strong>visible only to them</strong> when logged in. They cannot add, edit, or delete cards.
+      ℹ️ Guests can only customize the frontend appearance. Changes are visible only to them. They cannot add, edit, or delete cards.
     </div>
-
-    <!-- Add guest form -->
     <div class="panel-card">
       <div class="panel-card-title">➕ Create Guest Account</div>
       <form method="POST" action="/admin/guests/add">
         <div class="form-grid">
-          <div class="form-group">
-            <label>Guest Username</label>
-            <input type="text" name="guest_username" placeholder="e.g. rahul" required />
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="guest_password" placeholder="Min 6 characters" required minlength="6" />
-          </div>
+          <div class="form-group"><label>Guest Username</label><input type="text" name="guest_username" placeholder="e.g. helper" required /></div>
+          <div class="form-group"><label>Password</label><input type="password" name="guest_password" placeholder="Min 6 characters" required minlength="6" /></div>
         </div>
-        <div style="margin-top:16px;">
-          <button type="submit" class="btn btn-green">+ Create Guest</button>
-        </div>
+        <div style="margin-top:16px"><button type="submit" class="btn btn-green">+ Create Guest</button></div>
       </form>
     </div>
-
-    <!-- Existing guests -->
     <div class="panel-card">
       <div class="panel-card-title">👥 Active Guests</div>
       {% if guests %}
@@ -482,43 +383,63 @@
           </form>
         </div>
         {% endfor %}
-      {% else %}
-        <div class="empty-state" style="padding:24px;">No guest accounts yet.</div>
-      {% endif %}
+      {% else %}<div class="empty-state" style="padding:24px">No guest accounts yet.</div>{% endif %}
     </div>
   </div>
   {% endif %}
 
+  <!-- ══ TAB: SETTINGS ══ -->
+  <div class="tab-panel" id="tab-settings">
+    <div class="sec-header">
+      <div><div class="sec-title">Site Settings</div><div class="sec-sub">{% if role=='owner' %}Global changes apply to all visitors{% else %}Your personal customizations — only you see these{% endif %}</div></div>
+    </div>
+    {% if role == 'guest' %}<div class="guest-notice">🎨 Changes here are visible only to you when logged in.</div>{% endif %}
+    <form method="POST" action="/admin/settings">
+      <div class="panel-card">
+        <div class="panel-card-title">🏠 Hero Section</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Badge Text</label><input type="text" name="hero_badge" value="{{ settings.hero_badge }}" placeholder="Cyber Awareness & Tech" /></div>
+          <div class="form-group"><label>Title</label><input type="text" name="hero_title" value="{{ settings.hero_title }}" placeholder="S.S" /></div>
+          <div class="form-group span2"><label>Subtitle</label><input type="text" name="hero_subtitle" value="{{ settings.hero_subtitle }}" /></div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-card-title">📖 About Section</div>
+        <div class="form-grid">
+          <div class="form-group"><label>About Title</label><input type="text" name="about_title" value="{{ settings.about_title }}" /></div>
+          <div class="form-group span2"><label>About Text</label><textarea name="about_text">{{ settings.about_text }}</textarea></div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-card-title">🎨 Theme Colors</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Accent / Text Color</label><div class="color-row"><input type="color" name="accent_color" value="{{ settings.accent_color }}" id="accentPick" /><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="accentHex">{{ settings.accent_color }}</span></div></div>
+          <div class="form-group"><label>Background Color</label><div class="color-row"><input type="color" name="bg_color" value="{{ settings.bg_color }}" id="bgPick" /><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="bgHex">{{ settings.bg_color }}</span></div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        {% if role == 'guest' %}
+        <form method="POST" action="/admin/settings/reset" style="margin:0">
+          <button type="submit" class="btn btn-ghost" onclick="return confirm('Reset all your customizations?')">↩ Reset to Default</button>
+        </form>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
   <!-- ══ TAB: ACCOUNT ══ -->
   <div class="tab-panel" id="tab-account">
-    <div class="sec-header">
-      <div>
-        <div class="sec-title">Change Password</div>
-        <div class="sec-sub">Logged in as <span style="color:var(--neon-cyan)">{{ username }}</span></div>
-      </div>
-    </div>
-
-    <div class="panel-card" style="max-width:480px;">
+    <div class="sec-header"><div><div class="sec-title">Change Password</div><div class="sec-sub">Logged in as <span style="color:var(--neon-cyan)">{{ username }}</span></div></div></div>
+    <div class="panel-card" style="max-width:480px">
       <div class="panel-card-title">🔑 Update Password</div>
       <form method="POST" action="/admin/change-password">
         <div class="form-grid single">
-          <div class="form-group">
-            <label>Current Password</label>
-            <input type="password" name="current_password" required placeholder="Enter current password" />
-          </div>
-          <div class="form-group">
-            <label>New Password</label>
-            <input type="password" name="new_password" id="newPw" required placeholder="Min 8 characters" minlength="8" oninput="checkStrength(this.value)" />
-            <div class="pw-strength" id="pwStrength"></div>
-          </div>
-          <div class="form-group">
-            <label>Confirm New Password</label>
-            <input type="password" name="confirm_password" required placeholder="Repeat new password" />
-          </div>
+          <div class="form-group"><label>Current Password</label><input type="password" name="current_password" required placeholder="Enter current password" /></div>
+          <div class="form-group"><label>New Password</label><input type="password" name="new_password" id="newPw" required placeholder="Min 8 characters" minlength="8" oninput="checkStrength(this.value)" /><div class="pw-strength" id="pwStrength"></div></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" name="confirm_password" required placeholder="Repeat new password" /></div>
         </div>
-        <div style="margin-top:16px;">
-          <button type="submit" class="btn btn-primary">🔒 Update Password</button>
-        </div>
+        <div style="margin-top:16px"><button type="submit" class="btn btn-primary">🔒 Update Password</button></div>
       </form>
     </div>
   </div>
@@ -526,54 +447,47 @@
 </div><!-- /main -->
 
 <script>
-  // ── Tab switching ──
-  const panels = document.querySelectorAll('.tab-panel');
-  const navItems = document.querySelectorAll('.sidebar .nav-item:not(.danger)');
+'use strict';
 
-  function switchTab(name) {
-    panels.forEach(p => p.classList.remove('active'));
-    const target = document.getElementById('tab-' + name);
-    if (target) target.classList.add('active');
-    // Update sidebar active
-    navItems.forEach(n => n.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-  }
+// ── TAB SWITCHING ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('tab-' + name);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
 
-  // ── Color pickers ──
-  const accentPick = document.getElementById('accentPick');
-  const bgPick = document.getElementById('bgPick');
-  if (accentPick) accentPick.addEventListener('input', e => {
-    document.getElementById('accentHex').textContent = e.target.value;
+// ── COLOR PICKERS ──
+const accentPick = document.getElementById('accentPick');
+const bgPick = document.getElementById('bgPick');
+if(accentPick) accentPick.addEventListener('input', e => { document.getElementById('accentHex').textContent = e.target.value; });
+if(bgPick) bgPick.addEventListener('input', e => { document.getElementById('bgHex').textContent = e.target.value; });
+
+// ── PASSWORD STRENGTH ──
+function checkStrength(pw) {
+  const bar = document.getElementById('pwStrength');
+  if(!bar) return;
+  let score = 0;
+  if(pw.length >= 8) score++;
+  if(pw.length >= 12) score++;
+  if(/[A-Z]/.test(pw)) score++;
+  if(/[0-9]/.test(pw)) score++;
+  if(/[^A-Za-z0-9]/.test(pw)) score++;
+  const colors = ['#ff4466','#ff8844','#ffcc00','#00ff9d','#00f5ff'];
+  const widths = ['20%','40%','60%','80%','100%'];
+  bar.style.background = colors[score-1] || 'var(--glass-border)';
+  bar.style.width = widths[score-1] || '0%';
+}
+
+// ── AUTO-HIDE FLASH ──
+setTimeout(() => {
+  document.querySelectorAll('.flash').forEach(f => {
+    f.style.transition = 'opacity .5s';
+    f.style.opacity = '0';
+    setTimeout(() => f.remove(), 500);
   });
-  if (bgPick) bgPick.addEventListener('input', e => {
-    document.getElementById('bgHex').textContent = e.target.value;
-  });
-
-  // ── Password strength ──
-  function checkStrength(pw) {
-    const bar = document.getElementById('pwStrength');
-    if (!bar) return;
-    let score = 0;
-    if (pw.length >= 8) score++;
-    if (pw.length >= 12) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
-    const colors = ['#ff4466','#ff8844','#ffcc00','#00ff9d','#00f5ff'];
-    const widths = ['20%','40%','60%','80%','100%'];
-    bar.style.background = colors[score-1] || 'var(--glass-border)';
-    bar.style.width = widths[score-1] || '0%';
-  }
-
-  // ── Auto-hide flash ──
-  setTimeout(() => {
-    document.querySelectorAll('.flash').forEach(f => {
-      f.style.transition = 'opacity .5s';
-      f.style.opacity = '0';
-      setTimeout(() => f.remove(), 500);
-    });
-  }, 3500);
+}, 3500);
 </script>
-
 </body>
 </html>
