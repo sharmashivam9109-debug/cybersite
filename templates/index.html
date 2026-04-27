@@ -1553,7 +1553,7 @@ async function selectLanguage(code){
     if(err.message && err.message.includes('API key')) {
       showToast('Set ANTHROPIC_API_KEY on server');
     } else {
-      showToast('Translation failed — try again');
+      showToast(err.message || 'Translation failed — try again');
     }
     toastTimer = setTimeout(hideToast, 4000);
   } finally {
