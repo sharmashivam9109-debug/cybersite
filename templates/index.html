@@ -1226,20 +1226,7 @@ function parseContent(t){
       return `${before}<a href="${safe}" class="auto-link" target="_blank" rel="noopener noreferrer">${safeDisplay}</a>`;
     });
 }
-async function openDetail(id){
-  try{
-    const r=await fetch('/api/card/'+id); if(!r.ok) throw new Error();
-    const d=await r.json();
-    document.getElementById('d-cat').textContent=d.category;
-    document.getElementById('d-title').textContent=d.title;
-    document.getElementById('d-date').textContent=d.created_at;
-    document.getElementById('d-body').innerHTML='<p>'+parseContent(d.full_content)+'</p>';
-    const dThumb=document.getElementById('d-thumb');
-    if(d.thumbnail){ dThumb.src='/static/'+d.thumbnail; dThumb.alt=d.title; dThumb.style.display='block'; }
-    else { dThumb.style.display='none'; dThumb.src=''; }
-    navigate('detail');
-  }catch(e){ console.error('Failed to load article',e); }
-}
+/* openDetail moved to language system below */
 
 /* ── REVEAL ── */
 let io;
@@ -1360,7 +1347,7 @@ function showOwnerOverlay(){ const ov=document.getElementById('owner-overlay'); 
 function hideOwnerOverlay(){ const ov=document.getElementById('owner-overlay'); ov.classList.remove('show'); document.body.style.overflow=''; clearTimeout(ownerTimer); const fill=document.getElementById('oo-timer-fill'); if(fill){fill.style.animation='none';void fill.offsetWidth;fill.style.animation='';} }
 
 /* ══════════════════════════════════════
-   LANGUAGE SYSTEM — Backend Proxy
+   LANGUAGE SYSTEM — Full Page Translation
 ══════════════════════════════════════ */
 const LANGUAGES = [
   { code:'en',  name:'English',    native:'English',    flag:'🇬🇧' },
@@ -1379,26 +1366,46 @@ const LANGUAGES = [
   { code:'it',  name:'Italian',    native:'Italiano',   flag:'🇮🇹' },
 ];
 
-const ORIGINAL_STRINGS = {
-  hero_kicker:   document.querySelector('.hero-kicker')?.textContent?.trim() || 'Cyber Awareness & Tech',
-  hero_sub:      document.querySelector('.hero-sub')?.textContent?.trim() || '',
-  btn_read:      'Read Articles',
-  btn_community: 'Community',
-  about_label:   'About',
-  about_p2:      'Focused on cyber awareness — translating complex security topics into knowledge that actually protects people online.',
-  about_p3:      'Currently exploring the intersection of web development and security education.',
-  content_label: 'Content',
-  content_title: 'Cyber Awareness',
-  community_label: 'Community',
-  community_title: 'Posts & Shares',
-  connect_label: 'Connect',
-  connect_title: document.querySelector('.connect-title')?.textContent?.trim() || 'Follow along.',
-  scroll_hint:   'Scroll',
-  card_read:     'Read article',
-  back_btn:      '← Back',
-  back_all:      '← All Articles',
-};
+function buildOriginalStrings() {
+  const strings = {
+    hero_kicker:     document.querySelector('.hero-kicker')?.textContent?.trim() || '',
+    hero_sub:        document.querySelector('.hero-sub')?.textContent?.trim() || '',
+    btn_read:        'Read Articles',
+    btn_community:   'Community',
+    about_label:     'About',
+    about_p2:        'Focused on cyber awareness — translating complex security topics into knowledge that actually protects people online.',
+    about_p3:        'Currently exploring the intersection of web development and security education.',
+    content_label:   'Content',
+    content_title:   'Cyber Awareness',
+    community_label: 'Community',
+    community_title: 'Posts & Shares',
+    connect_label:   'Connect',
+    connect_title:   document.querySelector('.connect-title')?.textContent?.trim() || 'Follow along.',
+    scroll_hint:     'Scroll',
+    card_read:       'Read article',
+    back_btn:        '← Back',
+    back_all:        '← All Articles',
+    footer_text:     '© S.S — Ethical Cyber Awareness. For educational purposes only.',
+    no_posts:        'No posts yet — be the first to share something.',
+    new_post_label:  'New Post',
+    attach_file:     'Attach File',
+    publish_btn:     'Publish →',
+    share_knowledge: 'Share your knowledge.',
+    join_desc:       'Join the community to post articles, share files, and connect with others.',
+    create_account:  'Create Account →',
+    log_in:          'Log In',
+    no_email:        'No email needed — just username & password.',
+    community_member:'Community Member',
+  };
+  (window.__CARDS__ || []).forEach((c, i) => {
+    strings['card_title_' + i] = c.title;
+    strings['card_desc_' + i]  = c.description;
+    strings['card_cat_' + i]   = c.category;
+  });
+  return strings;
+}
 
+let ORIGINAL_STRINGS = {};
 let currentLang = 'en';
 let langDropdownOpen = false;
 let translationCache = {};
@@ -1444,52 +1451,96 @@ function showToast(msg){
 }
 function hideToast(){ document.getElementById('lang-toast')?.classList.remove('show'); }
 
+function reloadCardsTranslated(strings) {
+  const cards = window.__CARDS__ || [];
+  const box = document.getElementById('cards-container');
+  if(!box || !cards.length) return;
+  const readTxt = strings.card_read || 'Read article';
+  box.innerHTML = cards.map((c, i) => {
+    const title = strings['card_title_' + i] || c.title;
+    const desc  = strings['card_desc_' + i]  || c.description;
+    const cat   = strings['card_cat_' + i]   || c.category;
+    const thumb = c.thumbnail
+      ? '<div class="card-thumb"><img src="/static/' + escHtml(c.thumbnail) + '" alt="' + escHtml(title) + '" loading="lazy"/></div>'
+      : '<div class="card-thumb-placeholder"><span class="ph-icon">' + (c.icon||'🔒') + '</span></div>';
+    return '<div class="card reveal" onclick="openDetail(' + c.id + ')">' + thumb + '<div class="card-body"><div class="card-cat">' + escHtml(cat) + '</div><h3 class="card-title">' + escHtml(title) + '</h3><p class="card-desc">' + escHtml(desc) + '</p><div class="card-footer"><span class="card-read">' + escHtml(readTxt) + '</span><div class="card-arrow">→</div></div></div></div>';
+  }).join('');
+  if(window.matchMedia('(hover:hover)').matches){
+    box.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('mousemove',e=>{ const r=card.getBoundingClientRect(),dx=(e.clientX-(r.left+r.width/2))/(r.width/2),dy=(e.clientY-(r.top+r.height/2))/(r.height/2); card.style.transform='perspective(800px) rotateY('+(dx*4)+'deg) rotateX('+(-dy*3)+'deg) translateY(-4px)'; });
+      card.addEventListener('mouseleave',()=>{ card.style.transform=''; });
+    });
+  }
+  observe(); refreshCursorTargets();
+}
+
 function applyStrings(strings){
-  // Hero kicker
   const kicker = document.querySelector('.hero-kicker');
   if(kicker && strings.hero_kicker) kicker.textContent = strings.hero_kicker;
-  // Hero sub
   const sub = document.querySelector('.hero-sub');
   if(sub && strings.hero_sub) sub.textContent = strings.hero_sub;
-  // Buttons
   document.querySelectorAll('.btn-dark').forEach(b => { if(strings.btn_read) b.textContent = strings.btn_read; });
-  // About
   const aboutLabel = document.querySelector('#about-s .section-mono');
   if(aboutLabel && strings.about_label) aboutLabel.textContent = strings.about_label;
   const aboutPs = document.querySelectorAll('.about-body p');
   if(aboutPs[1] && strings.about_p2) aboutPs[1].innerHTML = strings.about_p2;
   if(aboutPs[2] && strings.about_p3) aboutPs[2].textContent = strings.about_p3;
-  // Content section
   const contentLabel = document.querySelector('#content-s .section-mono');
   if(contentLabel && strings.content_label) contentLabel.textContent = strings.content_label;
   const contentTitle = document.querySelector('#content-s .section-title2');
   if(contentTitle && strings.content_title) contentTitle.textContent = strings.content_title;
-  // Community
   const commLabel = document.querySelector('#community .section-mono');
   if(commLabel && strings.community_label) commLabel.textContent = strings.community_label;
   const commTitle = document.querySelector('#community .section-title2');
   if(commTitle && strings.community_title) commTitle.textContent = strings.community_title;
-  // Connect
   const connectLabel = document.querySelector('.connect-section .section-mono');
   if(connectLabel && strings.connect_label) connectLabel.textContent = strings.connect_label;
   const connectTitle = document.querySelector('.connect-title');
   if(connectTitle && strings.connect_title) connectTitle.textContent = strings.connect_title;
-  // Scroll hint
   const scrollHint = document.querySelector('.scroll-hint span');
   if(scrollHint && strings.scroll_hint) scrollHint.textContent = strings.scroll_hint;
-  // Back buttons
   document.querySelectorAll('.detail-back').forEach((b,i) => {
     if(i===0 && strings.back_btn) b.textContent = strings.back_btn;
     if(i===1 && strings.back_all) b.textContent = strings.back_all;
   });
+  const footerP = document.querySelector('#page-home footer p');
+  if(footerP && strings.footer_text) footerP.textContent = strings.footer_text;
+  const np = document.querySelector('.posts-empty p');
+  if(np && strings.no_posts) np.textContent = strings.no_posts;
+  const npl = document.querySelector('.post-form-title');
+  if(npl && strings.new_post_label) npl.textContent = strings.new_post_label;
+  const pb = document.querySelector('.post-submit-btn');
+  if(pb && strings.publish_btn) pb.textContent = strings.publish_btn;
+  document.querySelectorAll('.user-welcome-sub').forEach(el=>{ if(strings.community_member) el.textContent=strings.community_member; });
+  reloadCardsTranslated(strings);
 }
 
-// ── Backend translate via /api/translate ──
-async function translateViaBackend(targetLang, langName){
+async function openDetail(id){
+  try{
+    const r=await fetch('/api/card/'+id); if(!r.ok) throw new Error();
+    const d=await r.json();
+    if(currentLang !== 'en'){
+      try{
+        const tr=await fetch('/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({language:currentLang,language_name:LANGUAGES.find(l=>l.code===currentLang)?.name||currentLang,strings:{title:d.title,category:d.category,full_content:d.full_content}})});
+        if(tr.ok){const td=await tr.json();if(td.translated){d.title=td.translated.title||d.title;d.category=td.translated.category||d.category;d.full_content=td.translated.full_content||d.full_content;}}
+      }catch(e){}
+    }
+    document.getElementById('d-cat').textContent=d.category;
+    document.getElementById('d-title').textContent=d.title;
+    document.getElementById('d-date').textContent=d.created_at;
+    document.getElementById('d-body').innerHTML='<p>'+parseContent(d.full_content)+'</p>';
+    const dThumb=document.getElementById('d-thumb');
+    if(d.thumbnail){ dThumb.src='/static/'+d.thumbnail; dThumb.alt=d.title; dThumb.style.display='block'; }
+    else { dThumb.style.display='none'; dThumb.src=''; }
+    navigate('detail');
+  }catch(e){ console.error('Failed to load article',e); }
+}
+
+async function translateViaBackend(targetLang, langName, strings){
   const response = await fetch('/api/translate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ language: targetLang, language_name: langName, strings: ORIGINAL_STRINGS })
+    body: JSON.stringify({ language: targetLang, language_name: langName, strings: strings })
   });
   if(!response.ok){
     const err = await response.json().catch(()=>({}));
@@ -1506,7 +1557,6 @@ async function selectLanguage(code){
   const lang = LANGUAGES.find(l => l.code === code);
   if(!lang) return;
 
-  // English = restore originals
   if(code === 'en'){
     currentLang = 'en';
     localStorage.setItem('site_lang','en');
@@ -1518,27 +1568,24 @@ async function selectLanguage(code){
     return;
   }
 
-  // Check cache first
   if(translationCache[code]){
     currentLang = code;
     localStorage.setItem('site_lang', code);
     updateLangBtn(lang);
     applyStrings(translationCache[code]);
     buildLangList();
-    showToast(`${lang.flag} ${lang.name}`);
+    showToast(lang.flag + ' ' + lang.name);
     toastTimer = setTimeout(hideToast, 2000);
     return;
   }
 
-  // Translate via backend
   const btn = document.getElementById('lang-btn');
   btn?.classList.add('translating');
   document.body.classList.add('translating-page');
-  showToast(`Translating to ${lang.name}…`);
+  showToast('Translating to ' + lang.name + '…');
 
   try {
-    const translated = await translateViaBackend(code, lang.name);
-    // Cache it
+    const translated = await translateViaBackend(code, lang.name, ORIGINAL_STRINGS);
     translationCache[code] = translated;
     try { localStorage.setItem('lang_cache', JSON.stringify(translationCache)); } catch(e){}
     currentLang = code;
@@ -1546,15 +1593,11 @@ async function selectLanguage(code){
     updateLangBtn(lang);
     applyStrings(translated);
     buildLangList();
-    showToast(`${lang.flag} ${lang.name}`);
+    showToast(lang.flag + ' ' + lang.name);
     toastTimer = setTimeout(hideToast, 2500);
   } catch(err){
     console.error('Translation failed:', err);
-    if(err.message && err.message.includes('API key')) {
-      showToast('Set ANTHROPIC_API_KEY on server');
-    } else {
-      showToast(err.message || 'Translation failed — try again');
-    }
+    showToast(err.message || 'Translation failed — try again');
     toastTimer = setTimeout(hideToast, 4000);
   } finally {
     btn?.classList.remove('translating');
@@ -1563,6 +1606,7 @@ async function selectLanguage(code){
 }
 
 function initLanguage(){
+  ORIGINAL_STRINGS = buildOriginalStrings();
   buildLangList();
   const lang = LANGUAGES.find(l => l.code === currentLang);
   if(lang) updateLangBtn(lang);
@@ -1573,6 +1617,7 @@ function initLanguage(){
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',()=>{ loadCards(); observe(); refreshCursorTargets(); initLanguage(); applyPostBanners(); });
+
 </script>
 
 </body>
