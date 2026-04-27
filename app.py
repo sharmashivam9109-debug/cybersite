@@ -6,6 +6,11 @@ from functools import wraps
 import os, uuid, datetime, json, mimetypes, base64, re
 
 app = Flask(__name__)
+
+# ✅ FIX: Jinja2 mein enumerate support add kiya (admin dashboard crash fix)
+app.jinja_env.globals['enumerate'] = enumerate
+app.jinja_env.filters['enumerate'] = enumerate
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cyber-hub-ultra-secret-2025-change-me')
 _db_url = os.environ.get('DATABASE_URL', 'sqlite:///cybersite.db')
 if _db_url.startswith('postgres://'):
