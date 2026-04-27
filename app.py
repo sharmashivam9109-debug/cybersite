@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os, uuid, datetime, json, mimetypes
-import anthropic
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cyber-hub-ultra-secret-2025-change-me')
@@ -197,13 +196,15 @@ def get_card(card_id):
 @app.route('/api/translate', methods=['POST'])
 def translate_text():
     try:
+        import urllib.request
+        import urllib.parse
+
         data = request.get_json()
         if not data:
             return jsonify({'error': 'No data provided'}), 400
 
         # Frontend sends: { language: 'hi', language_name: 'Hindi', strings: {...} }
         target_lang = data.get('language', '').strip()
-        lang_name   = data.get('language_name', target_lang)
         strings     = data.get('strings', {})
 
         if not target_lang:
@@ -211,40 +212,26 @@ def translate_text():
         if not strings:
             return jsonify({'error': 'No strings to translate'}), 400
 
-        api_key = os.environ.get('ANTHROPIC_API_KEY', '')
-        if not api_key:
-            return jsonify({'error': 'Translation service not configured'}), 503
+        def translate_text_mymemory(text, target):
+            if not text or not text.strip():
+                return text
+            params = urllib.parse.urlencode({'q': text, 'langpair': f'en|{target}'})
+            url = f'https://api.mymemory.translated.net/get?{params}'
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                result = json.loads(resp.read().decode())
+            translated = result.get('responseData', {}).get('translatedText', text)
+            return translated if translated else text
 
-        client = anthropic.Anthropic(api_key=api_key)
+        translated = {}
+        for key, value in strings.items():
+            if isinstance(value, str) and value.strip():
+                translated[key] = translate_text_mymemory(value, target_lang)
+            else:
+                translated[key] = value
 
-        strings_json = json.dumps(strings, ensure_ascii=False, indent=2)
-
-        prompt = f"""Translate the following JSON string values to {lang_name} ({target_lang}).
-Return ONLY a valid JSON object with the exact same keys but translated values.
-Do not translate the keys. Do not add explanation or markdown. Return pure JSON only.
-
-{strings_json}"""
-
-        message = client.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=2048,
-            messages=[{"role": "user", "content": prompt}]
-        )
-
-        raw = message.content[0].text.strip()
-
-        # Strip markdown fences if present
-        if raw.startswith('```'):
-            raw = raw.split('\n', 1)[-1]
-            if raw.endswith('```'):
-                raw = raw.rsplit('```', 1)[0]
-            raw = raw.strip()
-
-        translated = json.loads(raw)
         return jsonify({'translated': translated, 'status': 'ok'})
 
-    except json.JSONDecodeError as e:
-        return jsonify({'error': f'Failed to parse translation: {str(e)}'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
