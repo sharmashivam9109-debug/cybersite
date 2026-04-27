@@ -443,7 +443,15 @@ def admin_dashboard():
         total_visits = PageView.query.count()
         total_users  = PublicUser.query.count()
         total_posts  = UserPost.query.count()
-        top_cards = db.session.query(ContentCard.title, ContentCard.icon, db.func.count(PageView.id).label('views')).join(PageView, PageView.card_id == ContentCard.id).group_by(ContentCard.id).order_by(db.text('views DESC')).limit(5).all()
+        # ✅ FIX: outerjoin + db.func.count().desc() — PostgreSQL compatible
+        top_cards = db.session.query(
+            ContentCard.title,
+            ContentCard.icon,
+            db.func.count(PageView.id).label('views')
+        ).outerjoin(PageView, PageView.card_id == ContentCard.id)\
+         .group_by(ContentCard.id)\
+         .order_by(db.func.count(PageView.id).desc())\
+         .limit(5).all()
         analytics = {'daily':daily,'unique_today':unique_today,'total_visits':total_visits,'total_users':total_users,'total_posts':total_posts,'top_cards':top_cards}
     if role == 'owner':
         settings = {
@@ -513,25 +521,21 @@ def admin_save_settings():
             if val: set_guest_custom(username, k, val)
 
     # ── Image settings (only owner — crop se aaya base64) ──
-    # Guest ke liye images allow nahi — sirf owner change kar sakta hai
     if role == 'owner':
         image_slots = {
-            'hero_image_data': ('hero_image', 'hero'),   # form field name → (setting key, file prefix)
+            'hero_image_data': ('hero_image', 'hero'),
             'logo_image_data': ('logo_image', 'logo'),
             'fav_image_data':  ('fav_image',  'fav'),
         }
         for form_field, (setting_key, prefix) in image_slots.items():
             data_url = request.form.get(form_field, '').strip()
             if data_url:
-                # Purani image delete karo disk se (optional cleanup)
                 old_path = get_setting(setting_key, '')
                 if old_path:
                     old_full = os.path.join('static', old_path)
                     if os.path.exists(old_full):
                         try: os.remove(old_full)
                         except: pass
-
-                # Naya cropped image save karo
                 saved_path = save_base64_image(data_url, subfolder='uploads', prefix=prefix)
                 if saved_path:
                     set_setting(setting_key, saved_path)
@@ -610,14 +614,12 @@ def admin_add():
         order_index  = int(request.form.get('order_index', 0))
         thumbnail    = ''
 
-        # 1) Pehle crop ka data check karo (hidden field se)
         crop_data = request.form.get('thumbnail_crop_data', '').strip()
         if crop_data:
             saved = save_base64_image(crop_data, subfolder='uploads', prefix='card')
             if saved:
                 thumbnail = saved
 
-        # 2) Agar crop data nahi tha to normal file upload check karo
         if not thumbnail and 'thumbnail' in request.files:
             file = request.files['thumbnail']
             if file and file.filename and allowed_image(file.filename):
@@ -649,10 +651,8 @@ def admin_edit(card_id):
         card.icon         = request.form.get('icon', '🔒').strip()
         card.order_index  = int(request.form.get('order_index', 0))
 
-        # 1) Crop data check karo
         crop_data = request.form.get('thumbnail_crop_data', '').strip()
         if crop_data:
-            # Purani image delete karo
             if card.thumbnail:
                 old_full = os.path.join('static', card.thumbnail)
                 if os.path.exists(old_full):
@@ -662,7 +662,6 @@ def admin_edit(card_id):
             if saved:
                 card.thumbnail = saved
 
-        # 2) Agar crop nahi to normal file upload
         elif 'thumbnail' in request.files:
             file = request.files['thumbnail']
             if file and file.filename and allowed_image(file.filename):
@@ -687,7 +686,6 @@ def admin_edit(card_id):
 @owner_required
 def admin_delete(card_id):
     card = ContentCard.query.get_or_404(card_id)
-    # Thumbnail bhi delete karo
     if card.thumbnail:
         old_full = os.path.join('static', card.thumbnail)
         if os.path.exists(old_full):
