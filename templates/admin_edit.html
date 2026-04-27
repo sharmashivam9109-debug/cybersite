@@ -5,97 +5,480 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Card — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black: #020408; --neon-blue: #00b4ff; --neon-purple: #9b59ff; --glass: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08); --text: #e8eaf0; --muted: rgba(232,234,240,0.5); }
+    :root {
+      --black: #020408; --deep: #050b14; --neon-blue: #00b4ff; --neon-purple: #9b59ff;
+      --neon-cyan: #00f5ff; --neon-green: #00ff9d; --neon-red: #ff4466;
+      --glass: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08);
+      --text: #e8eaf0; --muted: rgba(232,234,240,0.5);
+    }
     body { background: var(--black); color: var(--text); font-family: 'Syne', sans-serif; }
+
+    /* ── SIDEBAR ── */
     .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: rgba(5,11,20,0.95); border-right: 1px solid var(--glass-border); padding: 32px 24px; display: flex; flex-direction: column; gap: 8px; }
-    .sidebar-logo { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 4px; color: #00f5ff; text-transform: uppercase; padding-bottom: 24px; border-bottom: 1px solid var(--glass-border); margin-bottom: 16px; }
+    .sidebar-logo { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 4px; color: var(--neon-cyan); text-transform: uppercase; padding-bottom: 24px; border-bottom: 1px solid var(--glass-border); margin-bottom: 16px; }
     .nav-item { display: block; padding: 10px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; color: var(--muted); letter-spacing: 1px; transition: all 0.2s; }
     .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text); }
     .nav-item.danger { margin-top: auto; color: rgba(255,100,100,0.6); }
     .nav-item.danger:hover { color: #ff6b6b; background: rgba(255,100,100,0.08); }
+
+    /* ── MAIN ── */
     .main { margin-left: 240px; padding: 40px; max-width: 900px; }
+
+    /* ── FLASH ── */
+    .flash { padding: 11px 16px; border-radius: 6px; margin-bottom: 24px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .5px; }
+    .flash.success { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.25); color: var(--neon-green); }
+    .flash.error   { background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.25); color: var(--neon-red); }
+
     h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
     .sub { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-bottom: 36px; }
     .form-group { margin-bottom: 24px; }
     label { display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
-    input[type=text], input[type=number], textarea { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s; }
+    input[type=text], input[type=number], textarea {
+      width: 100%; padding: 12px 16px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 6px;
+      color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s;
+    }
     input[type=text]:focus, textarea:focus, input[type=number]:focus { border-color: rgba(0,180,255,0.4); }
     textarea { min-height: 200px; resize: vertical; line-height: 1.7; }
-    input[type=file] { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; padding: 8px 0; }
-    .hint { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .hint { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
     .btn-save { padding: 14px 40px; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); border: none; border-radius: 6px; color: #fff; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
     .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-cancel { padding: 14px 28px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; cursor: pointer; text-decoration: none; margin-left: 12px; transition: all 0.2s; }
-    .btn-cancel:hover { color: var(--text); }
-    .current-thumb { margin-top: 8px; }
-    .current-thumb img { width: 120px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid var(--glass-border); }
+    .btn-cancel { padding: 14px 28px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; cursor: pointer; text-decoration: none; margin-left: 12px; transition: all 0.2s; display: inline-block; }
+    .btn-cancel:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── CURRENT THUMBNAIL ── */
+    .current-thumb { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 12px; }
+    .current-thumb img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--glass-border); }
+    .current-thumb-info { flex: 1; }
+    .current-thumb-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .current-thumb-name { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-all; }
+
+    /* ── IMAGE UPLOAD + CROP ── */
+    .img-upload-zone { position: relative; border: 2px dashed var(--glass-border); border-radius: 10px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all .25s; background: rgba(255,255,255,0.015); overflow: hidden; }
+    .img-upload-zone:hover, .img-upload-zone.dragover { border-color: var(--neon-blue); background: rgba(0,180,255,0.05); }
+    .img-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; width: 100%; height: 100%; background: none; border: none; padding: 0; }
+    .upload-icon { font-size: 32px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .upload-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .upload-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+    .upload-formats { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+    .fmt-chip { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(0,245,255,0.08); color: var(--neon-cyan); border: 1px solid rgba(0,245,255,0.2); }
+
+    .thumb-preview-wrap { display: none; position: relative; background: rgba(5,11,20,0.8); border: 1px solid var(--glass-border); border-radius: 10px; padding: 16px; margin-top: 12px; }
+    .thumb-preview-wrap.show { display: block; }
+    .thumb-preview-inner { display: flex; align-items: center; gap: 16px; }
+    .thumb-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 2px solid rgba(0,245,255,0.3); box-shadow: 0 0 18px rgba(0,245,255,0.15); }
+    .thumb-info { flex: 1; }
+    .thumb-name { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+    .thumb-size { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+    .thumb-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .thumb-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(0,255,157,0.1); color: var(--neon-green); border: 1px solid rgba(0,255,157,0.25); }
+    .btn-sm { padding: 6px 14px; border-radius: 5px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 5px; }
+    .btn-edit { background: rgba(0,180,255,0.12); color: var(--neon-blue); }
+    .btn-edit:hover { background: rgba(0,180,255,0.22); }
+    .btn-del  { background: rgba(255,68,102,0.10); color: var(--neon-red); }
+    .btn-del:hover  { background: rgba(255,68,102,0.20); }
+
+    /* ── CROP MODAL ── */
+    .crop-modal-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(2,4,8,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; }
+    .crop-modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
+    .crop-modal { background: var(--deep); border: 1px solid var(--glass-border); border-radius: 16px; width: min(92vw, 760px); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,180,255,0.1); }
+    .crop-modal-header { padding: 18px 24px 16px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .crop-modal-title { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: var(--neon-cyan); display: flex; align-items: center; gap: 8px; }
+    .crop-modal-close { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.2); color: var(--neon-red); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .crop-modal-close:hover { background: rgba(255,68,102,0.2); transform: rotate(90deg); }
+    .crop-ratio-bar { padding: 12px 24px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; background: rgba(255,255,255,0.02); }
+    .crop-ratio-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-right: 6px; }
+    .ratio-btn { padding: 5px 12px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--muted); transition: all .2s; }
+    .ratio-btn:hover { color: var(--text); border-color: rgba(0,180,255,0.3); }
+    .ratio-btn.active { background: rgba(0,180,255,0.12); color: var(--neon-blue); border-color: rgba(0,180,255,0.4); }
+    .crop-canvas-area { flex: 1; overflow: hidden; background: #000; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+    .crop-canvas-area img { max-width: 100%; max-height: 100%; display: block; }
+    .crop-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.3); pointer-events: none; white-space: nowrap; }
+    .crop-tools-bar { padding: 12px 24px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; background: rgba(255,255,255,0.02); }
+    .crop-tool-btn { padding: 7px 14px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04); color: var(--muted); transition: all .2s; display: flex; align-items: center; gap: 6px; }
+    .crop-tool-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+    .crop-tool-sep { width: 1px; height: 24px; background: var(--glass-border); margin: 0 4px; }
+    .crop-tools-spacer { flex: 1; }
+    .zoom-wrap { display: flex; align-items: center; gap: 8px; }
+    .zoom-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); white-space: nowrap; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100px; height: 3px; background: var(--glass-border); border-radius: 2px; outline: none; cursor: pointer; border: none; padding: 0; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 8px rgba(0,180,255,0.5); cursor: pointer; }
+    input[type=range]:focus { border-color: transparent; }
+    .quality-wrap { display: flex; align-items: center; gap: 8px; }
+    .quality-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); }
+    .quality-val { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--neon-cyan); min-width: 30px; }
+    .crop-action-bar { padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+    .crop-output-size { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .size-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-green); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .btn-crop-confirm { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: 800; font-size: 13px; padding: 10px 28px; border-radius: 7px; border: none; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; box-shadow: 0 0 20px rgba(0,245,255,0.2); }
+    .btn-crop-confirm:hover { transform: translateY(-1px); box-shadow: 0 0 28px rgba(0,245,255,0.35); }
+    .btn-crop-cancel { background: transparent; color: var(--muted); border: 1px solid var(--glass-border); border-radius: 7px; padding: 10px 20px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; transition: all .2s; }
+    .btn-crop-cancel:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div class="sidebar-logo">● Admin Panel</div>
-    <a href="/admin" class="nav-item active">📋 All Cards</a>
-    <a href="/admin/add" class="nav-item">➕ Add Card</a>
-    <a href="/" class="nav-item" target="_blank">🌐 View Site</a>
-    <a href="/admin/logout" class="nav-item danger">⬅ Logout</a>
+
+<!-- ═══════════════ CROP MODAL ═══════════════ -->
+<div class="crop-modal-overlay" id="cropOverlay">
+  <div class="crop-modal">
+    <div class="crop-modal-header">
+      <div class="crop-modal-title">
+        ✂️ Image Crop Studio
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);font-weight:400;letter-spacing:2px" id="cropFileName"></span>
+      </div>
+      <button class="crop-modal-close" onclick="closeCropModal()">✕</button>
+    </div>
+
+    <div class="crop-ratio-bar">
+      <span class="crop-ratio-label">Ratio</span>
+      <button class="ratio-btn active" onclick="setRatio(1,1,this)" data-label="1:1">⬛ 1:1</button>
+      <button class="ratio-btn" onclick="setRatio(16,9,this)" data-label="16:9">▬ 16:9</button>
+      <button class="ratio-btn" onclick="setRatio(4,3,this)" data-label="4:3">▭ 4:3</button>
+      <button class="ratio-btn" onclick="setRatio(3,4,this)" data-label="3:4">▯ 3:4</button>
+      <button class="ratio-btn" onclick="setRatio(NaN,NaN,this)" data-label="Free">⤢ Free</button>
+      <div style="flex:1"></div>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Output:</span>
+      <select id="outputSizeSelect" onchange="updateDimLabel()" style="padding:4px 10px;font-size:10px;width:auto;min-width:120px">
+        <option value="original">Original Size</option>
+        <option value="800">800 × auto</option>
+        <option value="600">600 × auto</option>
+        <option value="400" selected>400 × auto</option>
+        <option value="300">300 × auto (thumb)</option>
+        <option value="200">200 × auto (icon)</option>
+      </select>
+    </div>
+
+    <div class="crop-canvas-area">
+      <img id="cropImage" src="" alt="crop-target" />
+      <div class="crop-hint">Drag to reposition · Scroll to zoom · Drag corners to resize</div>
+    </div>
+
+    <div class="crop-tools-bar">
+      <button class="crop-tool-btn" onclick="rotateCrop(-90)">↺ -90°</button>
+      <button class="crop-tool-btn" onclick="rotateCrop(90)">↻ +90°</button>
+      <div class="crop-tool-sep"></div>
+      <button class="crop-tool-btn" onclick="flipCrop('x')">⇆ Flip H</button>
+      <button class="crop-tool-btn" onclick="flipCrop('y')">⇅ Flip V</button>
+      <div class="crop-tool-sep"></div>
+      <button class="crop-tool-btn" onclick="resetCrop()">⟲ Reset</button>
+      <div class="crop-tool-sep"></div>
+      <div class="zoom-wrap">
+        <span class="zoom-label">🔍 Zoom</span>
+        <input type="range" id="zoomRange" min="0.1" max="3" step="0.05" value="1" oninput="applyCropZoom(this.value)" />
+        <span class="zoom-label" id="zoomVal">1.0×</span>
+      </div>
+      <div class="crop-tools-spacer"></div>
+      <div class="quality-wrap">
+        <span class="quality-label">Quality</span>
+        <input type="range" id="qualityRange" min="0.5" max="1" step="0.05" value="0.92" oninput="document.getElementById('qualityVal').textContent=Math.round(this.value*100)+'%'" />
+        <span class="quality-val" id="qualityVal">92%</span>
+      </div>
+    </div>
+
+    <div class="crop-action-bar">
+      <div class="crop-output-size"><div class="size-dot"></div><span id="cropDimLabel">Ready to crop</span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-crop-cancel" onclick="closeCropModal()">Cancel</button>
+        <button class="btn-crop-confirm" onclick="confirmCrop()">✓ Apply Crop</button>
+      </div>
+    </div>
   </div>
+</div>
 
-  <div class="main">
-    <h1>Edit Card</h1>
-    <p class="sub">Editing: {{ card.title }}</p>
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<div class="sidebar">
+  <div class="sidebar-logo">● Admin Panel</div>
+  <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">📋 All Cards</a>
+  <a href="{{ url_for('admin_add') }}" class="nav-item">➕ Add Card</a>
+  <a href="{{ url_for('index') }}" class="nav-item" target="_blank">🌐 View Site</a>
+  <a href="{{ url_for('admin_logout') }}" class="nav-item danger">⬅ Logout</a>
+</div>
 
-    <form method="POST" enctype="multipart/form-data">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Title *</label>
-          <input type="text" name="title" value="{{ card.title }}" required />
-        </div>
-        <div class="form-group">
-          <label>Category *</label>
-          <input type="text" name="category" value="{{ card.category }}" required />
-        </div>
-      </div>
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main">
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Icon (Emoji)</label>
-          <input type="text" name="icon" value="{{ card.icon }}" />
-        </div>
-        <div class="form-group">
-          <label>Display Order</label>
-          <input type="number" name="order_index" value="{{ card.order_index }}" min="0" />
-        </div>
-      </div>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
+  <h1>Edit Card</h1>
+  <p class="sub">Editing: <span style="color:var(--neon-cyan)">{{ card.title }}</span></p>
+
+  <form method="POST" enctype="multipart/form-data">
+
+    <div class="form-row">
       <div class="form-group">
-        <label>Short Description *</label>
-        <textarea name="description" rows="3" style="min-height:80px" required>{{ card.description }}</textarea>
+        <label>Title *</label>
+        <input type="text" name="title" value="{{ card.title }}" required />
       </div>
-
       <div class="form-group">
-        <label>Full Content *</label>
-        <textarea name="full_content" required>{{ card.full_content }}</textarea>
+        <label>Category *</label>
+        <input type="text" name="category" value="{{ card.category }}" required />
       </div>
+    </div>
 
+    <div class="form-row">
       <div class="form-group">
-        <label>Thumbnail Image</label>
-        {% if card.thumbnail %}
-        <div class="current-thumb">
-          <img src="/static/{{ card.thumbnail }}" alt="Current thumbnail" />
-          <p class="hint" style="margin-top:6px">Current thumbnail above. Upload new to replace.</p>
+        <label>Icon (Emoji)</label>
+        <input type="text" name="icon" value="{{ card.icon }}" />
+      </div>
+      <div class="form-group">
+        <label>Display Order</label>
+        <input type="number" name="order_index" value="{{ card.order_index }}" min="0" />
+        <p class="hint">Lower number = shown first</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Short Description *</label>
+      <textarea name="description" rows="3" style="min-height:80px" required>{{ card.description }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Full Content *</label>
+      <textarea name="full_content" required>{{ card.full_content }}</textarea>
+      <p class="hint">Supports: ## Heading, **bold**, - bullet lists</p>
+    </div>
+
+    <!-- ═══ THUMBNAIL WITH CROP ═══ -->
+    <div class="form-group">
+      <label>Thumbnail Image</label>
+
+      <!-- Current thumbnail agar exist karta hai -->
+      {% if card.thumbnail %}
+      <div class="current-thumb">
+        <img src="/static/{{ card.thumbnail }}" alt="Current thumbnail" />
+        <div class="current-thumb-info">
+          <div class="current-thumb-label">Current Thumbnail</div>
+          <div class="current-thumb-name">{{ card.thumbnail }}</div>
+          <p class="hint" style="margin-top:4px">Naya image upload karo replace karne ke liye.</p>
         </div>
-        {% endif %}
-        <input type="file" name="thumbnail" accept="image/*" style="margin-top:10px" />
+      </div>
+      {% endif %}
+
+      <!-- Upload zone -->
+      <div class="img-upload-zone" id="zone-thumb" onclick="triggerUpload()">
+        <input type="file" id="file-thumb" name="thumbnail" accept="image/*" onchange="handleFileSelect(event)" />
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-label">
+          {% if card.thumbnail %}Naya image drop karo ya click karo{% else %}Drop image here or click to browse{% endif %}
+        </div>
+        <div class="upload-sub">Max 10MB — crop karne ka option milega</div>
+        <div class="upload-formats">
+          <span class="fmt-chip">PNG</span>
+          <span class="fmt-chip">JPG</span>
+          <span class="fmt-chip">GIF</span>
+          <span class="fmt-chip">WEBP</span>
+        </div>
       </div>
 
-      <div style="display:flex;align-items:center;margin-top:8px;">
-        <button type="submit" class="btn-save">Update Card</button>
-        <a href="/admin" class="btn-cancel">Cancel</a>
+      <!-- Preview after crop -->
+      <div class="thumb-preview-wrap" id="previewWrap">
+        <div class="thumb-preview-inner">
+          <img class="thumb-img" id="thumbPreview" src="" alt="preview" />
+          <div class="thumb-info">
+            <div class="thumb-name" id="thumbName">—</div>
+            <div class="thumb-size" id="thumbSize">—</div>
+            <div class="thumb-actions">
+              <button type="button" class="btn-sm btn-edit" onclick="recrop()">✂️ Re-Crop</button>
+              <button type="button" class="btn-sm btn-del" onclick="clearImage()">✕ Remove</button>
+              <span class="thumb-badge">✓ Cropped</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
-  </div>
+
+      <!-- Hidden field — crop ka base64 data yahan jayega -->
+      <input type="hidden" name="thumbnail_crop_data" id="thumbnail_crop_data" />
+
+      <p class="hint">Agar koi image nahi chuni to purani thumbnail rahegi.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;margin-top:8px;">
+      <button type="submit" class="btn-save">💾 Update Card</button>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn-cancel">Cancel</a>
+    </div>
+
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+'use strict';
+
+let cropperInstance = null;
+let rawFileDataURL  = null;
+let flipXState = 1, flipYState = 1;
+
+function triggerUpload() {
+  document.getElementById('file-thumb').click();
+}
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showFlash('❌ Only image files supported.', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { showFlash('❌ Image too large. Max 10MB.', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => { rawFileDataURL = e.target.result; openCropModal(file.name); };
+  reader.readAsDataURL(file);
+}
+
+function openCropModal(fileName) {
+  document.getElementById('cropFileName').textContent = fileName.length > 28 ? fileName.substring(0,28)+'…' : fileName;
+  const img = document.getElementById('cropImage');
+  img.src = rawFileDataURL;
+  document.getElementById('cropOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  flipXState = 1; flipYState = 1;
+  img.onload = () => {
+    destroyCropper();
+    document.getElementById('outputSizeSelect').value = '400';
+    cropperInstance = new Cropper(img, {
+      aspectRatio: 1,
+      viewMode: 1, dragMode: 'move', autoCropArea: 0.85,
+      restore: false, guides: true, center: true, highlight: false,
+      cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false,
+      ready() {
+        updateDimLabel();
+        document.getElementById('zoomRange').value = 1;
+        document.getElementById('zoomVal').textContent = '1.0×';
+      },
+      crop() { updateDimLabel(); }
+    });
+  };
+  if (img.complete && img.naturalWidth) img.onload();
+}
+
+function closeCropModal() {
+  document.getElementById('cropOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  destroyCropper();
+}
+
+function destroyCropper() {
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+}
+
+function setRatio(w, h, btn) {
+  document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (cropperInstance) cropperInstance.setAspectRatio(isNaN(w) ? NaN : w/h);
+}
+
+function rotateCrop(deg) { if (cropperInstance) cropperInstance.rotate(deg); }
+
+function flipCrop(axis) {
+  if (!cropperInstance) return;
+  if (axis === 'x') { flipXState *= -1; cropperInstance.scaleX(flipXState); }
+  else { flipYState *= -1; cropperInstance.scaleY(flipYState); }
+}
+
+function resetCrop() {
+  if (!cropperInstance) return;
+  cropperInstance.reset(); flipXState = 1; flipYState = 1;
+  document.getElementById('zoomRange').value = 1;
+  document.getElementById('zoomVal').textContent = '1.0×';
+}
+
+function applyCropZoom(val) {
+  if (cropperInstance) cropperInstance.zoomTo(parseFloat(val));
+  document.getElementById('zoomVal').textContent = parseFloat(val).toFixed(1) + '×';
+}
+
+function updateDimLabel() {
+  if (!cropperInstance) return;
+  const data = cropperInstance.getCropBoxData();
+  const canvasData = cropperInstance.getCanvasData();
+  const scale = canvasData.naturalWidth / canvasData.width;
+  const w = Math.round(data.width * scale);
+  const h = Math.round(data.height * scale);
+  const sizeVal = document.getElementById('outputSizeSelect').value;
+  let outW = w, outH = h;
+  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (h/w)); }
+  document.getElementById('cropDimLabel').textContent = `${outW} × ${outH} px`;
+}
+
+function confirmCrop() {
+  if (!cropperInstance) return;
+  const sizeVal = document.getElementById('outputSizeSelect').value;
+  const quality = parseFloat(document.getElementById('qualityRange').value);
+  const cropData = cropperInstance.getData(true);
+  let outW = cropData.width, outH = cropData.height;
+  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (cropData.height/cropData.width)); }
+  const canvas = cropperInstance.getCroppedCanvas({ width: outW, height: outH, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+  if (!canvas) { showFlash('❌ Crop failed.', 'error'); return; }
+  const dataURL = canvas.toDataURL('image/jpeg', quality);
+
+  // Hidden field mein store — backend yahan se padhega
+  document.getElementById('thumbnail_crop_data').value = dataURL;
+
+  // Preview
+  document.getElementById('thumbPreview').src = dataURL;
+  const fi = document.getElementById('file-thumb');
+  document.getElementById('thumbName').textContent = fi.files[0]?.name || 'image.jpg';
+  const bytes = Math.round((dataURL.length * 3) / 4);
+  document.getElementById('thumbSize').textContent = `${outW} × ${outH}px · ${formatBytes(bytes)}`;
+  document.getElementById('previewWrap').classList.add('show');
+
+  closeCropModal();
+  showFlash(`✓ Image cropped — ${outW}×${outH}px`, 'success');
+}
+
+function recrop() {
+  const fi = document.getElementById('file-thumb');
+  openCropModal(fi.files[0]?.name || 'image');
+}
+
+function clearImage() {
+  document.getElementById('thumbnail_crop_data').value = '';
+  document.getElementById('previewWrap').classList.remove('show');
+  document.getElementById('file-thumb').value = '';
+  document.getElementById('thumbPreview').src = '';
+}
+
+/* Drag & Drop */
+const zone = document.getElementById('zone-thumb');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { rawFileDataURL = ev.target.result; openCropModal(file.name); };
+  reader.readAsDataURL(file);
+});
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(2) + ' MB';
+}
+
+function showFlash(msg, type) {
+  const f = document.createElement('div');
+  f.className = 'flash ' + type; f.textContent = msg;
+  Object.assign(f.style, { position:'fixed', top:'20px', right:'24px', zIndex:'99999', maxWidth:'340px' });
+  document.body.appendChild(f);
+  setTimeout(() => { f.style.transition='opacity .4s'; f.style.opacity='0'; setTimeout(()=>f.remove(),400); }, 3000);
+}
+
+document.getElementById('cropOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeCropModal();
+});
+</script>
 </body>
 </html>
