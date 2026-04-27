@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
-import os, uuid, datetime, json, mimetypes
+import os, uuid, datetime, json, mimetypes, base64, re
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cyber-hub-ultra-secret-2025-change-me')
@@ -23,6 +23,8 @@ ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 BLOCKED_EXTENSIONS = {'exe', 'bat', 'cmd', 'sh', 'php', 'py', 'js', 'vbs'}
 
 db = SQLAlchemy(app)
+
+# ─── Models ────────────────────────────────────────────────────────────────────
 
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,6 +95,8 @@ class PageView(db.Model):
     ip_hash = db.Column(db.String(64), default='')
     card_id = db.Column(db.Integer, db.ForeignKey('content_card.id'), nullable=True)
 
+# ─── Helpers ───────────────────────────────────────────────────────────────────
+
 def allowed_image(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
 
@@ -158,6 +162,56 @@ def format_file_size(size_bytes):
     elif size_bytes < 1024*1024: return f"{size_bytes/1024:.1f} KB"
     else: return f"{size_bytes/(1024*1024):.1f} MB"
 
+# ─── NEW: Base64 Crop Image Saver ─────────────────────────────────────────────
+def save_base64_image(data_url, subfolder='uploads', prefix='img'):
+    """
+    Crop modal se aaya base64 data URL decode karke disk pe save karta hai.
+    
+    data_url format:  data:image/jpeg;base64,/9j/4AAQ...
+    Returns:          'uploads/abc123.jpg'  (static ke andar relative path)
+    Ya None agar data empty/invalid ho.
+    """
+    if not data_url or not data_url.startswith('data:image'):
+        return None
+
+    try:
+        # Format: "data:image/jpeg;base64,<data>"
+        match = re.match(r'data:image/(\w+);base64,(.+)', data_url, re.DOTALL)
+        if not match:
+            return None
+
+        ext        = match.group(1).lower()   # jpeg / png / webp / gif
+        raw_base64 = match.group(2)
+
+        # jpeg → jpg
+        if ext == 'jpeg':
+            ext = 'jpg'
+
+        # Allowed extensions check
+        if ext not in ALLOWED_IMAGE_EXTENSIONS:
+            return None
+
+        # Decode
+        img_bytes = base64.b64decode(raw_base64)
+
+        # 8MB cap (crop ke baad generally kam hoga)
+        if len(img_bytes) > 8 * 1024 * 1024:
+            return None
+
+        # Save
+        folder = os.path.join('static', subfolder)
+        os.makedirs(folder, exist_ok=True)
+        filename = f"{prefix}_{uuid.uuid4().hex}.{ext}"
+        save_path = os.path.join(folder, filename)
+
+        with open(save_path, 'wb') as f:
+            f.write(img_bytes)
+
+        return f"{subfolder}/{filename}"   # e.g. "uploads/img_abc123.jpg"
+
+    except Exception:
+        return None
+
 # ─── Public Routes ─────────────────────────────────────────────────────────────
 
 @app.route('/')
@@ -177,6 +231,9 @@ def index():
         'about_text':    get_setting('about_text',    'A curated collection of cybersecurity knowledge for everyday people.'),
         'accent_color':  get_setting('accent_color',  '#00b4ff'),
         'bg_color':      get_setting('bg_color',      '#020408'),
+        'hero_image':    get_setting('hero_image',    ''),
+        'logo_image':    get_setting('logo_image',    ''),
+        'fav_image':     get_setting('fav_image',     ''),
     }
     if role == 'guest' and admin_username:
         for k in site_settings:
@@ -206,7 +263,6 @@ def translate_text():
         if not data:
             return jsonify({'error': 'No data provided'}), 400
 
-        # Frontend sends: { language: 'hi', language_name: 'Hindi', strings: {...} }
         target_lang = data.get('language', '').strip()
         strings     = data.get('strings', {})
 
@@ -390,9 +446,31 @@ def admin_dashboard():
         top_cards = db.session.query(ContentCard.title, ContentCard.icon, db.func.count(PageView.id).label('views')).join(PageView, PageView.card_id == ContentCard.id).group_by(ContentCard.id).order_by(db.text('views DESC')).limit(5).all()
         analytics = {'daily':daily,'unique_today':unique_today,'total_visits':total_visits,'total_users':total_users,'total_posts':total_posts,'top_cards':top_cards}
     if role == 'owner':
-        settings = {'hero_title':get_setting('hero_title','Cyber Hub'),'hero_subtitle':get_setting('hero_subtitle','Your digital safety, simplified.'),'hero_badge':get_setting('hero_badge','SECURITY KNOWLEDGE BASE'),'about_title':get_setting('about_title','About This Hub'),'about_text':get_setting('about_text','A curated collection.'),'accent_color':get_setting('accent_color','#00b4ff'),'bg_color':get_setting('bg_color','#020408')}
+        settings = {
+            'hero_title':    get_setting('hero_title',    'Cyber Hub'),
+            'hero_subtitle': get_setting('hero_subtitle', 'Your digital safety, simplified.'),
+            'hero_badge':    get_setting('hero_badge',    'SECURITY KNOWLEDGE BASE'),
+            'about_title':   get_setting('about_title',   'About This Hub'),
+            'about_text':    get_setting('about_text',    'A curated collection.'),
+            'accent_color':  get_setting('accent_color',  '#00b4ff'),
+            'bg_color':      get_setting('bg_color',      '#020408'),
+            'hero_image':    get_setting('hero_image',    ''),
+            'logo_image':    get_setting('logo_image',    ''),
+            'fav_image':     get_setting('fav_image',     ''),
+        }
     else:
-        settings = {'hero_title':get_guest_custom(username,'hero_title',get_setting('hero_title','Cyber Hub')),'hero_subtitle':get_guest_custom(username,'hero_subtitle',get_setting('hero_subtitle','Your digital safety, simplified.')),'hero_badge':get_guest_custom(username,'hero_badge',get_setting('hero_badge','SECURITY KNOWLEDGE BASE')),'about_title':get_guest_custom(username,'about_title',get_setting('about_title','About This Hub')),'about_text':get_guest_custom(username,'about_text',get_setting('about_text','A curated collection.')),'accent_color':get_guest_custom(username,'accent_color',get_setting('accent_color','#00b4ff')),'bg_color':get_guest_custom(username,'bg_color',get_setting('bg_color','#020408'))}
+        settings = {
+            'hero_title':    get_guest_custom(username, 'hero_title',    get_setting('hero_title',    'Cyber Hub')),
+            'hero_subtitle': get_guest_custom(username, 'hero_subtitle', get_setting('hero_subtitle', 'Your digital safety, simplified.')),
+            'hero_badge':    get_guest_custom(username, 'hero_badge',    get_setting('hero_badge',    'SECURITY KNOWLEDGE BASE')),
+            'about_title':   get_guest_custom(username, 'about_title',   get_setting('about_title',   'About This Hub')),
+            'about_text':    get_guest_custom(username, 'about_text',    get_setting('about_text',    'A curated collection.')),
+            'accent_color':  get_guest_custom(username, 'accent_color',  get_setting('accent_color',  '#00b4ff')),
+            'bg_color':      get_guest_custom(username, 'bg_color',      get_setting('bg_color',      '#020408')),
+            'hero_image':    get_setting('hero_image', ''),
+            'logo_image':    get_setting('logo_image', ''),
+            'fav_image':     get_setting('fav_image',  ''),
+        }
     guests = Admin.query.filter_by(role='guest').all() if role == 'owner' else []
     return render_template('admin_dashboard.html', cards=cards, role=role, username=username, analytics=analytics, settings=settings, guests=guests, all_posts=all_posts, public_users=public_users, format_file_size=format_file_size)
 
@@ -415,39 +493,74 @@ def admin_ban_user(user_id):
     flash(f'User {user.username} {"banned" if user.is_banned else "unbanned"}.', 'success')
     return redirect(url_for('admin_dashboard'))
 
+# ─── Admin Settings (TEXT + IMAGES) ───────────────────────────────────────────
+
 @app.route('/admin/settings', methods=['POST'])
 @login_required
 def admin_save_settings():
-    role = session.get('admin_role', 'guest'); username = session.get('admin_username', '')
-    keys = ['hero_title','hero_subtitle','hero_badge','about_title','about_text','accent_color','bg_color']
+    role     = session.get('admin_role', 'guest')
+    username = session.get('admin_username', '')
+
+    # ── Text settings (same as before) ──
+    text_keys = ['hero_title', 'hero_subtitle', 'hero_badge', 'about_title', 'about_text', 'accent_color', 'bg_color']
     if role == 'owner':
-        for k in keys:
+        for k in text_keys:
             val = request.form.get(k, '').strip()
             if val: set_setting(k, val)
-        flash('Site settings updated!', 'success')
     else:
-        for k in keys:
+        for k in text_keys:
             val = request.form.get(k, '').strip()
             if val: set_guest_custom(username, k, val)
+
+    # ── Image settings (only owner — crop se aaya base64) ──
+    # Guest ke liye images allow nahi — sirf owner change kar sakta hai
+    if role == 'owner':
+        image_slots = {
+            'hero_image_data': ('hero_image', 'hero'),   # form field name → (setting key, file prefix)
+            'logo_image_data': ('logo_image', 'logo'),
+            'fav_image_data':  ('fav_image',  'fav'),
+        }
+        for form_field, (setting_key, prefix) in image_slots.items():
+            data_url = request.form.get(form_field, '').strip()
+            if data_url:
+                # Purani image delete karo disk se (optional cleanup)
+                old_path = get_setting(setting_key, '')
+                if old_path:
+                    old_full = os.path.join('static', old_path)
+                    if os.path.exists(old_full):
+                        try: os.remove(old_full)
+                        except: pass
+
+                # Naya cropped image save karo
+                saved_path = save_base64_image(data_url, subfolder='uploads', prefix=prefix)
+                if saved_path:
+                    set_setting(setting_key, saved_path)
+                else:
+                    flash(f'⚠️ {prefix.capitalize()} image save nahi hua — invalid format.', 'error')
+
+        flash('Site settings updated!', 'success')
+    else:
         flash('Your personal customizations saved!', 'success')
+
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/settings/reset', methods=['POST'])
 @login_required
 def admin_reset_guest_settings():
     if session.get('admin_role') == 'guest':
-        GuestCustomization.query.filter_by(guest_username=session.get('admin_username','')).delete()
-        db.session.commit(); flash('Customizations reset.', 'success')
+        GuestCustomization.query.filter_by(guest_username=session.get('admin_username', '')).delete()
+        db.session.commit()
+        flash('Customizations reset.', 'success')
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/change-password', methods=['POST'])
 @login_required
 def admin_change_password():
     username = session.get('admin_username', '')
-    current = request.form.get('current_password', '')
-    new_pw  = request.form.get('new_password', '')
-    confirm = request.form.get('confirm_password', '')
-    admin   = Admin.query.filter_by(username=username).first()
+    current  = request.form.get('current_password', '')
+    new_pw   = request.form.get('new_password', '')
+    confirm  = request.form.get('confirm_password', '')
+    admin    = Admin.query.filter_by(username=username).first()
     if not admin or not admin.check_password(current):
         flash('Current password is wrong.', 'error'); return redirect(url_for('admin_dashboard'))
     if len(new_pw) < 8:
@@ -483,51 +596,103 @@ def admin_delete_guest(guest_id):
     flash(f'Guest "{guest.username}" removed.', 'success')
     return redirect(url_for('admin_dashboard'))
 
+# ─── Admin Cards (Add / Edit — with crop support) ─────────────────────────────
+
 @app.route('/admin/add', methods=['GET', 'POST'])
 @owner_required
 def admin_add():
     if request.method == 'POST':
-        title = request.form.get('title','').strip(); description = request.form.get('description','').strip()
-        full_content = request.form.get('full_content','').strip(); category = request.form.get('category','General').strip()
-        icon = request.form.get('icon','🔒').strip(); order_index = int(request.form.get('order_index',0))
-        thumbnail = ''
-        if 'thumbnail' in request.files:
+        title        = request.form.get('title', '').strip()
+        description  = request.form.get('description', '').strip()
+        full_content = request.form.get('full_content', '').strip()
+        category     = request.form.get('category', 'General').strip()
+        icon         = request.form.get('icon', '🔒').strip()
+        order_index  = int(request.form.get('order_index', 0))
+        thumbnail    = ''
+
+        # 1) Pehle crop ka data check karo (hidden field se)
+        crop_data = request.form.get('thumbnail_crop_data', '').strip()
+        if crop_data:
+            saved = save_base64_image(crop_data, subfolder='uploads', prefix='card')
+            if saved:
+                thumbnail = saved
+
+        # 2) Agar crop data nahi tha to normal file upload check karo
+        if not thumbnail and 'thumbnail' in request.files:
             file = request.files['thumbnail']
             if file and file.filename and allowed_image(file.filename):
-                ext = file.filename.rsplit('.', 1)[1].lower()
+                ext      = file.filename.rsplit('.', 1)[1].lower()
                 filename = f"{uuid.uuid4().hex}.{ext}"
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 thumbnail = f"uploads/{filename}"
-        db.session.add(ContentCard(title=title,description=description,full_content=full_content,category=category,thumbnail=thumbnail,icon=icon,order_index=order_index))
-        db.session.commit(); flash('Card added!', 'success')
+
+        db.session.add(ContentCard(
+            title=title, description=description, full_content=full_content,
+            category=category, thumbnail=thumbnail, icon=icon, order_index=order_index
+        ))
+        db.session.commit()
+        flash('Card added!', 'success')
         return redirect(url_for('admin_dashboard'))
     return render_template('admin_add.html')
+
 
 @app.route('/admin/edit/<int:card_id>', methods=['GET', 'POST'])
 @owner_required
 def admin_edit(card_id):
     card = ContentCard.query.get_or_404(card_id)
     if request.method == 'POST':
-        card.title = request.form.get('title','').strip(); card.description = request.form.get('description','').strip()
-        card.full_content = request.form.get('full_content','').strip(); card.category = request.form.get('category','General').strip()
-        card.icon = request.form.get('icon','🔒').strip(); card.order_index = int(request.form.get('order_index',0))
-        if 'thumbnail' in request.files:
+        card.title        = request.form.get('title', '').strip()
+        card.description  = request.form.get('description', '').strip()
+        card.full_content = request.form.get('full_content', '').strip()
+        card.category     = request.form.get('category', 'General').strip()
+        card.icon         = request.form.get('icon', '🔒').strip()
+        card.order_index  = int(request.form.get('order_index', 0))
+
+        # 1) Crop data check karo
+        crop_data = request.form.get('thumbnail_crop_data', '').strip()
+        if crop_data:
+            # Purani image delete karo
+            if card.thumbnail:
+                old_full = os.path.join('static', card.thumbnail)
+                if os.path.exists(old_full):
+                    try: os.remove(old_full)
+                    except: pass
+            saved = save_base64_image(crop_data, subfolder='uploads', prefix='card')
+            if saved:
+                card.thumbnail = saved
+
+        # 2) Agar crop nahi to normal file upload
+        elif 'thumbnail' in request.files:
             file = request.files['thumbnail']
             if file and file.filename and allowed_image(file.filename):
-                ext = file.filename.rsplit('.', 1)[1].lower()
+                if card.thumbnail:
+                    old_full = os.path.join('static', card.thumbnail)
+                    if os.path.exists(old_full):
+                        try: os.remove(old_full)
+                        except: pass
+                ext      = file.filename.rsplit('.', 1)[1].lower()
                 filename = f"{uuid.uuid4().hex}.{ext}"
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 card.thumbnail = f"uploads/{filename}"
-        db.session.commit(); flash('Card updated!', 'success')
+
+        db.session.commit()
+        flash('Card updated!', 'success')
         return redirect(url_for('admin_dashboard'))
     return render_template('admin_edit.html', card=card)
+
 
 @app.route('/admin/delete/<int:card_id>', methods=['POST'])
 @owner_required
 def admin_delete(card_id):
     card = ContentCard.query.get_or_404(card_id)
+    # Thumbnail bhi delete karo
+    if card.thumbnail:
+        old_full = os.path.join('static', card.thumbnail)
+        if os.path.exists(old_full):
+            try: os.remove(old_full)
+            except: pass
     db.session.delete(card); db.session.commit()
     flash('Card deleted.', 'success')
     return redirect(url_for('admin_dashboard'))
@@ -543,14 +708,25 @@ def init_db():
             admin = Admin(username='shivam', role='owner')
             admin.set_password(os.environ.get('ADMIN_PASSWORD', 'admin123'))
             db.session.add(admin)
-        defaults = {'hero_title':'Cyber Hub','hero_subtitle':'Your digital safety, simplified.','hero_badge':'SECURITY KNOWLEDGE BASE','about_title':'About This Hub','about_text':'A curated collection of cybersecurity knowledge for everyday people.','accent_color':'#00b4ff','bg_color':'#020408'}
+        defaults = {
+            'hero_title':    'Cyber Hub',
+            'hero_subtitle': 'Your digital safety, simplified.',
+            'hero_badge':    'SECURITY KNOWLEDGE BASE',
+            'about_title':   'About This Hub',
+            'about_text':    'A curated collection of cybersecurity knowledge for everyday people.',
+            'accent_color':  '#00b4ff',
+            'bg_color':      '#020408',
+            'hero_image':    '',
+            'logo_image':    '',
+            'fav_image':     '',
+        }
         for k, v in defaults.items():
             if not SiteSettings.query.filter_by(key=k).first():
                 db.session.add(SiteSettings(key=k, value=v))
         if not ContentCard.query.first():
             for c in [
-                ContentCard(title='WiFi Security Basics',description='Most people leave their WiFi completely exposed.',full_content='## WiFi Security\n\n**Key Steps:**\n- Use WPA3 or WPA2\n- Change default credentials\n- Strong password (16+ chars)',category='WiFi Security',icon='📡',order_index=1),
-                ContentCard(title='Common Phone Threats in 2025',description='Your smartphone holds more personal data than your home.',full_content='## Phone Security\n\n**Threats:**\n- Smishing\n- Malicious Apps\n- SIM Swapping',category='Mobile Security',icon='📱',order_index=2),
+                ContentCard(title='WiFi Security Basics', description='Most people leave their WiFi completely exposed.', full_content='## WiFi Security\n\n**Key Steps:**\n- Use WPA3 or WPA2\n- Change default credentials\n- Strong password (16+ chars)', category='WiFi Security', icon='📡', order_index=1),
+                ContentCard(title='Common Phone Threats in 2025', description='Your smartphone holds more personal data than your home.', full_content='## Phone Security\n\n**Threats:**\n- Smishing\n- Malicious Apps\n- SIM Swapping', category='Mobile Security', icon='📱', order_index=2),
             ]: db.session.add(c)
         db.session.commit()
 
