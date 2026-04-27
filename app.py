@@ -7,7 +7,7 @@ import os, uuid, datetime, json, mimetypes, base64, re
 
 app = Flask(__name__)
 
-# ✅ FIX: Jinja2 mein enumerate support add kiya (admin dashboard crash fix)
+# ✅ Jinja2 mein enumerate support
 app.jinja_env.globals['enumerate'] = enumerate
 app.jinja_env.filters['enumerate'] = enumerate
 
@@ -24,10 +24,23 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(hours=8)
 
+# ✅ Cache fix: templates reload + no static caching
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=0)
+
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 BLOCKED_EXTENSIONS = {'exe', 'bat', 'cmd', 'sh', 'php', 'py', 'js', 'vbs'}
 
 db = SQLAlchemy(app)
+
+# ✅ Admin routes pe no-cache headers
+@app.after_request
+def no_cache_admin(response):
+    if request.path.startswith('/admin'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
 
 # ─── Models ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +49,9 @@ class Admin(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), default='owner')
+    # ✅ FIX: profile_image column — dashboard template mein chahiye tha
+    profile_image = db.Column(db.String(200), default='')
+
     def set_password(self, pw):
         self.password_hash = generate_password_hash(pw, method='pbkdf2:sha256', salt_length=16)
     def check_password(self, pw):
@@ -49,6 +65,9 @@ class PublicUser(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     is_banned = db.Column(db.Boolean, default=False)
     ui_customizations = db.Column(db.Text, default='{}')
+    # ✅ FIX: profile_image column — posts/users tab mein chahiye tha
+    profile_image = db.Column(db.String(200), default='')
+
     def set_password(self, pw):
         self.password_hash = generate_password_hash(pw, method='pbkdf2:sha256', salt_length=16)
     def check_password(self, pw):
@@ -167,53 +186,33 @@ def format_file_size(size_bytes):
     elif size_bytes < 1024*1024: return f"{size_bytes/1024:.1f} KB"
     else: return f"{size_bytes/(1024*1024):.1f} MB"
 
-# ─── NEW: Base64 Crop Image Saver ─────────────────────────────────────────────
 def save_base64_image(data_url, subfolder='uploads', prefix='img'):
     """
     Crop modal se aaya base64 data URL decode karke disk pe save karta hai.
-    
-    data_url format:  data:image/jpeg;base64,/9j/4AAQ...
-    Returns:          'uploads/abc123.jpg'  (static ke andar relative path)
-    Ya None agar data empty/invalid ho.
+    Returns: 'uploads/abc123.jpg' ya None agar invalid ho.
     """
     if not data_url or not data_url.startswith('data:image'):
         return None
-
     try:
-        # Format: "data:image/jpeg;base64,<data>"
         match = re.match(r'data:image/(\w+);base64,(.+)', data_url, re.DOTALL)
         if not match:
             return None
-
-        ext        = match.group(1).lower()   # jpeg / png / webp / gif
+        ext = match.group(1).lower()
         raw_base64 = match.group(2)
-
-        # jpeg → jpg
         if ext == 'jpeg':
             ext = 'jpg'
-
-        # Allowed extensions check
         if ext not in ALLOWED_IMAGE_EXTENSIONS:
             return None
-
-        # Decode
         img_bytes = base64.b64decode(raw_base64)
-
-        # 8MB cap (crop ke baad generally kam hoga)
         if len(img_bytes) > 8 * 1024 * 1024:
             return None
-
-        # Save
         folder = os.path.join('static', subfolder)
         os.makedirs(folder, exist_ok=True)
         filename = f"{prefix}_{uuid.uuid4().hex}.{ext}"
         save_path = os.path.join(folder, filename)
-
         with open(save_path, 'wb') as f:
             f.write(img_bytes)
-
-        return f"{subfolder}/{filename}"   # e.g. "uploads/img_abc123.jpg"
-
+        return f"{subfolder}/{filename}"
     except Exception:
         return None
 
@@ -254,7 +253,12 @@ def index():
 def get_card(card_id):
     card = ContentCard.query.get_or_404(card_id)
     record_visit(card_id=card.id)
-    return jsonify({'id':card.id,'title':card.title,'description':card.description,'full_content':card.full_content,'category':card.category,'thumbnail':card.thumbnail,'icon':card.icon,'created_at':card.created_at.strftime('%B %d, %Y')})
+    return jsonify({
+        'id': card.id, 'title': card.title, 'description': card.description,
+        'full_content': card.full_content, 'category': card.category,
+        'thumbnail': card.thumbnail, 'icon': card.icon,
+        'created_at': card.created_at.strftime('%B %d, %Y')
+    })
 
 # ─── Translation API ───────────────────────────────────────────────────────────
 
@@ -263,14 +267,11 @@ def translate_text():
     try:
         import urllib.request
         import urllib.parse
-
         data = request.get_json()
         if not data:
             return jsonify({'error': 'No data provided'}), 400
-
         target_lang = data.get('language', '').strip()
-        strings     = data.get('strings', {})
-
+        strings = data.get('strings', {})
         if not target_lang:
             return jsonify({'error': 'No language specified'}), 400
         if not strings:
@@ -293,9 +294,7 @@ def translate_text():
                 translated[key] = translate_text_mymemory(value, target_lang)
             else:
                 translated[key] = value
-
         return jsonify({'translated': translated, 'status': 'ok'})
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -416,7 +415,9 @@ def admin_login():
         admin = Admin.query.filter_by(username=username).first()
         if admin and admin.check_password(password):
             session.permanent = True
-            session['admin_logged_in'] = True; session['admin_username'] = username; session['admin_role'] = admin.role
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            session['admin_role'] = admin.role
             flash(f'Welcome back, {username}!', 'success')
             return redirect(url_for('admin_dashboard'))
         flash('Invalid credentials.', 'error')
@@ -424,7 +425,8 @@ def admin_login():
 
 @app.route('/admin/logout')
 def admin_logout():
-    session.clear(); return redirect(url_for('index'))
+    session.clear()
+    return redirect(url_for('index'))
 
 # ─── Admin Dashboard ───────────────────────────────────────────────────────────
 
@@ -432,10 +434,15 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     cards = ContentCard.query.order_by(ContentCard.order_index, ContentCard.created_at.desc()).all()
-    role  = session.get('admin_role', 'guest')
+    role = session.get('admin_role', 'guest')
     username = session.get('admin_username', '')
     all_posts = UserPost.query.order_by(UserPost.created_at.desc()).all()
     public_users = PublicUser.query.order_by(PublicUser.created_at.desc()).all() if role == 'owner' else []
+
+    # ✅ FIX: admin_profile_image — logged-in admin ki profile image fetch karo
+    current_admin = Admin.query.filter_by(username=username).first()
+    admin_profile_image = (current_admin.profile_image or '') if current_admin else ''
+
     analytics = None
     if role == 'owner':
         today = datetime.date.today()
@@ -448,7 +455,6 @@ def admin_dashboard():
         total_visits = PageView.query.count()
         total_users  = PublicUser.query.count()
         total_posts  = UserPost.query.count()
-        # ✅ FIX: outerjoin + db.func.count().desc() — PostgreSQL compatible
         top_cards = db.session.query(
             ContentCard.title,
             ContentCard.icon,
@@ -457,7 +463,12 @@ def admin_dashboard():
          .group_by(ContentCard.id)\
          .order_by(db.func.count(PageView.id).desc())\
          .limit(5).all()
-        analytics = {'daily':daily,'unique_today':unique_today,'total_visits':total_visits,'total_users':total_users,'total_posts':total_posts,'top_cards':top_cards}
+        analytics = {
+            'daily': daily, 'unique_today': unique_today,
+            'total_visits': total_visits, 'total_users': total_users,
+            'total_posts': total_posts, 'top_cards': top_cards
+        }
+
     if role == 'owner':
         settings = {
             'hero_title':    get_setting('hero_title',    'Cyber Hub'),
@@ -484,8 +495,23 @@ def admin_dashboard():
             'logo_image':    get_setting('logo_image', ''),
             'fav_image':     get_setting('fav_image',  ''),
         }
+
     guests = Admin.query.filter_by(role='guest').all() if role == 'owner' else []
-    return render_template('admin_dashboard.html', cards=cards, role=role, username=username, analytics=analytics, settings=settings, guests=guests, all_posts=all_posts, public_users=public_users, format_file_size=format_file_size)
+
+    return render_template(
+        'admin_dashboard.html',
+        cards=cards,
+        role=role,
+        username=username,
+        analytics=analytics,
+        settings=settings,
+        guests=guests,
+        all_posts=all_posts,
+        public_users=public_users,
+        format_file_size=format_file_size,
+        # ✅ FIX: ye variable template ko milega — TemplateUndefinedError fix
+        admin_profile_image=admin_profile_image
+    )
 
 @app.route('/admin/post/delete/<int:post_id>', methods=['POST'])
 @owner_required
@@ -506,7 +532,7 @@ def admin_ban_user(user_id):
     flash(f'User {user.username} {"banned" if user.is_banned else "unbanned"}.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# ─── Admin Settings (TEXT + IMAGES) ───────────────────────────────────────────
+# ─── Admin Settings ────────────────────────────────────────────────────────────
 
 @app.route('/admin/settings', methods=['POST'])
 @login_required
@@ -514,7 +540,6 @@ def admin_save_settings():
     role     = session.get('admin_role', 'guest')
     username = session.get('admin_username', '')
 
-    # ── Text settings (same as before) ──
     text_keys = ['hero_title', 'hero_subtitle', 'hero_badge', 'about_title', 'about_text', 'accent_color', 'bg_color']
     if role == 'owner':
         for k in text_keys:
@@ -525,7 +550,6 @@ def admin_save_settings():
             val = request.form.get(k, '').strip()
             if val: set_guest_custom(username, k, val)
 
-    # ── Image settings (only owner — crop se aaya base64) ──
     if role == 'owner':
         image_slots = {
             'hero_image_data': ('hero_image', 'hero'),
@@ -605,7 +629,7 @@ def admin_delete_guest(guest_id):
     flash(f'Guest "{guest.username}" removed.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# ─── Admin Cards (Add / Edit — with crop support) ─────────────────────────────
+# ─── Admin Cards ───────────────────────────────────────────────────────────────
 
 @app.route('/admin/add', methods=['GET', 'POST'])
 @owner_required
@@ -643,7 +667,6 @@ def admin_add():
         return redirect(url_for('admin_dashboard'))
     return render_template('admin_add.html')
 
-
 @app.route('/admin/edit/<int:card_id>', methods=['GET', 'POST'])
 @owner_required
 def admin_edit(card_id):
@@ -666,7 +689,6 @@ def admin_edit(card_id):
             saved = save_base64_image(crop_data, subfolder='uploads', prefix='card')
             if saved:
                 card.thumbnail = saved
-
         elif 'thumbnail' in request.files:
             file = request.files['thumbnail']
             if file and file.filename and allowed_image(file.filename):
@@ -685,7 +707,6 @@ def admin_edit(card_id):
         flash('Card updated!', 'success')
         return redirect(url_for('admin_dashboard'))
     return render_template('admin_edit.html', card=card)
-
 
 @app.route('/admin/delete/<int:card_id>', methods=['POST'])
 @owner_required
@@ -728,8 +749,18 @@ def init_db():
                 db.session.add(SiteSettings(key=k, value=v))
         if not ContentCard.query.first():
             for c in [
-                ContentCard(title='WiFi Security Basics', description='Most people leave their WiFi completely exposed.', full_content='## WiFi Security\n\n**Key Steps:**\n- Use WPA3 or WPA2\n- Change default credentials\n- Strong password (16+ chars)', category='WiFi Security', icon='📡', order_index=1),
-                ContentCard(title='Common Phone Threats in 2025', description='Your smartphone holds more personal data than your home.', full_content='## Phone Security\n\n**Threats:**\n- Smishing\n- Malicious Apps\n- SIM Swapping', category='Mobile Security', icon='📱', order_index=2),
+                ContentCard(
+                    title='WiFi Security Basics',
+                    description='Most people leave their WiFi completely exposed.',
+                    full_content='## WiFi Security\n\n**Key Steps:**\n- Use WPA3 or WPA2\n- Change default credentials\n- Strong password (16+ chars)',
+                    category='WiFi Security', icon='📡', order_index=1
+                ),
+                ContentCard(
+                    title='Common Phone Threats in 2025',
+                    description='Your smartphone holds more personal data than your home.',
+                    full_content='## Phone Security\n\n**Threats:**\n- Smishing\n- Malicious Apps\n- SIM Swapping',
+                    category='Mobile Security', icon='📱', order_index=2
+                ),
             ]: db.session.add(c)
         db.session.commit()
 
