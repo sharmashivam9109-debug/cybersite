@@ -261,8 +261,8 @@
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
     .card { background: var(--surface); cursor: pointer; position: relative; display: flex; flex-direction: column; transition: background 0.25s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s; transform-style: preserve-3d; will-change: transform; overflow: hidden; }
     .card:hover { background: var(--bg-off); box-shadow: 0 12px 40px rgba(26,24,20,0.07); z-index: 1; }
-    .card-thumb { width: 100%; height: 200px; overflow: hidden; background: var(--bg-paper); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .card-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease-out); display: block; }
+    .card-thumb { width: 100%; height: 220px; overflow: hidden; background: var(--bg-paper); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center 70%; transition: transform 0.6s var(--ease-out); display: block; }
     .card:hover .card-thumb img { transform: scale(1.04); }
     .card-thumb-placeholder { width: 100%; height: 200px; background: var(--bg-paper); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-bottom: 1px solid var(--border); }
     .card-thumb-placeholder .ph-icon { font-size: 36px; opacity: 0.35; }
