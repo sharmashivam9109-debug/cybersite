@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard — S.S Cyber Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +33,7 @@
     .nav-spacer { flex: 1; }
     .nav-item.danger { color: rgba(255,68,102,0.6); }
     .nav-item.danger:hover { color: var(--neon-red); background: rgba(255,68,102,0.08); }
-    .role-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; margin-bottom: 8px; }
+    .role-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; margin-bottom: 8px; display: inline-block; }
     .role-badge.owner { background: rgba(155,89,255,0.15); color: var(--neon-purple); border: 1px solid rgba(155,89,255,0.3); }
     .role-badge.guest { background: rgba(0,180,255,0.1); color: var(--neon-blue); border: 1px solid rgba(0,180,255,0.25); }
 
@@ -78,6 +77,7 @@
     .btn-warn { background: rgba(255,200,0,0.1); color: #ffc800; }
     .btn-warn:hover { background: rgba(255,200,0,0.2); }
     .actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .actions form { display: inline; }
 
     /* ── FORM ── */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -155,61 +155,25 @@
     .empty-state { text-align: center; padding: 48px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; }
     .pw-strength { height: 3px; border-radius: 2px; margin-top: 4px; transition: all .3s; background: var(--glass-border); }
 
-    /* ═══════════════════════════════════════════════
-       ── IMAGE UPLOAD + CROP SYSTEM ──
-    ═══════════════════════════════════════════════ */
-
-    /* Drop Zone */
+    /* ── IMAGE UPLOAD + CROP SYSTEM ── */
     .img-upload-zone {
-      position: relative;
-      border: 2px dashed var(--glass-border);
-      border-radius: 10px;
-      padding: 28px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all .25s;
-      background: rgba(255,255,255,0.015);
-      overflow: hidden;
+      position: relative; border: 2px dashed var(--glass-border); border-radius: 10px;
+      padding: 28px 20px; text-align: center; cursor: pointer; transition: all .25s;
+      background: rgba(255,255,255,0.015); overflow: hidden;
     }
-    .img-upload-zone:hover,
-    .img-upload-zone.dragover {
-      border-color: var(--neon-blue);
-      background: rgba(0,180,255,0.05);
-    }
-    .img-upload-zone input[type=file] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; width: 100%; height: 100%;
-      background: none; border: none; padding: 0;
-    }
-    .upload-icon {
-      font-size: 32px; margin-bottom: 10px;
-      animation: float 3s ease-in-out infinite;
-    }
+    .img-upload-zone:hover, .img-upload-zone.dragover { border-color: var(--neon-blue); background: rgba(0,180,255,0.05); }
+    .img-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; width: 100%; height: 100%; background: none; border: none; padding: 0; }
+    .upload-icon { font-size: 32px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
     .upload-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
     .upload-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
     .upload-formats { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
     .fmt-chip { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(0,245,255,0.08); color: var(--neon-cyan); border: 1px solid rgba(0,245,255,0.2); }
 
-    /* Preview thumbnail (after crop) */
-    .thumb-preview-wrap {
-      display: none;
-      position: relative;
-      background: var(--panel);
-      border: 1px solid var(--glass-border);
-      border-radius: 10px;
-      padding: 16px;
-      margin-top: 12px;
-    }
+    .thumb-preview-wrap { display: none; position: relative; background: var(--panel); border: 1px solid var(--glass-border); border-radius: 10px; padding: 16px; margin-top: 12px; }
     .thumb-preview-wrap.show { display: block; }
-    .thumb-preview-inner {
-      display: flex; align-items: center; gap: 16px;
-    }
-    .thumb-img {
-      width: 80px; height: 80px; border-radius: 8px;
-      object-fit: cover;
-      border: 2px solid rgba(0,245,255,0.3);
-      box-shadow: 0 0 18px rgba(0,245,255,0.15);
-    }
+    .thumb-preview-inner { display: flex; align-items: center; gap: 16px; }
+    .thumb-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 2px solid rgba(0,245,255,0.3); box-shadow: 0 0 18px rgba(0,245,255,0.15); }
     .thumb-info { flex: 1; }
     .thumb-name { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
     .thumb-size { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
@@ -217,159 +181,42 @@
     .thumb-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(0,255,157,0.1); color: var(--neon-green); border: 1px solid rgba(0,255,157,0.25); margin-left: 8px; }
 
     /* ── CROP MODAL ── */
-    .crop-modal-overlay {
-      display: none;
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(2,4,8,0.92);
-      backdrop-filter: blur(10px);
-      align-items: center; justify-content: center;
-    }
+    .crop-modal-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(2,4,8,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; }
     .crop-modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
     @keyframes fadeIn { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
-
-    .crop-modal {
-      background: var(--deep);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      width: min(92vw, 760px);
-      max-height: 92vh;
-      display: flex; flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,180,255,0.1);
-    }
-
-    .crop-modal-header {
-      padding: 18px 24px 16px;
-      border-bottom: 1px solid var(--glass-border);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .crop-modal-title {
-      font-size: 14px; font-weight: 800; letter-spacing: 1px; color: var(--neon-cyan);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .crop-modal-close {
-      width: 32px; height: 32px; border-radius: 6px;
-      background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.2);
-      color: var(--neon-red); font-size: 16px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .2s;
-    }
+    .crop-modal { background: var(--deep); border: 1px solid var(--glass-border); border-radius: 16px; width: min(92vw, 760px); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,180,255,0.1); }
+    .crop-modal-header { padding: 18px 24px 16px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .crop-modal-title { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: var(--neon-cyan); display: flex; align-items: center; gap: 8px; }
+    .crop-modal-close { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.2); color: var(--neon-red); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
     .crop-modal-close:hover { background: rgba(255,68,102,0.2); transform: rotate(90deg); }
-
-    /* Aspect ratio tabs */
-    .crop-ratio-bar {
-      padding: 12px 24px;
-      display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
-      border-bottom: 1px solid var(--glass-border);
-      flex-shrink: 0;
-      background: rgba(255,255,255,0.02);
-    }
+    .crop-ratio-bar { padding: 12px 24px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; background: rgba(255,255,255,0.02); }
     .crop-ratio-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-right: 6px; }
-    .ratio-btn {
-      padding: 5px 12px; border-radius: 5px;
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .5px;
-      cursor: pointer; border: 1px solid var(--glass-border);
-      background: rgba(255,255,255,0.03); color: var(--muted);
-      transition: all .2s;
-    }
+    .ratio-btn { padding: 5px 12px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .5px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--muted); transition: all .2s; }
     .ratio-btn:hover { color: var(--text); border-color: rgba(0,180,255,0.3); }
-    .ratio-btn.active {
-      background: rgba(0,180,255,0.12); color: var(--neon-blue);
-      border-color: rgba(0,180,255,0.4);
-    }
-
-    /* Crop canvas area */
-    .crop-canvas-area {
-      flex: 1; overflow: hidden;
-      background: #000;
-      min-height: 0;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-    }
-    .crop-canvas-area img {
-      max-width: 100%; max-height: 100%;
-      display: block;
-    }
-
-    /* Tools bar */
-    .crop-tools-bar {
-      padding: 12px 24px;
-      border-top: 1px solid var(--glass-border);
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-      flex-shrink: 0;
-      background: rgba(255,255,255,0.02);
-    }
-    .crop-tool-btn {
-      padding: 7px 14px; border-radius: 5px;
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .5px;
-      cursor: pointer; border: 1px solid var(--glass-border);
-      background: rgba(255,255,255,0.04); color: var(--muted);
-      transition: all .2s; display: flex; align-items: center; gap: 6px;
-    }
+    .ratio-btn.active { background: rgba(0,180,255,0.12); color: var(--neon-blue); border-color: rgba(0,180,255,0.4); }
+    .crop-canvas-area { flex: 1; overflow: hidden; background: #000; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+    .crop-canvas-area img { max-width: 100%; max-height: 100%; display: block; }
+    .crop-tools-bar { padding: 12px 24px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; background: rgba(255,255,255,0.02); }
+    .crop-tool-btn { padding: 7px 14px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .5px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04); color: var(--muted); transition: all .2s; display: flex; align-items: center; gap: 6px; }
     .crop-tool-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
     .crop-tool-sep { width: 1px; height: 24px; background: var(--glass-border); margin: 0 4px; }
     .crop-tools-spacer { flex: 1; }
-
-    /* Zoom slider */
     .zoom-wrap { display: flex; align-items: center; gap: 8px; }
     .zoom-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); white-space: nowrap; }
-    input[type=range] {
-      -webkit-appearance: none; appearance: none;
-      width: 100px; height: 3px;
-      background: var(--glass-border); border-radius: 2px; outline: none;
-      cursor: pointer; border: none; padding: 0;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 14px; height: 14px;
-      border-radius: 50%; background: var(--neon-blue);
-      box-shadow: 0 0 8px rgba(0,180,255,0.5);
-      cursor: pointer;
-    }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100px; height: 3px; background: var(--glass-border); border-radius: 2px; outline: none; cursor: pointer; border: none; padding: 0; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 8px rgba(0,180,255,0.5); cursor: pointer; }
     input[type=range]:focus { border-color: transparent; }
-
-    /* Crop action buttons */
-    .crop-action-bar {
-      padding: 16px 24px;
-      border-top: 1px solid var(--glass-border);
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      flex-shrink: 0;
-    }
-    .crop-output-size {
-      font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
-      display: flex; align-items: center; gap: 6px;
-    }
+    .crop-action-bar { padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+    .crop-output-size { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
     .size-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-green); animation: pulse 1.5s infinite; }
-
-    /* Quality slider */
     .quality-wrap { display: flex; align-items: center; gap: 8px; }
     .quality-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); }
     .quality-val { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--neon-cyan); min-width: 30px; }
-
-    /* Crop confirm btn */
-    .btn-crop-confirm {
-      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
-      color: #000; font-weight: 800; font-size: 13px; padding: 10px 28px;
-      border-radius: 7px; border: none; cursor: pointer;
-      transition: all .2s; display: flex; align-items: center; gap: 8px;
-      font-family: 'Syne', sans-serif; letter-spacing: .5px;
-      box-shadow: 0 0 20px rgba(0,245,255,0.2);
-    }
+    .btn-crop-confirm { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: 800; font-size: 13px; padding: 10px 28px; border-radius: 7px; border: none; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; letter-spacing: .5px; box-shadow: 0 0 20px rgba(0,245,255,0.2); }
     .btn-crop-confirm:hover { transform: translateY(-1px); box-shadow: 0 0 28px rgba(0,245,255,0.35); }
-    .btn-crop-cancel {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--glass-border); border-radius: 7px;
-      padding: 10px 20px; cursor: pointer; font-family: 'Syne', sans-serif;
-      font-size: 12px; font-weight: 600; transition: all .2s;
-    }
+    .btn-crop-cancel { background: transparent; color: var(--muted); border: 1px solid var(--glass-border); border-radius: 7px; padding: 10px 20px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; transition: all .2s; }
     .btn-crop-cancel:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
-
-    /* Crosshair overlay hint */
-    .crop-hint {
-      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px;
-      color: rgba(255,255,255,0.3); pointer-events: none; white-space: nowrap;
-    }
+    .crop-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; color: rgba(255,255,255,0.3); pointer-events: none; white-space: nowrap; }
 
     /* Tab panel system */
     .tab-panel { display: none; }
@@ -390,11 +237,9 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════ CROP MODAL ═══════════════════════════ -->
+<!-- ═══════════════ CROP MODAL ═══════════════ -->
 <div class="crop-modal-overlay" id="cropOverlay">
   <div class="crop-modal">
-
-    <!-- Header -->
     <div class="crop-modal-header">
       <div class="crop-modal-title">
         ✂️ Image Crop Studio
@@ -402,8 +247,6 @@
       </div>
       <button class="crop-modal-close" onclick="closeCropModal()" title="Close">✕</button>
     </div>
-
-    <!-- Aspect Ratio Bar -->
     <div class="crop-ratio-bar">
       <span class="crop-ratio-label">Ratio</span>
       <button class="ratio-btn active" onclick="setRatio(1,1,this)" data-label="1:1">⬛ 1:1</button>
@@ -423,22 +266,18 @@
         <option value="200">200 × auto (icon)</option>
       </select>
     </div>
-
-    <!-- Crop Canvas -->
     <div class="crop-canvas-area" id="cropCanvasArea">
       <img id="cropImage" src="" alt="crop-target" />
       <div class="crop-hint">Drag to reposition · Scroll to zoom · Drag corners to resize</div>
     </div>
-
-    <!-- Tools Bar -->
     <div class="crop-tools-bar">
-      <button class="crop-tool-btn" onclick="rotateCrop(-90)" title="Rotate Left">↺ -90°</button>
-      <button class="crop-tool-btn" onclick="rotateCrop(90)" title="Rotate Right">↻ +90°</button>
+      <button class="crop-tool-btn" onclick="rotateCrop(-90)">↺ -90°</button>
+      <button class="crop-tool-btn" onclick="rotateCrop(90)">↻ +90°</button>
       <div class="crop-tool-sep"></div>
-      <button class="crop-tool-btn" onclick="flipCrop('x')" title="Flip Horizontal">⇆ Flip H</button>
-      <button class="crop-tool-btn" onclick="flipCrop('y')" title="Flip Vertical">⇅ Flip V</button>
+      <button class="crop-tool-btn" onclick="flipCrop('x')">⇆ Flip H</button>
+      <button class="crop-tool-btn" onclick="flipCrop('y')">⇅ Flip V</button>
       <div class="crop-tool-sep"></div>
-      <button class="crop-tool-btn" onclick="resetCrop()" title="Reset">⟲ Reset</button>
+      <button class="crop-tool-btn" onclick="resetCrop()">⟲ Reset</button>
       <div class="crop-tool-sep"></div>
       <div class="zoom-wrap">
         <span class="zoom-label">🔍 Zoom</span>
@@ -452,95 +291,314 @@
         <span class="quality-val" id="qualityVal">92%</span>
       </div>
     </div>
-
-    <!-- Action Bar -->
     <div class="crop-action-bar">
-      <div class="crop-output-size">
-        <div class="size-dot"></div>
-        <span id="cropDimLabel">Ready to crop</span>
-      </div>
+      <div class="crop-output-size"><div class="size-dot"></div><span id="cropDimLabel">Ready to crop</span></div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="btn-crop-cancel" onclick="closeCropModal()">Cancel</button>
         <button class="btn-crop-confirm" onclick="confirmCrop()">✓ Apply Crop</button>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
 <div class="sidebar">
   <div class="sidebar-logo"><div class="dot"></div><span>Admin Panel</span></div>
-  <div class="role-badge owner">owner</div>
+  <span class="role-badge {{ role }}">{{ role }}</span>
 
   <button class="nav-item active" onclick="switchTab('cards', this)">📋 <span>Cards</span></button>
   <button class="nav-item" onclick="switchTab('posts', this)">💬 <span>Posts</span></button>
+  {% if role == 'owner' %}
   <button class="nav-item" onclick="switchTab('users', this)">👥 <span>Users</span></button>
   <button class="nav-item" onclick="switchTab('analytics', this)">📊 <span>Analytics</span></button>
   <button class="nav-item" onclick="switchTab('guests', this)">🔑 <span>Guests</span></button>
+  {% endif %}
   <button class="nav-item" onclick="switchTab('settings', this)">⚙️ <span>Settings</span></button>
   <button class="nav-item" onclick="switchTab('account', this)">🔒 <span>Password</span></button>
+
   <div class="nav-spacer"></div>
-  <a href="#" class="nav-item" target="_blank">🌐 <span>View Site</span></a>
-  <a href="#" class="nav-item danger">⬅ <span>Logout</span></a>
+  <a href="{{ url_for('index') }}" class="nav-item" target="_blank">🌐 <span>View Site</span></a>
+  <a href="{{ url_for('admin_logout') }}" class="nav-item danger">⬅ <span>Logout</span></a>
 </div>
 
-<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<!-- ═══════════════ MAIN ═══════════════ -->
 <div class="main">
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
   <!-- ══ TAB: CARDS ══ -->
   <div class="tab-panel active" id="tab-cards">
     <div class="sec-header">
-      <div><div class="sec-title">Content Cards</div><div class="sec-sub">4 total entries</div></div>
-      <a href="#" class="btn btn-primary">+ Add Card</a>
+      <div>
+        <div class="sec-title">Content Cards</div>
+        <div class="sec-sub">{{ cards|length }} total entries</div>
+      </div>
+      {% if role == 'owner' %}
+      <a href="{{ url_for('admin_add') }}" class="btn btn-primary">+ Add Card</a>
+      {% endif %}
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Icon</th><th>Card Info</th><th>Description</th><th>Order</th><th>Actions</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Icon</th>
+            <th>Card Info</th>
+            <th>Description</th>
+            <th>Order</th>
+            {% if role == 'owner' %}<th>Actions</th>{% endif %}
+          </tr>
+        </thead>
         <tbody>
+          {% for card in cards %}
           <tr>
-            <td><div class="card-icon">🛡️</div></td>
-            <td><div class="card-name">Cyber Security</div><div class="card-cat">Security</div></td>
-            <td><div class="card-desc">Learn ethical hacking, penetration testing and network security fundamentals...</div></td>
-            <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">1</td>
-            <td><div class="actions">
-              <a href="#" class="btn btn-edit">Edit</a>
-              <button class="btn btn-del" onclick="return confirm('Delete?')">Delete</button>
-            </div></td>
+            <td><div class="card-icon">{{ card.icon }}</div></td>
+            <td>
+              <div class="card-name">{{ card.title }}</div>
+              <div class="card-cat">{{ card.category }}</div>
+            </td>
+            <td><div class="card-desc">{{ card.description[:100] }}{% if card.description|length > 100 %}...{% endif %}</div></td>
+            <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">{{ card.order_index }}</td>
+            {% if role == 'owner' %}
+            <td>
+              <div class="actions">
+                <a href="{{ url_for('admin_edit', card_id=card.id) }}" class="btn btn-edit">Edit</a>
+                <form method="POST" action="{{ url_for('admin_delete', card_id=card.id) }}" onsubmit="return confirm('Delete this card?')">
+                  <button type="submit" class="btn btn-del">Delete</button>
+                </form>
+              </div>
+            </td>
+            {% endif %}
           </tr>
+          {% else %}
           <tr>
-            <td><div class="card-icon">💻</div></td>
-            <td><div class="card-name">Programming</div><div class="card-cat">Dev</div></td>
-            <td><div class="card-desc">Python, JavaScript, C++ — structured courses from beginner to advanced...</div></td>
-            <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">2</td>
-            <td><div class="actions">
-              <a href="#" class="btn btn-edit">Edit</a>
-              <button class="btn btn-del">Delete</button>
-            </div></td>
+            <td colspan="5" style="text-align:center;padding:48px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">
+              No cards yet — <a href="{{ url_for('admin_add') }}" style="color:var(--neon-blue)">Add your first card</a>
+            </td>
           </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- ══ TAB: SETTINGS — DEMO WITH CROP ══ -->
+  <!-- ══ TAB: POSTS ══ -->
+  <div class="tab-panel" id="tab-posts">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">User Posts</div>
+        <div class="sec-sub">{{ all_posts|length }} total posts</div>
+      </div>
+    </div>
+
+    {% if all_posts %}
+      {% for post in all_posts %}
+      <div class="post-row">
+        <div class="post-row-header">
+          <div class="post-author-badge">
+            <div class="post-avatar">{{ post.author.username[0].upper() }}</div>
+            <div>
+              <div class="post-author-name">{{ post.author.username }}</div>
+              <div class="post-date">{{ post.created_at.strftime('%d %b %Y, %H:%M') }}</div>
+            </div>
+          </div>
+          {% if role == 'owner' %}
+          <form method="POST" action="{{ url_for('admin_delete_post', post_id=post.id) }}" onsubmit="return confirm('Delete this post?')">
+            <button type="submit" class="btn btn-del" style="font-size:11px;padding:6px 14px">🗑 Delete</button>
+          </form>
+          {% endif %}
+        </div>
+        <div class="post-title">{{ post.title }}</div>
+        <div class="post-body">{{ post.body[:300] }}{% if post.body|length > 300 %}...{% endif %}</div>
+        {% if post.file_name %}
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--neon-cyan)">
+          📎 <a href="{{ url_for('download_file', filename=post.file_name) }}" style="color:var(--neon-cyan)">{{ post.file_original }}</a>
+          ({{ format_file_size(post.file_size) }})
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="posts-empty-state">No posts yet.</div>
+    {% endif %}
+  </div>
+
+  <!-- ══ TAB: USERS ══ -->
+  {% if role == 'owner' %}
+  <div class="tab-panel" id="tab-users">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Public Users</div>
+        <div class="sec-sub">{{ public_users|length }} registered</div>
+      </div>
+    </div>
+
+    {% if public_users %}
+      {% for user in public_users %}
+      <div class="user-row">
+        <div class="user-avatar-big">{{ user.username[0].upper() }}</div>
+        <div class="user-info">
+          <div class="user-name">
+            {{ user.username }}
+            {% if user.is_banned %}
+              <span class="banned-badge" style="margin-left:8px">Banned</span>
+            {% else %}
+              <span class="active-badge" style="margin-left:8px">Active</span>
+            {% endif %}
+          </div>
+          <div class="user-meta">Joined {{ user.created_at.strftime('%d %b %Y') }} · {{ user.posts|length }} posts</div>
+        </div>
+        <form method="POST" action="{{ url_for('admin_ban_user', user_id=user.id) }}" onsubmit="return confirm('{{ 'Unban' if user.is_banned else 'Ban' }} this user?')">
+          <button type="submit" class="btn {% if user.is_banned %}btn-green{% else %}btn-warn{% endif %}" style="font-size:11px">
+            {% if user.is_banned %}✓ Unban{% else %}🚫 Ban{% endif %}
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No registered users yet.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ══ TAB: ANALYTICS ══ -->
+  {% if role == 'owner' %}
+  <div class="tab-panel" id="tab-analytics">
+    <div class="sec-header">
+      <div><div class="sec-title">Analytics</div><div class="sec-sub">Last 7 days overview</div></div>
+    </div>
+
+    {% if analytics %}
+    <div class="stat-row">
+      <div class="stat-box blue"><div class="stat-val">{{ analytics.total_visits }}</div><div class="stat-label">Total Visits</div></div>
+      <div class="stat-box cyan"><div class="stat-val">{{ analytics.unique_today }}</div><div class="stat-label">Unique Today</div></div>
+      <div class="stat-box green"><div class="stat-val">{{ analytics.total_users }}</div><div class="stat-label">Users</div></div>
+      <div class="stat-box purple"><div class="stat-val">{{ analytics.total_posts }}</div><div class="stat-label">Posts</div></div>
+      <div class="stat-box red"><div class="stat-val">{{ cards|length }}</div><div class="stat-label">Cards</div></div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Daily Page Views — Last 7 Days</div>
+      <div class="bars" id="analyticsBar">
+        {% set max_count = analytics.daily | map(attribute='count') | max %}
+        {% for day in analytics.daily %}
+        <div class="bar-col">
+          <div class="bar-count">{{ day.count }}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="height:{% if max_count > 0 %}{{ (day.count / max_count * 100)|int }}%{% else %}3px{% endif %}"></div>
+          </div>
+          <div class="bar-label">{{ day.date }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if analytics.top_cards %}
+    <div class="chart-wrap">
+      <div class="chart-title">Top Cards by Views</div>
+      {% for i, card in analytics.top_cards | enumerate %}
+      <div class="top-card-row">
+        <div class="top-card-rank">#{{ i+1 }}</div>
+        <div class="top-card-icon">{{ card.icon }}</div>
+        <div class="top-card-name">{{ card.title }}</div>
+        <div class="top-card-views">{{ card.views }} views</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ══ TAB: GUESTS ══ -->
+  {% if role == 'owner' %}
+  <div class="tab-panel" id="tab-guests">
+    <div class="sec-header">
+      <div><div class="sec-title">Guest Admins</div><div class="sec-sub">Limited access accounts</div></div>
+    </div>
+
+    <div class="guest-notice">
+      ℹ️ Guest admins can customize hero text and colors — but cannot add, edit or delete cards, or manage users.
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-card-title">➕ Add Guest Admin</div>
+      <form method="POST" action="{{ url_for('admin_add_guest') }}">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="guest_username" placeholder="guest_username" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="guest_password" placeholder="Min 8 characters" required />
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <button type="submit" class="btn btn-primary">Create Guest</button>
+        </div>
+      </form>
+    </div>
+
+    {% if guests %}
+      {% for guest in guests %}
+      <div class="guest-row">
+        <div class="post-avatar">{{ guest.username[0].upper() }}</div>
+        <div class="guest-username">{{ guest.username }}</div>
+        <span class="guest-tag">Guest</span>
+        <form method="POST" action="{{ url_for('admin_delete_guest', guest_id=guest.id) }}" onsubmit="return confirm('Remove this guest?')">
+          <button type="submit" class="btn btn-del" style="font-size:11px;padding:6px 14px">Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No guest admins yet.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ══ TAB: SETTINGS ══ -->
   <div class="tab-panel" id="tab-settings">
     <div class="sec-header">
       <div><div class="sec-title">Site Settings</div><div class="sec-sub">Global changes apply to all visitors</div></div>
     </div>
 
-    <form method="POST" action="/admin/settings" id="settingsForm" enctype="multipart/form-data">
+    {% if role == 'guest' %}
+    <div class="guest-notice">
+      ℹ️ Your changes are personal previews — only you will see them when logged in.
+      <form method="POST" action="{{ url_for('admin_reset_guest_settings') }}" style="display:inline;margin-left:12px">
+        <button type="submit" class="btn btn-warn" style="font-size:11px;padding:5px 14px">Reset to Default</button>
+      </form>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('admin_save_settings') }}" enctype="multipart/form-data" id="settingsForm">
 
       <div class="panel-card">
         <div class="panel-card-title">🏠 Hero Section</div>
         <div class="form-grid">
-          <div class="form-group"><label>Badge Text</label><input type="text" name="hero_badge" value="Cyber Awareness &amp; Tech" /></div>
-          <div class="form-group"><label>Title</label><input type="text" name="hero_title" value="S.S" /></div>
-          <div class="form-group span2"><label>Subtitle</label><input type="text" name="hero_subtitle" value="Next-Gen Cyber Hub" /></div>
+          <div class="form-group">
+            <label>Badge Text</label>
+            <input type="text" name="hero_badge" value="{{ settings.hero_badge }}" />
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="hero_title" value="{{ settings.hero_title }}" />
+          </div>
+          <div class="form-group span2">
+            <label>Subtitle</label>
+            <input type="text" name="hero_subtitle" value="{{ settings.hero_subtitle }}" />
+          </div>
         </div>
       </div>
 
-      <!-- ═══ IMAGE UPLOAD WITH CROP ═══ -->
+      {% if role == 'owner' %}
       <div class="panel-card">
         <div class="panel-card-title">🖼️ Site Images</div>
         <div class="form-grid">
@@ -548,16 +606,19 @@
           <!-- Hero Banner -->
           <div class="form-group span2">
             <label>Hero Banner / OG Image</label>
+            {% if settings.hero_image %}
+            <div style="margin-bottom:10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">
+              Current: <img src="/static/{{ settings.hero_image }}" style="height:40px;border-radius:4px;vertical-align:middle;margin-left:8px" />
+            </div>
+            {% endif %}
             <div class="img-upload-zone" id="zone-hero" onclick="triggerUpload('hero')">
               <input type="file" id="file-hero" accept="image/*" onchange="handleFileSelect(event,'hero')" />
               <div class="upload-icon">🏔️</div>
               <div class="upload-label">Drop image here or click to browse</div>
               <div class="upload-sub">Recommended: 1200 × 630px · OG Banner</div>
               <div class="upload-formats">
-                <span class="fmt-chip">JPG</span>
-                <span class="fmt-chip">PNG</span>
-                <span class="fmt-chip">WEBP</span>
-                <span class="fmt-chip">GIF</span>
+                <span class="fmt-chip">JPG</span><span class="fmt-chip">PNG</span>
+                <span class="fmt-chip">WEBP</span><span class="fmt-chip">GIF</span>
               </div>
             </div>
             <div class="thumb-preview-wrap" id="preview-hero">
@@ -574,22 +635,24 @@
                 </div>
               </div>
             </div>
-            <!-- hidden field for cropped data -->
             <input type="hidden" name="hero_image_data" id="hidden-hero" />
           </div>
 
           <!-- Logo -->
           <div class="form-group">
             <label>Site Logo</label>
+            {% if settings.logo_image %}
+            <div style="margin-bottom:10px">
+              <img src="/static/{{ settings.logo_image }}" style="height:40px;border-radius:50%;vertical-align:middle" />
+            </div>
+            {% endif %}
             <div class="img-upload-zone" id="zone-logo" onclick="triggerUpload('logo')">
               <input type="file" id="file-logo" accept="image/*" onchange="handleFileSelect(event,'logo')" />
               <div class="upload-icon">🔷</div>
               <div class="upload-label">Upload Logo</div>
               <div class="upload-sub">Square recommended · 512 × 512</div>
               <div class="upload-formats">
-                <span class="fmt-chip">PNG</span>
-                <span class="fmt-chip">SVG</span>
-                <span class="fmt-chip">WEBP</span>
+                <span class="fmt-chip">PNG</span><span class="fmt-chip">SVG</span><span class="fmt-chip">WEBP</span>
               </div>
             </div>
             <div class="thumb-preview-wrap" id="preview-logo">
@@ -612,15 +675,18 @@
           <!-- Favicon -->
           <div class="form-group">
             <label>Favicon / App Icon</label>
+            {% if settings.fav_image %}
+            <div style="margin-bottom:10px">
+              <img src="/static/{{ settings.fav_image }}" style="height:32px;border-radius:4px;vertical-align:middle" />
+            </div>
+            {% endif %}
             <div class="img-upload-zone" id="zone-fav" onclick="triggerUpload('fav')">
               <input type="file" id="file-fav" accept="image/*" onchange="handleFileSelect(event,'fav')" />
               <div class="upload-icon">⭐</div>
               <div class="upload-label">Upload Favicon</div>
               <div class="upload-sub">Square · 32 × 32 or 64 × 64</div>
               <div class="upload-formats">
-                <span class="fmt-chip">ICO</span>
-                <span class="fmt-chip">PNG</span>
-                <span class="fmt-chip">SVG</span>
+                <span class="fmt-chip">ICO</span><span class="fmt-chip">PNG</span><span class="fmt-chip">SVG</span>
               </div>
             </div>
             <div class="thumb-preview-wrap" id="preview-fav">
@@ -642,12 +708,25 @@
 
         </div>
       </div>
+      {% endif %}
 
       <div class="panel-card">
         <div class="panel-card-title">🎨 Theme Colors</div>
         <div class="form-grid">
-          <div class="form-group"><label>Accent Color</label><div class="color-row"><input type="color" name="accent_color" value="#00b4ff" id="accentPick" /><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="accentHex">#00b4ff</span></div></div>
-          <div class="form-group"><label>Background Color</label><div class="color-row"><input type="color" name="bg_color" value="#020408" id="bgPick" /><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="bgHex">#020408</span></div></div>
+          <div class="form-group">
+            <label>Accent Color</label>
+            <div class="color-row">
+              <input type="color" name="accent_color" value="{{ settings.accent_color }}" id="accentPick" />
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="accentHex">{{ settings.accent_color }}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Background Color</label>
+            <div class="color-row">
+              <input type="color" name="bg_color" value="{{ settings.bg_color }}" id="bgPick" />
+              <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="bgHex">{{ settings.bg_color }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -659,195 +738,136 @@
 
   <!-- ══ TAB: ACCOUNT ══ -->
   <div class="tab-panel" id="tab-account">
-    <div class="sec-header"><div><div class="sec-title">Change Password</div><div class="sec-sub">Logged in as <span style="color:var(--neon-cyan)">admin</span></div></div></div>
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Change Password</div>
+        <div class="sec-sub">Logged in as <span style="color:var(--neon-cyan)">{{ username }}</span></div>
+      </div>
+    </div>
     <div class="panel-card" style="max-width:480px">
       <div class="panel-card-title">🔑 Update Password</div>
-      <div class="form-grid single">
-        <div class="form-group"><label>Current Password</label><input type="password" placeholder="Enter current password" /></div>
-        <div class="form-group"><label>New Password</label><input type="password" id="newPw" placeholder="Min 8 characters" oninput="checkStrength(this.value)" /><div class="pw-strength" id="pwStrength"></div></div>
-        <div class="form-group"><label>Confirm New Password</label><input type="password" placeholder="Repeat new password" /></div>
-      </div>
-      <div style="margin-top:16px"><button class="btn btn-primary">🔒 Update Password</button></div>
+      <form method="POST" action="{{ url_for('admin_change_password') }}">
+        <div class="form-grid single">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" name="current_password" placeholder="Enter current password" required />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" name="new_password" id="newPw" placeholder="Min 8 characters" oninput="checkStrength(this.value)" required />
+            <div class="pw-strength" id="pwStrength"></div>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" name="confirm_password" placeholder="Repeat new password" required />
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <button type="submit" class="btn btn-primary">🔒 Update Password</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Other tabs (posts/users/analytics/guests) remain same structure, omitted for brevity -->
-  <div class="tab-panel" id="tab-posts"><div class="empty-state">Posts section — same as original</div></div>
-  <div class="tab-panel" id="tab-users"><div class="empty-state">Users section — same as original</div></div>
-  <div class="tab-panel" id="tab-analytics"><div class="empty-state">Analytics section — same as original</div></div>
-  <div class="tab-panel" id="tab-guests"><div class="empty-state">Guests section — same as original</div></div>
-
 </div><!-- /main -->
 
-<!-- Cropper.js library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-
 <script>
 'use strict';
 
-/* ═══════════════════════════════════════════════
-   CROP SYSTEM STATE
-═══════════════════════════════════════════════ */
+/* ═══ CROP SYSTEM ═══ */
 let cropperInstance = null;
-let currentSlot = null;         // which slot: 'hero' | 'logo' | 'fav'
-let rawFileDataURL = null;      // original file data URL
+let currentSlot = null;
+let rawFileDataURL = null;
 let flipXState = 1, flipYState = 1;
 
-// Default aspect ratios per slot
 const slotDefaults = {
-  hero: { ratio: 16/9,  label: '16:9',  size: '800' },
-  logo: { ratio: 1/1,   label: '1:1',   size: '400' },
-  fav:  { ratio: 1/1,   label: '1:1',   size: '200' }
+  hero: { ratio: 16/9, label: '16:9', size: '800' },
+  logo: { ratio: 1/1,  label: '1:1',  size: '400' },
+  fav:  { ratio: 1/1,  label: '1:1',  size: '200' }
 };
 
-/* ─── Trigger file input ─── */
 function triggerUpload(slot) {
   document.getElementById('file-' + slot).click();
 }
 
-/* ─── File selected → open crop modal ─── */
 function handleFileSelect(event, slot) {
   const file = event.target.files[0];
   if (!file) return;
-
-  // Validate type
-  if (!file.type.startsWith('image/')) {
-    showFlash('❌ Only image files are supported.', 'error');
-    return;
-  }
-  // Validate size (10MB max)
-  if (file.size > 10 * 1024 * 1024) {
-    showFlash('❌ Image too large. Max 10MB.', 'error');
-    return;
-  }
-
+  if (!file.type.startsWith('image/')) { showFlash('❌ Only image files supported.', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { showFlash('❌ Image too large. Max 10MB.', 'error'); return; }
   currentSlot = slot;
   const reader = new FileReader();
-  reader.onload = (e) => {
-    rawFileDataURL = e.target.result;
-    openCropModal(file.name, slot);
-  };
+  reader.onload = (e) => { rawFileDataURL = e.target.result; openCropModal(file.name, slot); };
   reader.readAsDataURL(file);
 }
 
-/* ─── Open crop modal ─── */
 function openCropModal(fileName, slot) {
-  // Set filename display
-  document.getElementById('cropFileName').textContent = fileName.length > 28
-    ? fileName.substring(0, 28) + '…' : fileName;
-
-  // Set image
+  document.getElementById('cropFileName').textContent = fileName.length > 28 ? fileName.substring(0,28)+'…' : fileName;
   const img = document.getElementById('cropImage');
   img.src = rawFileDataURL;
-
-  // Show modal
   document.getElementById('cropOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // Reset flip state
   flipXState = 1; flipYState = 1;
-
-  // Init cropper after image loads
   img.onload = () => {
     destroyCropper();
-
     const defaults = slotDefaults[slot] || { ratio: NaN, size: '400' };
-
-    // Set output size dropdown
-    const sizeSelect = document.getElementById('outputSizeSelect');
-    sizeSelect.value = defaults.size;
-
+    document.getElementById('outputSizeSelect').value = defaults.size;
     cropperInstance = new Cropper(img, {
       aspectRatio: isNaN(defaults.ratio) ? NaN : defaults.ratio,
-      viewMode: 1,
-      dragMode: 'move',
-      autoCropArea: 0.85,
-      restore: false,
-      guides: true,
-      center: true,
-      highlight: false,
-      cropBoxMovable: true,
-      cropBoxResizable: true,
-      toggleDragModeOnDblclick: false,
+      viewMode: 1, dragMode: 'move', autoCropArea: 0.85,
+      restore: false, guides: true, center: true, highlight: false,
+      cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false,
       ready() {
         updateDimLabel();
-        // Set active ratio btn
         const label = isNaN(defaults.ratio) ? 'Free' : defaults.label;
-        document.querySelectorAll('.ratio-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.label === label);
-        });
+        document.querySelectorAll('.ratio-btn').forEach(b => b.classList.toggle('active', b.dataset.label === label));
         document.getElementById('zoomRange').value = 1;
         document.getElementById('zoomVal').textContent = '1.0×';
       },
       crop() { updateDimLabel(); }
     });
   };
-  // If already loaded
   if (img.complete && img.naturalWidth) img.onload();
 }
 
-/* ─── Close modal ─── */
 function closeCropModal() {
   document.getElementById('cropOverlay').classList.remove('open');
   document.body.style.overflow = '';
   destroyCropper();
-  // Reset file input so same file can be re-selected
-  if (currentSlot) {
-    const fi = document.getElementById('file-' + currentSlot);
-    if (fi) fi.value = '';
-  }
+  if (currentSlot) { const fi = document.getElementById('file-' + currentSlot); if (fi) fi.value = ''; }
 }
 
-/* ─── Destroy cropper ─── */
 function destroyCropper() {
-  if (cropperInstance) {
-    cropperInstance.destroy();
-    cropperInstance = null;
-  }
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
 }
 
-/* ─── Aspect ratio buttons ─── */
 function setRatio(w, h, btn) {
   document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (cropperInstance) {
-    cropperInstance.setAspectRatio(isNaN(w) ? NaN : w / h);
-  }
+  if (cropperInstance) cropperInstance.setAspectRatio(isNaN(w) ? NaN : w/h);
 }
 
-/* ─── Rotate ─── */
-function rotateCrop(deg) {
-  if (cropperInstance) cropperInstance.rotate(deg);
-}
+function rotateCrop(deg) { if (cropperInstance) cropperInstance.rotate(deg); }
 
-/* ─── Flip ─── */
 function flipCrop(axis) {
   if (!cropperInstance) return;
-  if (axis === 'x') {
-    flipXState *= -1;
-    cropperInstance.scaleX(flipXState);
-  } else {
-    flipYState *= -1;
-    cropperInstance.scaleY(flipYState);
-  }
+  if (axis === 'x') { flipXState *= -1; cropperInstance.scaleX(flipXState); }
+  else { flipYState *= -1; cropperInstance.scaleY(flipYState); }
 }
 
-/* ─── Reset ─── */
 function resetCrop() {
   if (!cropperInstance) return;
-  cropperInstance.reset();
-  flipXState = 1; flipYState = 1;
+  cropperInstance.reset(); flipXState = 1; flipYState = 1;
   document.getElementById('zoomRange').value = 1;
   document.getElementById('zoomVal').textContent = '1.0×';
 }
 
-/* ─── Zoom ─── */
 function applyCropZoom(val) {
   if (cropperInstance) cropperInstance.zoomTo(parseFloat(val));
   document.getElementById('zoomVal').textContent = parseFloat(val).toFixed(1) + '×';
 }
 
-/* ─── Output size label ─── */
 function updateOutputSizeLabel() { updateDimLabel(); }
 
 function updateDimLabel() {
@@ -857,86 +877,39 @@ function updateDimLabel() {
   const scale = canvasData.naturalWidth / canvasData.width;
   const w = Math.round(data.width * scale);
   const h = Math.round(data.height * scale);
-
   const sizeVal = document.getElementById('outputSizeSelect').value;
   let outW = w, outH = h;
-  if (sizeVal !== 'original') {
-    outW = parseInt(sizeVal);
-    outH = Math.round(outW * (h / w));
-  }
+  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (h/w)); }
   document.getElementById('cropDimLabel').textContent = `${outW} × ${outH} px`;
 }
 
-/* ─── CONFIRM CROP — the main action ─── */
 function confirmCrop() {
   if (!cropperInstance || !currentSlot) return;
-
   const sizeVal = document.getElementById('outputSizeSelect').value;
   const quality = parseFloat(document.getElementById('qualityRange').value);
-
-  // Get crop data to calculate output dimensions
-  const imgData = cropperInstance.getImageData();
-  const cropData = cropperInstance.getData(true); // in natural image px
-
-  let outW = cropData.width;
-  let outH = cropData.height;
-  if (sizeVal !== 'original') {
-    outW = parseInt(sizeVal);
-    outH = Math.round(outW * (cropData.height / cropData.width));
-  }
-
-  // Render to canvas
-  const canvas = cropperInstance.getCroppedCanvas({
-    width: outW,
-    height: outH,
-    imageSmoothingEnabled: true,
-    imageSmoothingQuality: 'high',
-  });
-
-  if (!canvas) {
-    showFlash('❌ Crop failed. Try again.', 'error');
-    return;
-  }
-
-  // Convert to base64
-  const mimeType = 'image/jpeg';
-  const dataURL = canvas.toDataURL(mimeType, quality);
-
-  // Store in hidden field
+  const cropData = cropperInstance.getData(true);
+  let outW = cropData.width, outH = cropData.height;
+  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (cropData.height/cropData.width)); }
+  const canvas = cropperInstance.getCroppedCanvas({ width: outW, height: outH, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+  if (!canvas) { showFlash('❌ Crop failed. Try again.', 'error'); return; }
+  const dataURL = canvas.toDataURL('image/jpeg', quality);
   document.getElementById('hidden-' + currentSlot).value = dataURL;
-
-  // Update preview
-  const thumb = document.getElementById('thumb-' + currentSlot);
-  thumb.src = dataURL;
-
-  const nameEl = document.getElementById('thumb-' + currentSlot + '-name');
-  const sizeEl = document.getElementById('thumb-' + currentSlot + '-size');
-
-  // Get original filename
+  document.getElementById('thumb-' + currentSlot).src = dataURL;
   const fi = document.getElementById('file-' + currentSlot);
-  nameEl.textContent = fi.files[0]?.name || 'image.jpg';
-
-  // Estimate size
+  document.getElementById('thumb-' + currentSlot + '-name').textContent = fi.files[0]?.name || 'image.jpg';
   const bytes = Math.round((dataURL.length * 3) / 4);
-  sizeEl.textContent = `${outW} × ${outH}px · ${formatBytes(bytes)} · JPEG ${Math.round(quality*100)}%`;
-
-  // Show preview
+  document.getElementById('thumb-' + currentSlot + '-size').textContent = `${outW} × ${outH}px · ${formatBytes(bytes)} · JPEG ${Math.round(quality*100)}%`;
   document.getElementById('preview-' + currentSlot).classList.add('show');
-
-  // Close modal
   closeCropModal();
-  showFlash(`✓ Image cropped & ready — ${outW}×${outH}px`, 'success');
+  showFlash(`✓ Image cropped — ${outW}×${outH}px`, 'success');
 }
 
-/* ─── Re-crop (reopen modal with original) ─── */
 function recrop(slot) {
   currentSlot = slot;
   const fi = document.getElementById('file-' + slot);
-  const fileName = fi.files[0]?.name || 'image';
-  openCropModal(fileName, slot);
+  openCropModal(fi.files[0]?.name || 'image', slot);
 }
 
-/* ─── Clear image ─── */
 function clearImage(slot) {
   document.getElementById('hidden-' + slot).value = '';
   document.getElementById('preview-' + slot).classList.remove('show');
@@ -944,30 +917,49 @@ function clearImage(slot) {
   document.getElementById('thumb-' + slot).src = '';
 }
 
-/* ─── Drag & drop ─── */
+/* Drag & Drop */
 document.querySelectorAll('.img-upload-zone').forEach(zone => {
-  zone.addEventListener('dragover', e => {
-    e.preventDefault();
-    zone.classList.add('dragover');
-  });
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
   zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
+    e.preventDefault(); zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0]; if (!file) return;
     const slotId = zone.id.replace('zone-', '');
     currentSlot = slotId;
     const reader = new FileReader();
-    reader.onload = ev => {
-      rawFileDataURL = ev.target.result;
-      openCropModal(file.name, slotId);
-    };
+    reader.onload = ev => { rawFileDataURL = ev.target.result; openCropModal(file.name, slotId); };
     reader.readAsDataURL(file);
   });
 });
 
-/* ─── Utilities ─── */
+/* ═══ GENERAL DASHBOARD JS ═══ */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('tab-' + name);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+const accentPick = document.getElementById('accentPick');
+const bgPick = document.getElementById('bgPick');
+if (accentPick) accentPick.addEventListener('input', e => { document.getElementById('accentHex').textContent = e.target.value; });
+if (bgPick) bgPick.addEventListener('input', e => { document.getElementById('bgHex').textContent = e.target.value; });
+
+function checkStrength(pw) {
+  const bar = document.getElementById('pwStrength'); if (!bar) return;
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const colors = ['#ff4466','#ff8844','#ffcc00','#00ff9d','#00f5ff'];
+  const widths  = ['20%','40%','60%','80%','100%'];
+  bar.style.background = colors[score-1] || 'var(--glass-border)';
+  bar.style.width = widths[score-1] || '0%';
+}
+
 function formatBytes(bytes) {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
@@ -976,53 +968,12 @@ function formatBytes(bytes) {
 
 function showFlash(msg, type) {
   const f = document.createElement('div');
-  f.className = 'flash ' + type;
-  f.textContent = msg;
-  f.style.position = 'fixed';
-  f.style.top = '20px';
-  f.style.right = '24px';
-  f.style.zIndex = '99999';
-  f.style.maxWidth = '340px';
+  f.className = 'flash ' + type; f.textContent = msg;
+  Object.assign(f.style, { position:'fixed', top:'20px', right:'24px', zIndex:'99999', maxWidth:'340px' });
   document.body.appendChild(f);
-  setTimeout(() => {
-    f.style.transition = 'opacity .4s';
-    f.style.opacity = '0';
-    setTimeout(() => f.remove(), 400);
-  }, 3000);
+  setTimeout(() => { f.style.transition='opacity .4s'; f.style.opacity='0'; setTimeout(()=>f.remove(),400); }, 3000);
 }
 
-/* ═══════════════════════════════════════════════
-   GENERAL DASHBOARD JS
-═══════════════════════════════════════════════ */
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById('tab-' + name);
-  if(target) target.classList.add('active');
-  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-}
-
-const accentPick = document.getElementById('accentPick');
-const bgPick = document.getElementById('bgPick');
-if(accentPick) accentPick.addEventListener('input', e => { document.getElementById('accentHex').textContent = e.target.value; });
-if(bgPick) bgPick.addEventListener('input', e => { document.getElementById('bgHex').textContent = e.target.value; });
-
-function checkStrength(pw) {
-  const bar = document.getElementById('pwStrength');
-  if(!bar) return;
-  let score = 0;
-  if(pw.length >= 8) score++;
-  if(pw.length >= 12) score++;
-  if(/[A-Z]/.test(pw)) score++;
-  if(/[0-9]/.test(pw)) score++;
-  if(/[^A-Za-z0-9]/.test(pw)) score++;
-  const colors = ['#ff4466','#ff8844','#ffcc00','#00ff9d','#00f5ff'];
-  const widths = ['20%','40%','60%','80%','100%'];
-  bar.style.background = colors[score-1] || 'var(--glass-border)';
-  bar.style.width = widths[score-1] || '0%';
-}
-
-// Close crop modal on overlay click
 document.getElementById('cropOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeCropModal();
 });
