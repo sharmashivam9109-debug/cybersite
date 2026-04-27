@@ -7,7 +7,10 @@ import os, uuid, datetime, json, mimetypes
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'cyber-hub-ultra-secret-2025-change-me')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cybersite.db'
+_db_url = os.environ.get('DATABASE_URL', 'sqlite:///cybersite.db')
+if _db_url.startswith('postgres://'):
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['FILES_FOLDER'] = os.path.join('static', 'files')
@@ -34,7 +37,7 @@ class Admin(db.Model):
 class PublicUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)
     password_hash = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     is_banned = db.Column(db.Boolean, default=False)
@@ -242,22 +245,16 @@ def user_register():
     if 'user_logged_in' in session: return redirect(url_for('index'))
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
-        email    = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
-        confirm  = request.form.get('confirm_password', '')
-        if not username or not email or not password:
-            flash('All fields are required.', 'error'); return redirect(url_for('user_register'))
+        if not username or not password:
+            flash('Username and password are required.', 'error'); return redirect(url_for('user_register'))
         if len(username) < 3:
             flash('Username must be at least 3 characters.', 'error'); return redirect(url_for('user_register'))
         if len(password) < 6:
             flash('Password must be at least 6 characters.', 'error'); return redirect(url_for('user_register'))
-        if password != confirm:
-            flash('Passwords do not match.', 'error'); return redirect(url_for('user_register'))
         if PublicUser.query.filter_by(username=username).first():
             flash('Username already taken.', 'error'); return redirect(url_for('user_register'))
-        if PublicUser.query.filter_by(email=email).first():
-            flash('Email already registered.', 'error'); return redirect(url_for('user_register'))
-        user = PublicUser(username=username, email=email)
+        user = PublicUser(username=username, email=None)
         user.set_password(password)
         db.session.add(user); db.session.commit()
         session['user_logged_in'] = True; session['user_id'] = user.id; session['user_username'] = user.username
