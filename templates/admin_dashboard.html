@@ -66,7 +66,6 @@
       line-height: 1.5;
     }
 
-    /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
@@ -79,7 +78,6 @@
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
       z-index: 100;
-      padding: 0;
     }
 
     .sidebar-header {
@@ -96,247 +94,83 @@
       box-shadow: 0 0 16px rgba(124,92,255,0.35);
     }
 
-    .sidebar-logo-text {
-      font-size: 13px; font-weight: 600;
-      color: var(--text-primary); letter-spacing: -0.2px;
-    }
-    .sidebar-logo-sub {
-      font-size: 11px; color: var(--text-secondary);
-      font-family: var(--font-mono); letter-spacing: 0.3px;
-    }
+    .sidebar-logo-text { font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+    .sidebar-logo-sub { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); letter-spacing: 0.3px; }
 
-    /* Profile area in sidebar */
     .sidebar-profile {
       padding: 14px 16px;
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 10px;
     }
-    .sidebar-avatar-wrap {
-      position: relative; flex-shrink: 0;
-    }
-    .sidebar-avatar {
-      width: 36px; height: 36px; border-radius: var(--radius-full);
-      object-fit: cover;
-      border: 2px solid var(--border-strong);
-      background: var(--bg-elevated);
-      display: block;
-    }
-    .sidebar-avatar-fallback {
-      width: 36px; height: 36px; border-radius: var(--radius-full);
-      background: var(--accent-light);
-      border: 2px solid var(--accent);
-      color: var(--accent); font-weight: 700; font-size: 14px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .online-dot {
-      position: absolute; bottom: 1px; right: 1px;
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--green);
-      border: 2px solid var(--bg-surface);
-    }
+    .sidebar-avatar-wrap { position: relative; flex-shrink: 0; }
+    .sidebar-avatar { width: 36px; height: 36px; border-radius: var(--radius-full); object-fit: cover; border: 2px solid var(--border-strong); background: var(--bg-elevated); display: block; }
+    .sidebar-avatar-fallback { width: 36px; height: 36px; border-radius: var(--radius-full); background: var(--accent-light); border: 2px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .online-dot { position: absolute; bottom: 1px; right: 1px; width: 9px; height: 9px; border-radius: 50%; background: var(--green); border: 2px solid var(--bg-surface); }
     .sidebar-user-info { flex: 1; min-width: 0; }
-    .sidebar-username {
-      font-size: 13px; font-weight: 600;
-      color: var(--text-primary);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .sidebar-role {
-      font-size: 11px; font-family: var(--font-mono);
-      color: var(--text-secondary);
-      display: flex; align-items: center; gap: 4px; margin-top: 1px;
-    }
-    .role-dot {
-      width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
-    }
+    .sidebar-username { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-role { font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); display: flex; align-items: center; gap: 4px; margin-top: 1px; }
+    .role-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
     .role-dot.owner { background: var(--accent); }
     .role-dot.guest { background: var(--blue); }
 
-    .sidebar-nav {
-      flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 1px;
-      overflow-y: auto;
-    }
-
-    .nav-group-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.8px;
-      text-transform: uppercase; color: var(--text-tertiary);
-      padding: 8px 6px 4px; font-family: var(--font-mono);
-    }
-
-    .nav-item {
-      display: flex; align-items: center; gap: 9px;
-      padding: 8px 10px; border-radius: var(--radius-md);
-      font-size: 13px; font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer; border: none; background: none;
-      width: 100%; text-align: left; text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-      position: relative;
-    }
+    .sidebar-nav { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
+    .nav-group-label { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-tertiary); padding: 8px 6px 4px; font-family: var(--font-mono); }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; border: none; background: none; width: 100%; text-align: left; text-decoration: none; transition: background 0.15s, color 0.15s; position: relative; }
     .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
-    .nav-item.active {
-      background: var(--accent-light);
-      color: var(--accent);
-    }
+    .nav-item.active { background: var(--accent-light); color: var(--accent); }
     .nav-item.active .nav-icon { color: var(--accent); }
     .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
     .nav-item.danger { color: rgba(248,81,73,0.7); }
     .nav-item.danger:hover { background: var(--red-bg); color: var(--red); }
-    .nav-spacer { flex: 1; }
 
-    .sidebar-footer {
-      padding: 10px 10px 14px;
-      border-top: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 1px;
-    }
+    .sidebar-footer { padding: 10px 10px 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 1px; }
 
     /* ══════════════════════ MAIN ══════════════════════ */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1; padding: 32px 36px;
-      min-height: 100vh; max-width: 1200px;
-    }
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 32px 36px; min-height: 100vh; max-width: 1200px; }
 
-    /* ── FLASH ── */
-    .flash {
-      padding: 12px 16px; border-radius: var(--radius-md);
-      margin-bottom: 20px; font-size: 13px;
-      display: flex; align-items: center; gap: 8px;
-      border: 1px solid;
-    }
-    .flash.success {
-      background: var(--green-bg); border-color: rgba(63,185,80,0.3);
-      color: var(--green);
-    }
-    .flash.error {
-      background: var(--red-bg); border-color: rgba(248,81,73,0.3);
-      color: var(--red);
-    }
+    .flash { padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; border: 1px solid; }
+    .flash.success { background: var(--green-bg); border-color: rgba(63,185,80,0.3); color: var(--green); }
+    .flash.error { background: var(--red-bg); border-color: rgba(248,81,73,0.3); color: var(--red); }
 
-    /* ── PAGE HEADER ── */
-    .page-header {
-      display: flex; align-items: flex-end;
-      justify-content: space-between; margin-bottom: 24px;
-    }
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
     .page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
-    .page-sub {
-      font-size: 12px; color: var(--text-secondary);
-      font-family: var(--font-mono); margin-top: 3px;
-    }
+    .page-sub { font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 3px; }
 
-    /* ── BUTTONS ── */
-    .btn {
-      padding: 7px 14px; border-radius: var(--radius-md);
-      font-family: var(--font-sans); font-size: 13px; font-weight: 500;
-      cursor: pointer; border: none; text-decoration: none;
-      transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
-      line-height: 1;
-    }
-    .btn-primary {
-      background: var(--accent); color: #fff;
-      box-shadow: 0 1px 8px rgba(124,92,255,0.35);
-    }
+    .btn { padding: 7px 14px; border-radius: var(--radius-md); font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; border: none; text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; line-height: 1; }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 1px 8px rgba(124,92,255,0.35); }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: var(--bg-elevated); color: var(--text-primary);
-      border: 1px solid var(--border-strong);
-    }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-strong); }
     .btn-secondary:hover { background: var(--bg-hover); }
-
-    .btn-edit {
-      background: var(--blue-bg); color: var(--blue);
-      border: 1px solid rgba(88,166,255,0.2);
-    }
+    .btn-edit { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(88,166,255,0.2); }
     .btn-edit:hover { background: rgba(88,166,255,0.18); }
-
-    .btn-del {
-      background: var(--red-bg); color: var(--red);
-      border: 1px solid rgba(248,81,73,0.2);
-    }
+    .btn-del { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,81,73,0.2); }
     .btn-del:hover { background: rgba(248,81,73,0.18); }
-
-    .btn-green {
-      background: var(--green-bg); color: var(--green);
-      border: 1px solid rgba(63,185,80,0.2);
-    }
+    .btn-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(63,185,80,0.2); }
     .btn-green:hover { background: rgba(63,185,80,0.18); }
-
-    .btn-warn {
-      background: var(--yellow-bg); color: var(--yellow);
-      border: 1px solid rgba(210,153,34,0.2);
-    }
+    .btn-warn { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(210,153,34,0.2); }
     .btn-warn:hover { background: rgba(210,153,34,0.18); }
-
-    .btn-ghost {
-      background: transparent; color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
     .btn-ghost:hover { color: var(--text-primary); border-color: var(--border-strong); }
-
     .actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
     .actions form { display: inline; }
 
-    /* ── TABLE ── */
-    .table-wrap {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
+    .table-wrap { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; }
-    th {
-      padding: 11px 16px;
-      font-family: var(--font-mono); font-size: 10px;
-      font-weight: 500; letter-spacing: 0.8px;
-      color: var(--text-tertiary); text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
-      text-align: left; background: var(--bg-base);
-    }
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      vertical-align: middle; font-size: 13px;
-    }
+    th { padding: 11px 16px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.8px; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border); text-align: left; background: var(--bg-base); }
+    td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; font-size: 13px; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--bg-hover); }
     .card-icon { font-size: 20px; }
     .card-name { font-weight: 600; font-size: 13px; color: var(--text-primary); }
-    .card-cat {
-      font-family: var(--font-mono); font-size: 10px;
-      color: var(--accent); margin-top: 2px; letter-spacing: 0.3px;
-    }
+    .card-cat { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-top: 2px; letter-spacing: 0.3px; }
     .card-desc { color: var(--text-secondary); font-size: 12px; max-width: 280px; line-height: 1.5; }
 
-    /* ── PANEL CARD ── */
-    .panel-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 22px; margin-bottom: 20px;
-    }
-    .panel-card-title {
-      font-size: 13px; font-weight: 600;
-      color: var(--text-primary); margin-bottom: 18px;
-      display: flex; align-items: center; gap: 8px;
-      padding-bottom: 14px; border-bottom: 1px solid var(--border);
-    }
-    .panel-card-title-icon {
-      width: 26px; height: 26px; border-radius: var(--radius-sm);
-      background: var(--accent-light); display: flex; align-items: center;
-      justify-content: center; font-size: 13px;
-    }
+    .panel-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 20px; }
+    .panel-card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .panel-card-title-icon { width: 26px; height: 26px; border-radius: var(--radius-sm); background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 13px; }
 
-    /* ── ANALYTICS STATS ── */
-    .stat-row {
-      display: grid; grid-template-columns: repeat(5,1fr); gap: 12px;
-      margin-bottom: 24px;
-    }
-    .stat-box {
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 18px 20px;
-      transition: border-color 0.2s;
-    }
+    .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-box { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; transition: border-color 0.2s; }
     .stat-box:hover { border-color: var(--border-strong); }
     .stat-val { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 6px; letter-spacing: -0.5px; }
     .stat-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase; }
@@ -346,148 +180,63 @@
     .stat-box.purple .stat-val { color: var(--accent); }
     .stat-box.red .stat-val { color: var(--red); }
 
-    .chart-wrap {
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 22px; margin-bottom: 20px;
-    }
-    .chart-title {
-      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
-      text-transform: uppercase; color: var(--text-secondary); margin-bottom: 20px;
-      font-family: var(--font-mono);
-    }
+    .chart-wrap { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 20px; }
+    .chart-title { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 20px; font-family: var(--font-mono); }
     .bars { display: flex; align-items: flex-end; gap: 10px; height: 110px; }
     .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; }
     .bar-track { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-    .bar-fill {
-      width: 100%; border-radius: 4px 4px 0 0;
-      background: linear-gradient(180deg, var(--accent) 0%, rgba(124,92,255,0.4) 100%);
-      transition: height 0.6s ease; min-height: 3px;
-    }
+    .bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--accent) 0%, rgba(124,92,255,0.4) 100%); transition: height 0.6s ease; min-height: 3px; }
     .bar-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-tertiary); }
     .bar-count { font-family: var(--font-mono); font-size: 9px; color: var(--text-secondary); }
 
-    .top-card-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 0; border-bottom: 1px solid var(--border);
-    }
+    .top-card-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .top-card-row:last-child { border-bottom: none; }
     .top-card-rank { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); width: 20px; }
     .top-card-icon { font-size: 16px; }
     .top-card-name { flex: 1; font-size: 13px; font-weight: 500; }
-    .top-card-views {
-      font-family: var(--font-mono); font-size: 11px;
-      background: var(--accent-dim); color: var(--accent);
-      padding: 2px 8px; border-radius: var(--radius-sm);
-    }
+    .top-card-views { font-family: var(--font-mono); font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 2px 8px; border-radius: var(--radius-sm); }
 
-    /* ── POSTS ── */
-    .post-row {
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 10px;
-      transition: border-color 0.2s;
-    }
+    .post-row { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 10px; transition: border-color 0.2s; }
     .post-row:hover { border-color: var(--border-strong); }
-    .post-row-header {
-      display: flex; align-items: flex-start;
-      justify-content: space-between; gap: 12px; margin-bottom: 12px;
-    }
+    .post-row-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .post-author-badge { display: flex; align-items: center; gap: 10px; }
     .post-author-name { font-weight: 600; font-size: 13px; }
     .post-date { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
     .post-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .post-body {
-      font-size: 13px; color: var(--text-secondary); line-height: 1.6;
-      margin-bottom: 12px; white-space: pre-wrap; word-break: break-word;
-      max-height: 100px; overflow: hidden;
-    }
-    .posts-empty-state {
-      text-align: center; padding: 56px; color: var(--text-secondary);
-      font-size: 13px; background: var(--bg-surface);
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
-    }
+    .post-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; word-break: break-word; max-height: 100px; overflow: hidden; }
+    .posts-empty-state { text-align: center; padding: 56px; color: var(--text-secondary); font-size: 13px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
 
-    /* ── AVATAR SYSTEM ── */
-    .avatar {
-      border-radius: var(--radius-full);
-      object-fit: cover; display: block; flex-shrink: 0;
-      border: 2px solid var(--border-strong);
-      background: var(--bg-elevated);
-    }
-    .avatar-fallback {
-      border-radius: var(--radius-full);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; flex-shrink: 0; border: 2px solid var(--border-strong);
-    }
+    .avatar { border-radius: var(--radius-full); object-fit: cover; display: block; flex-shrink: 0; border: 2px solid var(--border-strong); background: var(--bg-elevated); }
+    .avatar-fallback { border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; border: 2px solid var(--border-strong); }
     .avatar-sm { width: 30px; height: 30px; font-size: 12px; }
     .avatar-md { width: 38px; height: 38px; font-size: 15px; }
-
-    .avatar-wrap {
-      position: relative; flex-shrink: 0;
-    }
+    .avatar-wrap { position: relative; flex-shrink: 0; }
     .avatar-wrap:hover .avatar-overlay { opacity: 1; }
-    .avatar-overlay {
-      position: absolute; inset: 0; border-radius: var(--radius-full);
-      background: rgba(0,0,0,0.5); display: flex; align-items: center;
-      justify-content: center; opacity: 0; transition: opacity 0.2s;
-      cursor: pointer; font-size: 11px; color: #fff;
-    }
+    .avatar-overlay { position: absolute; inset: 0; border-radius: var(--radius-full); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; cursor: pointer; font-size: 11px; color: #fff; }
 
-    /* ── USERS TAB ── */
-    .user-row {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 18px; background: var(--bg-surface);
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
-      margin-bottom: 8px; transition: border-color 0.2s;
-    }
+    .user-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 8px; transition: border-color 0.2s; }
     .user-row:hover { border-color: var(--border-strong); }
     .user-info { flex: 1; }
     .user-name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
     .user-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-    .badge {
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px;
-      padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500;
-    }
+    .badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500; }
     .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,81,73,0.25); }
     .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(63,185,80,0.25); }
     .badge-purple { background: var(--purple-bg); color: var(--accent); border: 1px solid rgba(124,92,255,0.25); }
     .badge-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(88,166,255,0.25); }
 
-    /* ── GUEST TAB ── */
-    .guest-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px; background: var(--bg-elevated);
-      border-radius: var(--radius-md); margin-bottom: 8px;
-      border: 1px solid var(--border);
-    }
+    .guest-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-elevated); border-radius: var(--radius-md); margin-bottom: 8px; border: 1px solid var(--border); }
     .guest-username { flex: 1; font-weight: 500; font-size: 13px; }
-    .notice-box {
-      background: var(--blue-bg); border: 1px solid rgba(88,166,255,0.2);
-      border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px;
-      font-size: 12px; color: var(--blue); line-height: 1.6;
-      display: flex; gap: 8px; align-items: flex-start;
-    }
+    .notice-box { background: var(--blue-bg); border: 1px solid rgba(88,166,255,0.2); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: var(--blue); line-height: 1.6; display: flex; gap: 8px; align-items: flex-start; }
     .notice-box .notice-icon { flex-shrink: 0; font-size: 14px; }
 
-    /* ── FORMS ── */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-grid.single { grid-template-columns: 1fr; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.span2 { grid-column: span 2; }
-    label {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
-      color: var(--text-secondary); text-transform: uppercase;
-      font-family: var(--font-mono);
-    }
-    input[type=text], input[type=password], input[type=color], textarea, select {
-      background: var(--bg-base); border: 1px solid var(--border-strong);
-      border-radius: var(--radius-md); padding: 9px 13px; color: var(--text-primary);
-      font-family: var(--font-sans); font-size: 13px; outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s; width: 100%;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: var(--shadow-accent);
-    }
+    label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); }
+    input[type=text], input[type=password], input[type=color], textarea, select { background: var(--bg-base); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 9px 13px; color: var(--text-primary); font-family: var(--font-sans); font-size: 13px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: var(--shadow-accent); }
     input[type=color] { padding: 4px 8px; height: 38px; cursor: pointer; }
     textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
     .color-row { display: flex; align-items: center; gap: 10px; }
@@ -495,196 +244,135 @@
     .pw-strength { height: 3px; border-radius: 2px; margin-top: 4px; transition: all 0.3s; background: var(--border); }
     .empty-state { text-align: center; padding: 48px; color: var(--text-secondary); font-size: 13px; }
 
-    /* ── IMAGE UPLOAD SYSTEM ── */
+    /* ════════════════════════════════════════
+       IMAGE UPLOAD SYSTEM — FIXED
+    ════════════════════════════════════════ */
     .img-upload-zone {
-      position: relative; border: 1px dashed var(--border-strong);
-      border-radius: var(--radius-lg); padding: 24px 16px;
-      text-align: center; cursor: pointer; transition: all 0.2s;
+      position: relative;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
       background: var(--bg-base);
+      display: block; /* label needs this */
     }
     .img-upload-zone:hover, .img-upload-zone.dragover {
       border-color: var(--accent);
       background: var(--accent-dim);
     }
+    /* FIX: hidden file input inside label — no more onclick conflicts */
     .img-upload-zone input[type=file] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2;
-      width: 100%; height: 100%; background: none; border: none; padding: 0;
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      z-index: 2; width: 100%; height: 100%;
+      border: none; padding: 0; background: none;
     }
-    .upload-icon { font-size: 28px; margin-bottom: 8px; }
-    .upload-label { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
-    .upload-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
-    .upload-formats { display: flex; gap: 5px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-    .fmt-chip {
-      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px;
-      padding: 2px 7px; border-radius: var(--radius-sm);
-      background: var(--accent-dim); color: var(--accent);
-      border: 1px solid rgba(124,92,255,0.2);
-    }
-    .thumb-preview-wrap {
-      display: none; position: relative; background: var(--bg-elevated);
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
-      padding: 14px; margin-top: 10px;
-    }
+    .upload-icon { font-size: 28px; margin-bottom: 8px; pointer-events: none; }
+    .upload-label { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; pointer-events: none; }
+    .upload-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); pointer-events: none; }
+    .upload-formats { display: flex; gap: 5px; justify-content: center; margin-top: 10px; flex-wrap: wrap; pointer-events: none; }
+    .fmt-chip { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px; padding: 2px 7px; border-radius: var(--radius-sm); background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(124,92,255,0.2); }
+
+    .thumb-preview-wrap { display: none; position: relative; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-top: 10px; }
     .thumb-preview-wrap.show { display: block; }
     .thumb-preview-inner { display: flex; align-items: center; gap: 14px; }
-    .thumb-img {
-      width: 72px; height: 72px; border-radius: var(--radius-md);
-      object-fit: cover; border: 2px solid var(--border-strong);
-    }
+    .thumb-img { width: 72px; height: 72px; border-radius: var(--radius-md); object-fit: cover; border: 2px solid var(--border-strong); }
     .thumb-info { flex: 1; }
-    .thumb-name {
-      font-weight: 600; font-size: 13px; color: var(--text-primary);
-      margin-bottom: 3px; white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; max-width: 260px;
-    }
+    .thumb-name { font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
     .thumb-size { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); }
     .thumb-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-    .thumb-badge {
-      font-family: var(--font-mono); font-size: 10px; padding: 2px 8px;
-      border-radius: var(--radius-sm); background: var(--green-bg);
-      color: var(--green); border: 1px solid rgba(63,185,80,0.25);
-      display: inline-flex; align-items: center; gap: 4px; margin-left: 6px;
-    }
+    .thumb-badge { font-family: var(--font-mono); font-size: 10px; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--green-bg); color: var(--green); border: 1px solid rgba(63,185,80,0.25); display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; }
 
-    /* ── CROP MODAL ── */
+    /* ════════════════════════════════════════
+       CROP MODAL — MAXIMISED FIX
+       Image ab poora modal cover karega
+    ════════════════════════════════════════ */
     .crop-modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
       align-items: center; justify-content: center;
     }
     .crop-modal-overlay.open { display: flex; animation: fadeUp 0.2s ease; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
     .crop-modal {
-      background: var(--bg-surface); border: 1px solid var(--border-strong);
-      border-radius: var(--radius-xl); width: min(92vw, 760px);
-      max-height: 92vh; display: flex; flex-direction: column; overflow: hidden;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      /* FIX: almost full viewport */
+      width: min(96vw, 900px);
+      height: 96vh;
+      max-height: 96vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
       box-shadow: var(--shadow-lg);
     }
-    .crop-modal-header {
-      padding: 16px 20px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
-    }
-    .crop-modal-title {
-      font-size: 14px; font-weight: 600; color: var(--text-primary);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .crop-modal-title-sub {
-      font-family: var(--font-mono); font-size: 11px;
-      color: var(--text-secondary); font-weight: 400;
-    }
-    .crop-modal-close {
-      width: 30px; height: 30px; border-radius: var(--radius-sm);
-      background: var(--red-bg); border: 1px solid rgba(248,81,73,0.2);
-      color: var(--red); font-size: 14px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-    }
+
+    .crop-modal-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .crop-modal-title { font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+    .crop-modal-title-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+    .crop-modal-close { width: 30px; height: 30px; border-radius: var(--radius-sm); background: var(--red-bg); border: 1px solid rgba(248,81,73,0.2); color: var(--red); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .crop-modal-close:hover { background: rgba(248,81,73,0.2); transform: rotate(90deg); }
 
-    .crop-ratio-bar {
-      padding: 10px 20px; display: flex; gap: 5px; align-items: center;
-      flex-wrap: wrap; border-bottom: 1px solid var(--border); flex-shrink: 0;
-      background: var(--bg-base);
-    }
-    .crop-ratio-label {
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px;
-      color: var(--text-tertiary); text-transform: uppercase; margin-right: 4px;
-    }
-    .ratio-btn {
-      padding: 5px 11px; border-radius: var(--radius-sm);
-      font-family: var(--font-mono); font-size: 10px; cursor: pointer;
-      border: 1px solid var(--border); background: var(--bg-elevated);
-      color: var(--text-secondary); transition: all 0.15s;
-    }
+    .crop-ratio-bar { padding: 8px 18px; display: flex; gap: 5px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg-base); }
+    .crop-ratio-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--text-tertiary); text-transform: uppercase; margin-right: 4px; }
+    .ratio-btn { padding: 5px 11px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 10px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-secondary); transition: all 0.15s; }
     .ratio-btn:hover { color: var(--text-primary); border-color: var(--border-strong); }
     .ratio-btn.active { background: var(--accent-light); color: var(--accent); border-color: rgba(124,92,255,0.3); }
 
+    /* FIX: canvas area takes ALL remaining space */
     .crop-canvas-area {
-      flex: 1; overflow: hidden; background: #000; min-height: 0;
-      display: flex; align-items: center; justify-content: center;
+      flex: 1;
+      overflow: hidden;
+      background: #000;
+      min-height: 0; /* critical for flex shrink */
+      position: relative;
+      display: block; /* let cropper.js control layout */
     }
-    .crop-canvas-area img { max-width: 100%; max-height: 100%; display: block; }
-    .crop-hint {
-      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-      font-family: var(--font-mono); font-size: 9px; color: rgba(255,255,255,0.25);
-      pointer-events: none; white-space: nowrap;
+    /* FIX: cropper image fills the container */
+    .crop-canvas-area img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: 100%;
     }
+    .crop-canvas-area .cropper-container {
+      /* make cropper fill the box */
+      width: 100% !important;
+    }
+    .crop-hint { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; color: rgba(255,255,255,0.2); pointer-events: none; white-space: nowrap; z-index: 10; }
 
-    .crop-tools-bar {
-      padding: 10px 20px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      flex-shrink: 0; background: var(--bg-base);
-    }
-    .crop-tool-btn {
-      padding: 6px 12px; border-radius: var(--radius-sm);
-      font-family: var(--font-mono); font-size: 10px; cursor: pointer;
-      border: 1px solid var(--border); background: var(--bg-elevated);
-      color: var(--text-secondary); transition: all 0.15s;
-      display: flex; align-items: center; gap: 5px;
-    }
+    .crop-tools-bar { padding: 8px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex-shrink: 0; background: var(--bg-base); }
+    .crop-tool-btn { padding: 6px 12px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 10px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-secondary); transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
     .crop-tool-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
     .crop-tool-sep { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
     .crop-tools-spacer { flex: 1; }
-
     .zoom-wrap { display: flex; align-items: center; gap: 6px; }
     .zoom-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); white-space: nowrap; }
 
-    input[type=range] {
-      -webkit-appearance: none; appearance: none; width: 90px; height: 3px;
-      background: var(--border-strong); border-radius: 2px; outline: none;
-      cursor: pointer; border: none; padding: 0;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
-      background: var(--accent); cursor: pointer;
-      box-shadow: 0 0 6px rgba(124,92,255,0.4);
-    }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 90px; height: 3px; background: var(--border-strong); border-radius: 2px; outline: none; cursor: pointer; border: none; padding: 0; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 6px rgba(124,92,255,0.4); }
     input[type=range]:focus { border-color: transparent; box-shadow: none; }
 
-    .crop-action-bar {
-      padding: 14px 20px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      flex-shrink: 0;
-    }
-    .crop-output-size {
-      font-family: var(--font-mono); font-size: 11px;
-      color: var(--text-secondary); display: flex; align-items: center; gap: 6px;
-    }
-    .size-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
-      animation: blink 1.5s infinite;
-    }
+    .crop-action-bar { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+    .crop-output-size { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+    .size-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
     .quality-wrap { display: flex; align-items: center; gap: 6px; }
     .quality-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); }
     .quality-val { font-family: var(--font-mono); font-size: 11px; color: var(--accent); min-width: 30px; }
-
-    .btn-crop-confirm {
-      background: var(--accent); color: #fff; font-weight: 600;
-      font-size: 13px; padding: 9px 22px; border-radius: var(--radius-md);
-      border: none; cursor: pointer; transition: all 0.15s;
-      display: flex; align-items: center; gap: 7px;
-      font-family: var(--font-sans); box-shadow: 0 2px 12px rgba(124,92,255,0.35);
-    }
+    .btn-crop-confirm { background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; padding: 9px 22px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 7px; font-family: var(--font-sans); box-shadow: 0 2px 12px rgba(124,92,255,0.35); }
     .btn-crop-confirm:hover { background: var(--accent-hover); transform: translateY(-1px); }
-    .btn-crop-cancel {
-      background: transparent; color: var(--text-secondary);
-      border: 1px solid var(--border); border-radius: var(--radius-md);
-      padding: 9px 18px; cursor: pointer; font-family: var(--font-sans);
-      font-size: 13px; font-weight: 500; transition: all 0.15s;
-    }
+    .btn-crop-cancel { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 9px 18px; cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 500; transition: all 0.15s; }
     .btn-crop-cancel:hover { color: var(--text-primary); border-color: var(--border-strong); }
 
     /* ── TAB PANEL ── */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px; background: var(--border); margin: 8px 0;
-    }
+    .divider { height: 1px; background: var(--border); margin: 8px 0; }
 
     /* RESPONSIVE */
     @media (max-width: 900px) {
@@ -699,7 +387,13 @@
       .stat-row { grid-template-columns: 1fr 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .form-group.span2 { grid-column: span 1; }
-      .crop-modal { width: 98vw; }
+      /* Mobile: crop modal full screen */
+      .crop-modal {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+      }
       input[type=range] { width: 65px; }
     }
   </style>
@@ -735,10 +429,13 @@
         <option value="200">200 × auto (icon)</option>
       </select>
     </div>
-    <div class="crop-canvas-area" id="cropCanvasArea" style="position:relative;">
+
+    <!-- FIX: canvas takes all flex space -->
+    <div class="crop-canvas-area" id="cropCanvasArea">
       <img id="cropImage" src="" alt="crop-target" />
       <div class="crop-hint">Drag to reposition · Scroll to zoom · Drag corners to resize</div>
     </div>
+
     <div class="crop-tools-bar">
       <button class="crop-tool-btn" onclick="rotateCrop(-90)">↺ -90°</button>
       <button class="crop-tool-btn" onclick="rotateCrop(90)">↻ +90°</button>
@@ -775,8 +472,6 @@
 
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
 <div class="sidebar">
-
-  <!-- Logo -->
   <div class="sidebar-header">
     <div class="sidebar-logo-icon">⚡</div>
     <div>
@@ -785,9 +480,8 @@
     </div>
   </div>
 
-  <!-- Profile -->
   <div class="sidebar-profile">
-    <div class="avatar-wrap">
+    <div class="sidebar-avatar-wrap">
       {% if admin_profile_image %}
         <img src="/static/{{ admin_profile_image }}" class="avatar avatar-sm sidebar-avatar" alt="{{ username }}" />
       {% else %}
@@ -806,17 +500,14 @@
     </div>
   </div>
 
-  <!-- Nav -->
   <div class="sidebar-nav">
     <div class="nav-group-label">Workspace</div>
-
     <button class="nav-item active" onclick="switchTab('cards', this)">
       <span class="nav-icon">📋</span><span>Cards</span>
     </button>
     <button class="nav-item" onclick="switchTab('posts', this)">
       <span class="nav-icon">💬</span><span>Posts</span>
     </button>
-
     {% if role == 'owner' %}
     <div class="nav-group-label" style="margin-top:6px">Management</div>
     <button class="nav-item" onclick="switchTab('users', this)">
@@ -829,7 +520,6 @@
       <span class="nav-icon">🔑</span><span>Guests</span>
     </button>
     {% endif %}
-
     <div class="nav-group-label" style="margin-top:6px">Account</div>
     <button class="nav-item" onclick="switchTab('settings', this)">
       <span class="nav-icon">⚙️</span><span>Settings</span>
@@ -839,7 +529,6 @@
     </button>
   </div>
 
-  <!-- Footer nav -->
   <div class="sidebar-footer">
     <a href="{{ url_for('index') }}" class="nav-item" target="_blank">
       <span class="nav-icon">🌐</span><span>View Site</span>
@@ -853,7 +542,6 @@
 <!-- ═══════════════ MAIN ═══════════════ -->
 <div class="main">
 
-  <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
@@ -925,20 +613,16 @@
         <div class="page-sub">{{ all_posts|length }} total posts</div>
       </div>
     </div>
-
     {% if all_posts %}
       {% for post in all_posts %}
       <div class="post-row">
         <div class="post-row-header">
           <div class="post-author-badge">
-            <!-- Profile image avatar -->
             <div class="avatar-wrap">
               {% if post.author.profile_image %}
-                <img src="{{ url_for('static', filename=post.author.profile_image) }}"
-                     class="avatar avatar-sm" alt="{{ post.author.username }}" />
+                <img src="{{ url_for('static', filename=post.author.profile_image) }}" class="avatar avatar-sm" alt="{{ post.author.username }}" />
               {% else %}
-                <div class="avatar-fallback avatar-sm"
-                     style="background:var(--accent-light);color:var(--accent)">
+                <div class="avatar-fallback avatar-sm" style="background:var(--accent-light);color:var(--accent)">
                   {{ post.author.username[0].upper() }}
                 </div>
               {% endif %}
@@ -978,18 +662,14 @@
         <div class="page-sub">{{ public_users|length }} registered</div>
       </div>
     </div>
-
     {% if public_users %}
       {% for user in public_users %}
       <div class="user-row">
-        <!-- Profile image avatar with hover overlay -->
         <div class="avatar-wrap">
           {% if user.profile_image %}
-            <img src="{{ url_for('static', filename=user.profile_image) }}"
-                 class="avatar avatar-md" alt="{{ user.username }}" />
+            <img src="{{ url_for('static', filename=user.profile_image) }}" class="avatar avatar-md" alt="{{ user.username }}" />
           {% else %}
-            <div class="avatar-fallback avatar-md"
-                 style="background:var(--accent-light);color:var(--accent)">
+            <div class="avatar-fallback avatar-md" style="background:var(--accent-light);color:var(--accent)">
               {{ user.username[0].upper() }}
             </div>
           {% endif %}
@@ -1025,7 +705,6 @@
     <div class="page-header">
       <div><div class="page-title">Analytics</div><div class="page-sub">Last 7 days overview</div></div>
     </div>
-
     {% if analytics %}
     <div class="stat-row">
       <div class="stat-box blue"><div class="stat-val">{{ analytics.total_visits }}</div><div class="stat-label">Total Visits</div></div>
@@ -1034,7 +713,6 @@
       <div class="stat-box purple"><div class="stat-val">{{ analytics.total_posts }}</div><div class="stat-label">Posts</div></div>
       <div class="stat-box red"><div class="stat-val">{{ cards|length }}</div><div class="stat-label">Cards</div></div>
     </div>
-
     <div class="chart-wrap">
       <div class="chart-title">Daily Page Views — Last 7 Days</div>
       <div class="bars" id="analyticsBar">
@@ -1050,7 +728,6 @@
         {% endfor %}
       </div>
     </div>
-
     {% if analytics.top_cards %}
     <div class="chart-wrap">
       <div class="chart-title">Top Cards by Views</div>
@@ -1074,17 +751,12 @@
     <div class="page-header">
       <div><div class="page-title">Guest Admins</div><div class="page-sub">Limited access accounts</div></div>
     </div>
-
     <div class="notice-box">
       <span class="notice-icon">ℹ️</span>
       <span>Guest admins can customize hero text and colors — but cannot add, edit or delete cards, or manage users.</span>
     </div>
-
     <div class="panel-card">
-      <div class="panel-card-title">
-        <div class="panel-card-title-icon">➕</div>
-        Add Guest Admin
-      </div>
+      <div class="panel-card-title"><div class="panel-card-title-icon">➕</div>Add Guest Admin</div>
       <form method="POST" action="{{ url_for('admin_add_guest') }}">
         <div class="form-grid">
           <div class="form-group">
@@ -1096,18 +768,13 @@
             <input type="password" name="guest_password" placeholder="Min 8 characters" required />
           </div>
         </div>
-        <div style="margin-top:14px">
-          <button type="submit" class="btn btn-primary">Create Guest</button>
-        </div>
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">Create Guest</button></div>
       </form>
     </div>
-
     {% if guests %}
       {% for guest in guests %}
       <div class="guest-row">
-        <div class="avatar-fallback avatar-sm" style="background:var(--blue-bg);color:var(--blue)">
-          {{ guest.username[0].upper() }}
-        </div>
+        <div class="avatar-fallback avatar-sm" style="background:var(--blue-bg);color:var(--blue)">{{ guest.username[0].upper() }}</div>
         <div class="guest-username">{{ guest.username }}</div>
         <span class="badge badge-blue">Guest</span>
         <form method="POST" action="{{ url_for('admin_delete_guest', guest_id=guest.id) }}" onsubmit="return confirm('Remove this guest?')">
@@ -1126,7 +793,6 @@
     <div class="page-header">
       <div><div class="page-title">Site Settings</div><div class="page-sub">Global changes apply to all visitors</div></div>
     </div>
-
     {% if role == 'guest' %}
     <div class="notice-box">
       <span class="notice-icon">ℹ️</span>
@@ -1140,12 +806,8 @@
     {% endif %}
 
     <form method="POST" action="{{ url_for('admin_save_settings') }}" enctype="multipart/form-data" id="settingsForm">
-
       <div class="panel-card">
-        <div class="panel-card-title">
-          <div class="panel-card-title-icon">🏠</div>
-          Hero Section
-        </div>
+        <div class="panel-card-title"><div class="panel-card-title-icon">🏠</div>Hero Section</div>
         <div class="form-grid">
           <div class="form-group">
             <label>Badge Text</label>
@@ -1164,13 +826,10 @@
 
       {% if role == 'owner' %}
       <div class="panel-card">
-        <div class="panel-card-title">
-          <div class="panel-card-title-icon">🖼️</div>
-          Site Images
-        </div>
+        <div class="panel-card-title"><div class="panel-card-title-icon">🖼️</div>Site Images</div>
         <div class="form-grid">
 
-          <!-- Hero Banner -->
+          <!-- Hero Banner — FIX: label wraps input, no onclick needed -->
           <div class="form-group span2">
             <label>Hero Banner / OG Image</label>
             {% if settings.hero_image %}
@@ -1178,7 +837,7 @@
               Current: <img src="/static/{{ settings.hero_image }}" style="height:36px;border-radius:var(--radius-sm);vertical-align:middle" />
             </div>
             {% endif %}
-            <div class="img-upload-zone" id="zone-hero" onclick="triggerUpload('hero')">
+            <label class="img-upload-zone" id="zone-hero">
               <input type="file" id="file-hero" accept="image/*" onchange="handleFileSelect(event,'hero')" />
               <div class="upload-icon">🏔️</div>
               <div class="upload-label">Drop image here or click to browse</div>
@@ -1187,7 +846,7 @@
                 <span class="fmt-chip">JPG</span><span class="fmt-chip">PNG</span>
                 <span class="fmt-chip">WEBP</span><span class="fmt-chip">GIF</span>
               </div>
-            </div>
+            </label>
             <div class="thumb-preview-wrap" id="preview-hero">
               <div class="thumb-preview-inner">
                 <img class="thumb-img" id="thumb-hero" src="" alt="preview" />
@@ -1213,7 +872,7 @@
               <img src="/static/{{ settings.logo_image }}" style="height:38px;border-radius:50%;vertical-align:middle" />
             </div>
             {% endif %}
-            <div class="img-upload-zone" id="zone-logo" onclick="triggerUpload('logo')">
+            <label class="img-upload-zone" id="zone-logo">
               <input type="file" id="file-logo" accept="image/*" onchange="handleFileSelect(event,'logo')" />
               <div class="upload-icon">🔷</div>
               <div class="upload-label">Upload Logo</div>
@@ -1221,7 +880,7 @@
               <div class="upload-formats">
                 <span class="fmt-chip">PNG</span><span class="fmt-chip">SVG</span><span class="fmt-chip">WEBP</span>
               </div>
-            </div>
+            </label>
             <div class="thumb-preview-wrap" id="preview-logo">
               <div class="thumb-preview-inner">
                 <img class="thumb-img" id="thumb-logo" src="" alt="preview" style="border-radius:50%;width:60px;height:60px" />
@@ -1247,7 +906,7 @@
               <img src="/static/{{ settings.fav_image }}" style="height:30px;border-radius:var(--radius-sm);vertical-align:middle" />
             </div>
             {% endif %}
-            <div class="img-upload-zone" id="zone-fav" onclick="triggerUpload('fav')">
+            <label class="img-upload-zone" id="zone-fav">
               <input type="file" id="file-fav" accept="image/*" onchange="handleFileSelect(event,'fav')" />
               <div class="upload-icon">⭐</div>
               <div class="upload-label">Upload Favicon</div>
@@ -1255,7 +914,7 @@
               <div class="upload-formats">
                 <span class="fmt-chip">ICO</span><span class="fmt-chip">PNG</span><span class="fmt-chip">SVG</span>
               </div>
-            </div>
+            </label>
             <div class="thumb-preview-wrap" id="preview-fav">
               <div class="thumb-preview-inner">
                 <img class="thumb-img" id="thumb-fav" src="" alt="preview" style="width:44px;height:44px;border-radius:var(--radius-sm)" />
@@ -1278,10 +937,7 @@
       {% endif %}
 
       <div class="panel-card">
-        <div class="panel-card-title">
-          <div class="panel-card-title-icon">🎨</div>
-          Theme Colors
-        </div>
+        <div class="panel-card-title"><div class="panel-card-title-icon">🎨</div>Theme Colors</div>
         <div class="form-grid">
           <div class="form-group">
             <label>Accent Color</label>
@@ -1315,23 +971,14 @@
       </div>
     </div>
 
-    <!-- Profile image UI (frontend only, no backend change) -->
     <div class="panel-card" style="max-width:500px;margin-bottom:20px">
-      <div class="panel-card-title">
-        <div class="panel-card-title-icon">🪪</div>
-        Profile Image
-      </div>
+      <div class="panel-card-title"><div class="panel-card-title-icon">🪪</div>Profile Image</div>
       <div style="display:flex;align-items:center;gap:20px">
         <div class="avatar-wrap" style="position:relative;">
           {% if admin_profile_image %}
-            <img src="/static/{{ admin_profile_image }}"
-                 class="avatar"
-                 style="width:72px;height:72px;border:3px solid var(--accent);box-shadow:0 0 20px rgba(124,92,255,0.25)"
-                 alt="{{ username }}" id="accountAvatarImg" />
+            <img src="/static/{{ admin_profile_image }}" class="avatar" style="width:72px;height:72px;border:3px solid var(--accent);box-shadow:0 0 20px rgba(124,92,255,0.25)" alt="{{ username }}" id="accountAvatarImg" />
           {% else %}
-            <div class="avatar-fallback"
-                 style="width:72px;height:72px;font-size:26px;font-weight:700;background:var(--accent-light);color:var(--accent);border:3px solid var(--accent);box-shadow:0 0 20px rgba(124,92,255,0.2)"
-                 id="accountAvatarFallback">
+            <div class="avatar-fallback" style="width:72px;height:72px;font-size:26px;font-weight:700;background:var(--accent-light);color:var(--accent);border:3px solid var(--accent);box-shadow:0 0 20px rgba(124,92,255,0.2)" id="accountAvatarFallback">
               {{ username[0].upper() if username else 'A' }}
             </div>
           {% endif %}
@@ -1340,24 +987,17 @@
         <div>
           <div style="font-weight:600;font-size:14px;margin-bottom:4px">{{ username }}</div>
           <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Click photo to change · PNG, JPG, WEBP</div>
-          <button type="button" class="btn btn-secondary" style="font-size:12px" onclick="document.getElementById('dpFileInput').click()">
-            📷 Change Photo
-          </button>
+          <button type="button" class="btn btn-secondary" style="font-size:12px" onclick="document.getElementById('dpFileInput').click()">📷 Change Photo</button>
           <input type="file" id="dpFileInput" accept="image/*" style="display:none" onchange="previewDP(event)" />
         </div>
       </div>
       <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-        <p style="font-size:12px;color:var(--text-secondary);font-family:var(--font-mono)">
-          ℹ️ Profile image upload is managed separately — contact owner to update your backend profile photo.
-        </p>
+        <p style="font-size:12px;color:var(--text-secondary);font-family:var(--font-mono)">ℹ️ Profile image upload is managed separately — contact owner to update your backend profile photo.</p>
       </div>
     </div>
 
     <div class="panel-card" style="max-width:480px">
-      <div class="panel-card-title">
-        <div class="panel-card-title-icon">🔑</div>
-        Update Password
-      </div>
+      <div class="panel-card-title"><div class="panel-card-title-icon">🔑</div>Update Password</div>
       <form method="POST" action="{{ url_for('admin_change_password') }}">
         <div class="form-grid single">
           <div class="form-group">
@@ -1387,7 +1027,46 @@
 <script>
 'use strict';
 
-/* ═══ CROP SYSTEM ═══ */
+/* ═══════════════════════════════════════════
+   FIX 1: TAB STATE — URL hash se tab yaad rakhna
+   Page reload/flash ke baad bhi sahi tab open rahega
+═══════════════════════════════════════════ */
+function switchTab(name, btn) {
+  // All panels hide
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  // Target show
+  const target = document.getElementById('tab-' + name);
+  if (target) target.classList.add('active');
+  // Sidebar highlight
+  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Save in URL hash (no page reload)
+  history.replaceState(null, '', '#tab-' + name);
+}
+
+// On page load — restore last active tab from hash
+(function restoreTab() {
+  const hash = window.location.hash; // e.g. "#tab-settings"
+  if (hash && hash.startsWith('#tab-')) {
+    const name = hash.replace('#tab-', '');
+    const panel = document.getElementById('tab-' + name);
+    if (panel) {
+      // Find matching nav btn
+      const btns = document.querySelectorAll('.sidebar .nav-item');
+      let matchBtn = null;
+      btns.forEach(b => {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'")) {
+          matchBtn = b;
+        }
+      });
+      switchTab(name, matchBtn);
+    }
+  }
+})();
+
+/* ═══════════════════════════════════════════
+   FIX 2: CROP SYSTEM — fullscreen cropper
+═══════════════════════════════════════════ */
 let cropperInstance = null;
 let currentSlot = null;
 let rawFileDataURL = null;
@@ -1398,10 +1077,6 @@ const slotDefaults = {
   logo: { ratio: 1/1,  label: '1:1',  size: '400' },
   fav:  { ratio: 1/1,  label: '1:1',  size: '200' }
 };
-
-function triggerUpload(slot) {
-  document.getElementById('file-' + slot).click();
-}
 
 function handleFileSelect(event, slot) {
   const file = event.target.files[0];
@@ -1421,15 +1096,28 @@ function openCropModal(fileName, slot) {
   document.getElementById('cropOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   flipXState = 1; flipYState = 1;
-  img.onload = () => {
+
+  // Wait for image to load then init cropper
+  const initCropper = () => {
     destroyCropper();
     const defaults = slotDefaults[slot] || { ratio: NaN, size: '400' };
     document.getElementById('outputSizeSelect').value = defaults.size;
+
+    // FIX: viewMode:2 forces crop box inside canvas
+    // fillColor white for JPG transparency
     cropperInstance = new Cropper(img, {
       aspectRatio: isNaN(defaults.ratio) ? NaN : defaults.ratio,
-      viewMode: 1, dragMode: 'move', autoCropArea: 0.85,
-      restore: false, guides: true, center: true, highlight: false,
-      cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false,
+      viewMode: 2,          // FIX: image fills cropper container
+      dragMode: 'move',
+      autoCropArea: 0.9,    // FIX: crop box 90% by default — maximum coverage
+      restore: false,
+      guides: true,
+      center: true,
+      highlight: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: false,
+      background: false,    // FIX: no grid bg, cleaner
       ready() {
         updateDimLabel();
         const label = isNaN(defaults.ratio) ? 'Free' : defaults.label;
@@ -1440,14 +1128,22 @@ function openCropModal(fileName, slot) {
       crop() { updateDimLabel(); }
     });
   };
-  if (img.complete && img.naturalWidth) img.onload();
+
+  if (img.complete && img.naturalWidth) {
+    initCropper();
+  } else {
+    img.onload = initCropper;
+  }
 }
 
 function closeCropModal() {
   document.getElementById('cropOverlay').classList.remove('open');
   document.body.style.overflow = '';
   destroyCropper();
-  if (currentSlot) { const fi = document.getElementById('file-' + currentSlot); if (fi) fi.value = ''; }
+  if (currentSlot) {
+    const fi = document.getElementById('file-' + currentSlot);
+    if (fi) fi.value = '';
+  }
 }
 
 function destroyCropper() {
@@ -1484,15 +1180,16 @@ function updateOutputSizeLabel() { updateDimLabel(); }
 
 function updateDimLabel() {
   if (!cropperInstance) return;
-  const data = cropperInstance.getCropBoxData();
-  const canvasData = cropperInstance.getCanvasData();
-  const scale = canvasData.naturalWidth / canvasData.width;
-  const w = Math.round(data.width * scale);
-  const h = Math.round(data.height * scale);
-  const sizeVal = document.getElementById('outputSizeSelect').value;
-  let outW = w, outH = h;
-  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (h/w)); }
-  document.getElementById('cropDimLabel').textContent = `${outW} × ${outH} px`;
+  try {
+    const data = cropperInstance.getData(true);
+    const sizeVal = document.getElementById('outputSizeSelect').value;
+    let outW = data.width, outH = data.height;
+    if (sizeVal !== 'original' && data.width > 0) {
+      outW = parseInt(sizeVal);
+      outH = Math.round(outW * (data.height / data.width));
+    }
+    document.getElementById('cropDimLabel').textContent = `${outW} × ${outH} px`;
+  } catch(e) {}
 }
 
 function confirmCrop() {
@@ -1501,8 +1198,16 @@ function confirmCrop() {
   const quality = parseFloat(document.getElementById('qualityRange').value);
   const cropData = cropperInstance.getData(true);
   let outW = cropData.width, outH = cropData.height;
-  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (cropData.height/cropData.width)); }
-  const canvas = cropperInstance.getCroppedCanvas({ width: outW, height: outH, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+  if (sizeVal !== 'original' && cropData.width > 0) {
+    outW = parseInt(sizeVal);
+    outH = Math.round(outW * (cropData.height / cropData.width));
+  }
+  const canvas = cropperInstance.getCroppedCanvas({
+    width: outW, height: outH,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high',
+    fillColor: '#fff'
+  });
   if (!canvas) { showFlash('Crop failed. Try again.', 'error'); return; }
   const dataURL = canvas.toDataURL('image/jpeg', quality);
   document.getElementById('hidden-' + currentSlot).value = dataURL;
@@ -1510,10 +1215,11 @@ function confirmCrop() {
   const fi = document.getElementById('file-' + currentSlot);
   document.getElementById('thumb-' + currentSlot + '-name').textContent = fi.files[0]?.name || 'image.jpg';
   const bytes = Math.round((dataURL.length * 3) / 4);
-  document.getElementById('thumb-' + currentSlot + '-size').textContent = `${outW} × ${outH}px · ${formatBytes(bytes)} · JPEG ${Math.round(quality*100)}%`;
+  document.getElementById('thumb-' + currentSlot + '-size').textContent =
+    `${outW} × ${outH}px · ${formatBytes(bytes)} · JPEG ${Math.round(quality*100)}%`;
   document.getElementById('preview-' + currentSlot).classList.add('show');
   closeCropModal();
-  showFlash(`Image cropped — ${outW}×${outH}px`, 'success');
+  showFlash(`✓ Image cropped — ${outW}×${outH}px`, 'success');
 }
 
 function recrop(slot) {
@@ -1544,10 +1250,9 @@ document.querySelectorAll('.img-upload-zone').forEach(zone => {
   });
 });
 
-/* ═══ DP PREVIEW (frontend only) ═══ */
+/* DP Preview */
 function previewDP(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
     const imgEl = document.getElementById('accountAvatarImg');
@@ -1564,25 +1269,18 @@ function previewDP(event) {
       newImg.alt = 'Profile';
       fallback.parentNode.insertBefore(newImg, fallback);
     }
-    showFlash('Preview updated (frontend only — contact developer to save)', 'success');
+    showFlash('Preview updated (frontend only)', 'success');
   };
   reader.readAsDataURL(file);
 }
 
-/* ═══ GENERAL ═══ */
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById('tab-' + name);
-  if (target) target.classList.add('active');
-  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-}
-
+/* Color pickers */
 const accentPick = document.getElementById('accentPick');
 const bgPick = document.getElementById('bgPick');
 if (accentPick) accentPick.addEventListener('input', e => { document.getElementById('accentHex').textContent = e.target.value; });
 if (bgPick) bgPick.addEventListener('input', e => { document.getElementById('bgHex').textContent = e.target.value; });
 
+/* Password strength */
 function checkStrength(pw) {
   const bar = document.getElementById('pwStrength'); if (!bar) return;
   let score = 0;
@@ -1621,6 +1319,7 @@ function showFlash(msg, type) {
   }, 3000);
 }
 
+/* Close modal on overlay click */
 document.getElementById('cropOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeCropModal();
 });
