@@ -382,8 +382,6 @@
     .crop-canvas-area img {
       display: block;
       max-width: 100%;
-      /* hidden — cropper replaces it */
-      opacity: 0;
       max-height: 100%;
     }
     .crop-hint {
@@ -536,10 +534,10 @@
       <button class="ratio-btn" onclick="setRatio(NaN,NaN,this)">Free</button>
       <div style="flex:1"></div>
       <select id="outputSizeSelect" onchange="updateDimLabel()">
-        <option value="original">Original</option>
+        <option value="original" selected>Original</option>
         <option value="800">800px</option>
         <option value="600">600px</option>
-        <option value="400" selected>400px</option>
+        <option value="400">400px</option>
         <option value="300">300px (thumb)</option>
         <option value="200">200px (icon)</option>
       </select>
@@ -764,7 +762,7 @@ function openCropModal(fileName) {
 
   const initCropper = () => {
     destroyCropper();
-    document.getElementById('outputSizeSelect').value = '400';
+    document.getElementById('outputSizeSelect').value = 'original';
 
     cropperInstance = new Cropper(img, {
       aspectRatio: 1,
@@ -784,13 +782,13 @@ function openCropModal(fileName) {
         updateDimLabel();
         document.getElementById('zoomRange').value = 1;
         document.getElementById('zoomVal').textContent = '1.0×';
-        /* Ensure crop box fills full canvas on start */
-        const cd = this.cropper.getCanvasData();
+        /* Crop box = exact image area, no transparent gaps */
+        const imgData = this.cropper.getImageData();
         this.cropper.setCropBoxData({
-          left: cd.left,
-          top: cd.top,
-          width: cd.width,
-          height: cd.height
+          left: imgData.left,
+          top: imgData.top,
+          width: imgData.width,
+          height: imgData.height
         });
         updateDimLabel();
       },
@@ -798,8 +796,15 @@ function openCropModal(fileName) {
     });
   };
 
-  if (img.complete && img.naturalWidth) { initCropper(); }
-  else { img.onload = initCropper; }
+  destroyCropper();
+  img.src = '';
+  img.onload = null;
+  requestAnimationFrame(() => {
+    img.onload = () => {
+      requestAnimationFrame(initCropper);
+    };
+    img.src = rawFileDataURL;
+  });
 }
 
 function closeCropModal() {
