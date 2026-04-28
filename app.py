@@ -717,7 +717,10 @@ def admin_delete(card_id):
         if os.path.exists(old_full):
             try: os.remove(old_full)
             except: pass
-    db.session.delete(card); db.session.commit()
+    # ✅ FIX: Pehle PageView records delete karo (foreign key constraint fix)
+    PageView.query.filter_by(card_id=card_id).delete()
+    db.session.delete(card)
+    db.session.commit()
     flash('Card deleted.', 'success')
     return redirect(url_for('admin_dashboard'))
 
