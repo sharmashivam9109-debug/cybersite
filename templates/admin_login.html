@@ -3,105 +3,453 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login — Cyber Hub</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <title>Admin Login — S.S Cyber Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --black: #020408; --neon-blue: #00b4ff; --neon-purple: #9b59ff; --neon-cyan: #00f5ff;
-      --glass: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08);
-      --text: #e8eaf0; --muted: rgba(232,234,240,0.5);
+      --bg-base:      #0d1117;
+      --bg-surface:   #161b24;
+      --bg-elevated:  #1c2333;
+      --accent:       #7c5cff;
+      --accent-light: rgba(124,92,255,0.15);
+      --accent-hover: #9070ff;
+      --text-primary: #e6edf3;
+      --text-secondary:#8b949e;
+      --text-tertiary:#484f58;
+      --border:       rgba(255,255,255,0.07);
+      --border-strong:rgba(255,255,255,0.13);
+      --red:          #f85149;
+      --red-bg:       rgba(248,81,73,0.1);
+      --green:        #3fb950;
+      --font-mono:    'JetBrains Mono', monospace;
+      --font-sans:    'Inter', sans-serif;
     }
+
+    html { font-size: 14px; }
     body {
-      background: var(--black); color: var(--text);
-      font-family: 'Syne', sans-serif;
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+      position: relative;
     }
-    body::before {
+
+    /* ── ANIMATED BG ── */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(124,92,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,92,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      0%   { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    .bg-glow-1 {
+      position: fixed; z-index: 0;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,92,255,0.12) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation: float1 8s ease-in-out infinite;
+    }
+    .bg-glow-2 {
+      position: fixed; z-index: 0;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(88,166,255,0.08) 0%, transparent 70%);
+      bottom: -150px; right: -150px;
+      animation: float2 10s ease-in-out infinite;
+    }
+    @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,20px)} }
+    @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,-30px)} }
+
+    /* ── LOGIN CARD ── */
+    .login-wrap {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 420px;
+      padding: 16px;
+    }
+
+    .login-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,92,255,0.08);
+      animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(24px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── LOGO ── */
+    .login-logo {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px;
+    }
+    .login-logo-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 24px rgba(124,92,255,0.5), 0 0 48px rgba(124,92,255,0.2);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 24px rgba(124,92,255,0.5), 0 0 48px rgba(124,92,255,0.2); }
+      50%      { box-shadow: 0 0 32px rgba(124,92,255,0.7), 0 0 64px rgba(124,92,255,0.3); }
+    }
+    .login-logo-text { flex: 1; }
+    .login-logo-name {
+      font-size: 15px; font-weight: 700; color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    .login-logo-sub {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-tertiary); letter-spacing: 0.5px; margin-top: 1px;
+    }
+    .login-status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(63,185,80,0.6);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── DIVIDER ── */
+    .login-divider {
+      height: 1px; background: var(--border);
+      margin-bottom: 28px; position: relative;
+    }
+    .login-divider::after {
+      content: 'RESTRICTED ACCESS';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: var(--bg-surface);
+      padding: 0 10px;
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 2px; color: var(--text-tertiary);
+    }
+
+    /* ── HEADING ── */
+    .login-heading {
+      font-size: 22px; font-weight: 700;
+      letter-spacing: -0.5px; margin-bottom: 6px;
+    }
+    .login-sub {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-secondary); margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    /* ── ALERT ── */
+    .alert {
+      padding: 11px 14px; border-radius: 8px; margin-bottom: 20px;
+      font-size: 12px; display: flex; align-items: center; gap: 8px;
+      background: var(--red-bg);
+      border: 1px solid rgba(248,81,73,0.25);
+      color: var(--red);
+      font-family: var(--font-mono);
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97);
+    }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-6px)}
+      40%{transform:translateX(6px)}
+      60%{transform:translateX(-4px)}
+      80%{transform:translateX(4px)}
+    }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.8px; color: var(--text-secondary);
+      text-transform: uppercase; margin-bottom: 7px; font-weight: 500;
+    }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 13px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px; pointer-events: none;
+      color: var(--text-tertiary);
+      transition: color 0.2s;
+    }
+    input[type=text],
+    input[type=password] {
+      width: 100%;
+      padding: 11px 13px 11px 40px;
+      background: var(--bg-base);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-sans); font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,92,255,0.2);
+    }
+    input:focus + .input-icon,
+    .input-wrap:focus-within .input-icon {
+      color: var(--accent);
+    }
+
+    /* password toggle */
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-tertiary); font-size: 13px; padding: 4px;
+      transition: color 0.2s; line-height: 1;
+    }
+    .pw-toggle:hover { color: var(--text-secondary); }
+
+    /* strength bar */
+    .pw-strength-wrap { margin-top: 6px; display: flex; gap: 4px; }
+    .pw-bar {
+      flex: 1; height: 3px; border-radius: 2px;
+      background: var(--border-strong);
+      transition: background 0.3s;
+    }
+
+    /* ── SUBMIT BTN ── */
+    .btn-login {
+      width: 100%; padding: 12px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 10px;
+      font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+      cursor: pointer; letter-spacing: -0.2px;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(124,92,255,0.4);
+      margin-top: 8px; position: relative; overflow: hidden;
+    }
+    .btn-login::before {
       content: '';
-      position: fixed; inset: 0;
-      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(13,71,161,0.2), transparent 70%);
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
       pointer-events: none;
     }
-    .login-box {
-      background: rgba(10,22,40,0.8);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px; padding: 48px 40px;
-      width: 100%; max-width: 400px;
-      backdrop-filter: blur(20px);
-      position: relative; z-index: 1;
+    .btn-login:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(124,92,255,0.5);
     }
-    .login-tag {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      letter-spacing: 4px; color: var(--neon-cyan);
-      text-transform: uppercase; margin-bottom: 8px;
+    .btn-login:active { transform: translateY(0); }
+
+    /* ripple */
+    .ripple {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transform: scale(0); animation: rippleAnim 0.5s linear;
+      pointer-events: none;
     }
-    .login-title { font-size: 28px; font-weight: 800; margin-bottom: 32px; }
-    .alert {
-      padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;
-      font-family: 'DM Mono', monospace; font-size: 12px;
-      background: rgba(220,50,50,0.1); border: 1px solid rgba(220,50,50,0.3);
-      color: #ff6b6b;
+    @keyframes rippleAnim { to { transform:scale(4); opacity:0; } }
+
+    /* ── FOOTER ── */
+    .login-footer {
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
     }
-    label {
-      display: block; font-family: 'DM Mono', monospace;
-      font-size: 11px; letter-spacing: 2px; color: var(--muted);
-      text-transform: uppercase; margin-bottom: 8px;
-    }
-    input {
-      width: 100%; padding: 12px 16px; margin-bottom: 20px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--glass-border); border-radius: 6px;
-      color: var(--text); font-family: 'Syne', sans-serif; font-size: 15px;
-      outline: none; transition: border-color 0.3s;
-    }
-    input:focus { border-color: rgba(0,180,255,0.4); }
-    button {
-      width: 100%; padding: 14px;
-      background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-      border: none; border-radius: 6px;
-      color: #fff; font-family: 'Syne', sans-serif;
-      font-size: 13px; font-weight: 700;
-      letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
-      transition: opacity 0.3s, transform 0.2s;
-    }
-    button:hover { opacity: 0.9; transform: translateY(-1px); }
     .back-link {
-      display: block; text-align: center; margin-top: 20px;
-      font-family: 'DM Mono', monospace; font-size: 11px;
-      color: var(--muted); text-decoration: none; letter-spacing: 2px;
-      transition: color 0.3s;
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-tertiary); text-decoration: none;
+      letter-spacing: 0.3px; transition: color 0.2s;
+      display: flex; align-items: center; gap: 5px;
     }
-    .back-link:hover { color: var(--neon-cyan); }
-    .warning {
-      margin-top: 24px; padding: 12px 16px; border-radius: 6px;
-      background: rgba(155,89,255,0.08); border: 1px solid rgba(155,89,255,0.2);
-      font-family: 'DM Mono', monospace; font-size: 11px;
-      color: rgba(155,89,255,0.7); letter-spacing: 1px; text-align: center;
+    .back-link:hover { color: var(--accent); }
+    .security-badge {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-tertiary); letter-spacing: 0.3px;
     }
+    .security-badge span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px rgba(124,92,255,0.5);
+    }
+
+    /* ── TERMINAL BADGE ── */
+    .terminal-line {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-tertiary);
+      padding: 8px 12px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 24px;
+      letter-spacing: 0.3px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .terminal-line .prompt { color: var(--accent); }
+    .terminal-line .cmd    { color: var(--text-secondary); }
+    .cursor {
+      display: inline-block; width: 6px; height: 11px;
+      background: var(--accent); vertical-align: text-bottom;
+      animation: cursorBlink 1s step-end infinite;
+    }
+    @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <div class="login-tag">● Restricted Access</div>
-    <h1 class="login-title">Admin Login</h1>
 
+<div class="bg-grid"></div>
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+
+<div class="login-wrap">
+  <div class="login-card">
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <div class="login-logo-icon">⚡</div>
+      <div class="login-logo-text">
+        <div class="login-logo-name">S.S Cyber Hub</div>
+        <div class="login-logo-sub">Admin Control Panel</div>
+      </div>
+      <div class="login-status-dot"></div>
+    </div>
+
+    <!-- Terminal line -->
+    <div class="terminal-line">
+      <span class="prompt">~/admin $</span>
+      <span class="cmd"> authenticate --secure</span>
+      <span class="cursor"></span>
+    </div>
+
+    <!-- Divider -->
+    <div class="login-divider"></div>
+
+    <div class="login-heading">Welcome back 👋</div>
+    <div class="login-sub">Apna credentials enter karo — sirf authorized access allowed hai.</div>
+
+    <!-- Alert -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for cat, msg in messages %}
         <div class="alert">⚠ {{ msg }}</div>
       {% endfor %}
     {% endwith %}
 
-    <form method="POST">
-      <label>Username</label>
-      <input type="text" name="username" placeholder="Enter username" required autocomplete="off" />
-      <label>Password</label>
-      <input type="password" name="password" placeholder="••••••••" required />
-      <button type="submit">Access Dashboard</button>
+    <!-- Form -->
+    <form method="POST" id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <div class="input-wrap">
+          <input type="text" name="username" placeholder="Enter username"
+                 required autocomplete="off" id="usernameInput" />
+          <span class="input-icon">👤</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <input type="password" name="password" placeholder="••••••••"
+                 required id="passwordInput" oninput="updateStrength(this.value)" />
+          <span class="input-icon">🔑</span>
+          <button type="button" class="pw-toggle" id="pwToggle" onclick="togglePw()" title="Show/hide">👁</button>
+        </div>
+        <div class="pw-strength-wrap" id="strengthWrap" style="display:none">
+          <div class="pw-bar" id="bar1"></div>
+          <div class="pw-bar" id="bar2"></div>
+          <div class="pw-bar" id="bar3"></div>
+          <div class="pw-bar" id="bar4"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" id="loginBtn" onclick="addRipple(event)">
+        <span id="btnText">🔓 Access Dashboard</span>
+      </button>
     </form>
-    <a href="/" class="back-link">← Back to site</a>
-    <div class="warning">🔒 Private Admin Area</div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <a href="/" class="back-link">← Back to site</a>
+      <div class="security-badge"><span></span> Secure Connection</div>
+    </div>
+
   </div>
+</div>
+
+<script>
+'use strict';
+
+/* Password show/hide */
+function togglePw() {
+  const inp = document.getElementById('passwordInput');
+  const btn = document.getElementById('pwToggle');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+/* Strength bars */
+function updateStrength(pw) {
+  const wrap = document.getElementById('strengthWrap');
+  if (!pw) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+
+  let score = 0;
+  if (pw.length >= 6)  score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw) || /[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  const colors = ['#f85149','#d29922','#58a6ff','#3fb950'];
+  const bars   = ['bar1','bar2','bar3','bar4'];
+  bars.forEach((id, i) => {
+    document.getElementById(id).style.background =
+      i < score ? colors[score - 1] : 'rgba(255,255,255,0.08)';
+  });
+}
+
+/* Ripple effect on button */
+function addRipple(e) {
+  const btn  = document.getElementById('loginBtn');
+  const rect = btn.getBoundingClientRect();
+  const r    = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  r.className = 'ripple';
+  Object.assign(r.style, {
+    width: size + 'px', height: size + 'px',
+    left:  (e.clientX - rect.left  - size/2) + 'px',
+    top:   (e.clientY - rect.top   - size/2) + 'px',
+  });
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 500);
+}
+
+/* Loading state on submit */
+document.getElementById('loginForm').addEventListener('submit', function() {
+  const btn  = document.getElementById('loginBtn');
+  const text = document.getElementById('btnText');
+  btn.disabled = true;
+  text.textContent = '⏳ Authenticating...';
+  btn.style.opacity = '0.8';
+});
+
+/* Auto focus username */
+document.getElementById('usernameInput').focus();
+</script>
 </body>
 </html>
