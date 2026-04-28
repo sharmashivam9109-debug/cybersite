@@ -563,11 +563,12 @@
         <span class="zoom-label" id="zoomVal">1.0×</span>
       </div>
       <div class="crop-tools-spacer"></div>
+      <!-- ✅ FIX 1: Quality default 100% (was 92%) -->
       <div class="quality-wrap">
         <span class="quality-label">Q</span>
-        <input type="range" id="qualityRange" min="0.5" max="1" step="0.05" value="0.92"
+        <input type="range" id="qualityRange" min="0.5" max="1" step="0.05" value="1"
           oninput="document.getElementById('qualityVal').textContent=Math.round(this.value*100)+'%'" />
-        <span class="quality-val" id="qualityVal">92%</span>
+        <span class="quality-val" id="qualityVal">100%</span>
       </div>
     </div>
 
@@ -768,7 +769,7 @@ function openCropModal(fileName) {
       aspectRatio: 1,
       viewMode: 1,
       dragMode: 'move',
-      autoCropArea: 1,        /* ← 100% — crop box covers entire image by default */
+      autoCropArea: 1,
       restore: false,
       guides: true,
       center: true,
@@ -782,7 +783,6 @@ function openCropModal(fileName) {
         updateDimLabel();
         document.getElementById('zoomRange').value = 1;
         document.getElementById('zoomVal').textContent = '1.0×';
-        /* Crop box = exact image area, no transparent gaps */
         const imgData = this.cropper.getImageData();
         this.cropper.setCropBoxData({
           left: imgData.left,
@@ -811,7 +811,6 @@ function closeCropModal() {
   document.getElementById('cropOverlay').classList.remove('open');
   document.body.style.overflow = '';
   destroyCropper();
-  /* If user cancels without ever cropping, clear the file input too */
   const existing = document.getElementById('thumbnail_crop_data').value;
   if (!existing) {
     document.getElementById('file-thumb').value = '';
@@ -864,7 +863,7 @@ function updateDimLabel() {
   } catch(e) {}
 }
 
-/* ─── CONFIRM CROP — main fix ─── */
+/* ─── CONFIRM CROP ─── */
 function confirmCrop() {
   if (!cropperInstance) return;
 
@@ -872,11 +871,10 @@ function confirmCrop() {
   btn.textContent = '⏳ Processing…';
   btn.disabled = true;
 
-  /* Small timeout so UI updates before heavy canvas op */
   setTimeout(() => {
     try {
-      const sizeVal = document.getElementById('outputSizeSelect').value;
-      const quality = parseFloat(document.getElementById('qualityRange').value);
+      const sizeVal  = document.getElementById('outputSizeSelect').value;
+      const quality  = parseFloat(document.getElementById('qualityRange').value);
       const cropData = cropperInstance.getData(true);
 
       let outW = Math.round(cropData.width);
@@ -900,20 +898,20 @@ function confirmCrop() {
         return;
       }
 
-      const dataURL = canvas.toDataURL('image/jpeg', quality);
+      // ✅ FIX 2: PNG use karo — lossless, zero quality loss
+      const dataURL = canvas.toDataURL('image/png');
 
-      /* Save to hidden field + show preview */
       document.getElementById('thumbnail_crop_data').value = dataURL;
       document.getElementById('thumbPreview').src = dataURL;
       document.getElementById('thumbName').textContent = rawFileName;
       const bytes = Math.round((dataURL.length * 3) / 4);
       document.getElementById('thumbSize').textContent =
-        `${outW} × ${outH}px · ${formatBytes(bytes)} · JPEG ${Math.round(quality*100)}%`;
+        `${outW} × ${outH}px · ${formatBytes(bytes)} · PNG Lossless`;
       document.getElementById('previewWrap').classList.add('show');
       document.getElementById('cropBadge').style.display = 'inline-flex';
 
       closeCropModal();
-      showFlash(`✓ Cropped — ${outW}×${outH}px`, 'success');
+      showFlash(`✓ Cropped — ${outW}×${outH}px · Full HD`, 'success');
     } catch(err) {
       showFlash('Error: ' + err.message, 'error');
     } finally {
