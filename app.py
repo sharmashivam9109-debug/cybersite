@@ -204,7 +204,7 @@ def save_base64_image(data_url, subfolder='uploads', prefix='img'):
         if ext not in ALLOWED_IMAGE_EXTENSIONS:
             return None
         img_bytes = base64.b64decode(raw_base64)
-        if len(img_bytes) > 8 * 1024 * 1024:
+        if len(img_bytes) > 50 * 1024 * 1024:
             return None
         folder = os.path.join('static', subfolder)
         os.makedirs(folder, exist_ok=True)
