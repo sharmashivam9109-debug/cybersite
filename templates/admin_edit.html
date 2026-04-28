@@ -3,125 +3,432 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Card — Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <title>Edit Card — S.S Cyber Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --black: #020408; --deep: #050b14; --neon-blue: #00b4ff; --neon-purple: #9b59ff;
-      --neon-cyan: #00f5ff; --neon-green: #00ff9d; --neon-red: #ff4466;
-      --glass: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08);
-      --text: #e8eaf0; --muted: rgba(232,234,240,0.5);
+      --bg-base:       #0d1117;
+      --bg-surface:    #161b24;
+      --bg-elevated:   #1c2333;
+      --bg-hover:      #1e2736;
+
+      --accent:        #7c5cff;
+      --accent-light:  rgba(124,92,255,0.15);
+      --accent-dim:    rgba(124,92,255,0.08);
+      --accent-hover:  #9070ff;
+
+      --text-primary:  #e6edf3;
+      --text-secondary:#8b949e;
+      --text-tertiary: #484f58;
+
+      --border:        rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.13);
+
+      --green:         #3fb950;
+      --green-bg:      rgba(63,185,80,0.1);
+      --red:           #f85149;
+      --red-bg:        rgba(248,81,73,0.1);
+      --blue:          #58a6ff;
+      --blue-bg:       rgba(88,166,255,0.1);
+      --yellow:        #d29922;
+      --yellow-bg:     rgba(210,153,34,0.1);
+
+      --shadow-accent: 0 0 0 3px rgba(124,92,255,0.25);
+      --shadow-lg:     0 12px 32px rgba(0,0,0,0.5);
+
+      --radius-sm:  4px;
+      --radius-md:  8px;
+      --radius-lg:  12px;
+      --radius-xl:  16px;
+      --radius-full:9999px;
+
+      --sidebar-w: 230px;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
     }
-    body { background: var(--black); color: var(--text); font-family: 'Syne', sans-serif; }
 
-    /* ── SIDEBAR ── */
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: rgba(5,11,20,0.95); border-right: 1px solid var(--glass-border); padding: 32px 24px; display: flex; flex-direction: column; gap: 8px; }
-    .sidebar-logo { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 4px; color: var(--neon-cyan); text-transform: uppercase; padding-bottom: 24px; border-bottom: 1px solid var(--glass-border); margin-bottom: 16px; }
-    .nav-item { display: block; padding: 10px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; color: var(--muted); letter-spacing: 1px; transition: all 0.2s; }
-    .nav-item:hover, .nav-item.active { background: var(--glass); color: var(--text); }
-    .nav-item.danger { margin-top: auto; color: rgba(255,100,100,0.6); }
-    .nav-item.danger:hover { color: #ff6b6b; background: rgba(255,100,100,0.08); }
-
-    /* ── MAIN ── */
-    .main { margin-left: 240px; padding: 40px; max-width: 900px; }
-
-    /* ── FLASH ── */
-    .flash { padding: 11px 16px; border-radius: 6px; margin-bottom: 24px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .5px; }
-    .flash.success { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.25); color: var(--neon-green); }
-    .flash.error   { background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.25); color: var(--neon-red); }
-
-    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
-    .sub { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-bottom: 36px; }
-    .form-group { margin-bottom: 24px; }
-    label { display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
-    input[type=text], input[type=number], textarea {
-      width: 100%; padding: 12px 16px;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 6px;
-      color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s;
+    html { font-size: 14px; }
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
     }
-    input[type=text]:focus, textarea:focus, input[type=number]:focus { border-color: rgba(0,180,255,0.4); }
-    textarea { min-height: 200px; resize: vertical; line-height: 1.7; }
-    .hint { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-    .btn-save { padding: 14px 40px; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); border: none; border-radius: 6px; color: #fff; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
-    .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-cancel { padding: 14px 28px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; cursor: pointer; text-decoration: none; margin-left: 12px; transition: all 0.2s; display: inline-block; }
-    .btn-cancel:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
 
-    /* ── CURRENT THUMBNAIL ── */
-    .current-thumb { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 12px; }
-    .current-thumb img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--glass-border); }
-    .current-thumb-info { flex: 1; }
-    .current-thumb-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
-    .current-thumb-name { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-all; }
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-logo-icon {
+      width: 32px; height: 32px; border-radius: var(--radius-md);
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(124,92,255,0.35);
+    }
+    .sidebar-logo-text { font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+    .sidebar-logo-sub  { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
 
-    /* ── IMAGE UPLOAD + CROP ── */
-    .img-upload-zone { position: relative; border: 2px dashed var(--glass-border); border-radius: 10px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all .25s; background: rgba(255,255,255,0.015); overflow: hidden; }
-    .img-upload-zone:hover, .img-upload-zone.dragover { border-color: var(--neon-blue); background: rgba(0,180,255,0.05); }
-    .img-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; width: 100%; height: 100%; background: none; border: none; padding: 0; }
-    .upload-icon { font-size: 32px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
-    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-    .upload-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-    .upload-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-    .upload-formats { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-    .fmt-chip { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(0,245,255,0.08); color: var(--neon-cyan); border: 1px solid rgba(0,245,255,0.2); }
+    .sidebar-nav {
+      flex: 1; padding: 10px;
+      display: flex; flex-direction: column; gap: 1px;
+      overflow-y: auto;
+    }
+    .nav-group-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--text-tertiary);
+      padding: 8px 6px 4px; font-family: var(--font-mono);
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px; border-radius: var(--radius-md);
+      font-size: 13px; font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover  { background: var(--bg-hover); color: var(--text-primary); }
+    .nav-item.active { background: var(--accent-light); color: var(--accent); }
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+    .nav-item.danger { color: rgba(248,81,73,0.7); }
+    .nav-item.danger:hover { background: var(--red-bg); color: var(--red); }
 
-    .thumb-preview-wrap { display: none; position: relative; background: rgba(5,11,20,0.8); border: 1px solid var(--glass-border); border-radius: 10px; padding: 16px; margin-top: 12px; }
+    .sidebar-footer {
+      padding: 10px 10px 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 1px;
+    }
+
+    /* ══ MAIN ══ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1; padding: 32px 36px;
+      min-height: 100vh;
+      max-width: calc(var(--sidebar-w) + 780px);
+    }
+
+    /* ══ FLASH ══ */
+    .flash {
+      padding: 12px 16px; border-radius: var(--radius-md);
+      margin-bottom: 20px; font-size: 13px;
+      display: flex; align-items: center; gap: 8px; border: 1px solid;
+    }
+    .flash.success { background: var(--green-bg); border-color: rgba(63,185,80,0.3); color: var(--green); }
+    .flash.error   { background: var(--red-bg);   border-color: rgba(248,81,73,0.3);  color: var(--red); }
+
+    /* ══ PAGE HEADER ══ */
+    .page-header { margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .page-title  { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+    .page-sub    { font-size: 12px; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 3px; }
+    .page-sub span { color: var(--accent); }
+
+    /* ══ PANEL CARD ══ */
+    .panel-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px; margin-bottom: 16px;
+    }
+    .panel-card-title {
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .panel-card-title-icon {
+      width: 26px; height: 26px; border-radius: var(--radius-sm);
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+
+    /* ══ FORM ══ */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.span2 { grid-column: span 2; }
+
+    label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+      color: var(--text-secondary); text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+    input[type=text],
+    input[type=number],
+    textarea {
+      background: var(--bg-base);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 9px 13px;
+      color: var(--text-primary);
+      font-family: var(--font-sans); font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-accent);
+    }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    textarea.tall { min-height: 200px; }
+    .hint {
+      font-size: 11px; color: var(--text-secondary);
+      font-family: var(--font-mono); line-height: 1.6; margin-top: 2px;
+    }
+    .required-star { color: var(--red); margin-left: 2px; }
+
+    /* ══ CURRENT THUMBNAIL BOX ══ */
+    .current-thumb-box {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+    }
+    .current-thumb-box img {
+      width: 80px; height: 60px; object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-strong);
+      flex-shrink: 0;
+    }
+    .current-thumb-info { flex: 1; min-width: 0; }
+    .current-thumb-label {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 1px;
+      color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .current-thumb-name {
+      font-size: 12px; font-weight: 600; color: var(--text-primary);
+      word-break: break-all;
+    }
+    .current-thumb-badge {
+      display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px;
+      padding: 2px 8px; border-radius: var(--radius-sm);
+      background: var(--yellow-bg); color: var(--yellow);
+      border: 1px solid rgba(210,153,34,0.25);
+    }
+
+    /* ══ BUTTONS ══ */
+    .btn {
+      padding: 9px 18px; border-radius: var(--radius-md);
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+      cursor: pointer; border: none; text-decoration: none;
+      transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+      line-height: 1;
+    }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 1px 8px rgba(124,92,255,0.35); }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-strong); }
+    .btn-secondary:hover { color: var(--text-primary); background: var(--bg-hover); }
+    .btn-edit { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(88,166,255,0.2); font-size: 11px; padding: 5px 12px; }
+    .btn-edit:hover { background: rgba(88,166,255,0.18); }
+    .btn-del  { background: var(--red-bg);  color: var(--red);  border: 1px solid rgba(248,81,73,0.2);  font-size: 11px; padding: 5px 12px; }
+    .btn-del:hover  { background: rgba(248,81,73,0.18); }
+
+    /* ══ IMAGE UPLOAD ZONE ══ */
+    .img-upload-zone {
+      position: relative;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg-base);
+      display: block;
+    }
+    .img-upload-zone:hover, .img-upload-zone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .img-upload-zone input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      z-index: 2; width: 100%; height: 100%;
+      border: none; padding: 0; background: none;
+    }
+    .upload-icon  { font-size: 32px; margin-bottom: 10px; pointer-events: none; }
+    .upload-label { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; pointer-events: none; }
+    .upload-sub   { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); pointer-events: none; }
+    .upload-formats { display: flex; gap: 5px; justify-content: center; margin-top: 12px; flex-wrap: wrap; pointer-events: none; }
+    .fmt-chip {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px;
+      padding: 2px 7px; border-radius: var(--radius-sm);
+      background: var(--accent-dim); color: var(--accent);
+      border: 1px solid rgba(124,92,255,0.2);
+    }
+
+    /* ══ THUMB PREVIEW ══ */
+    .thumb-preview-wrap {
+      display: none;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px; margin-top: 10px;
+    }
     .thumb-preview-wrap.show { display: block; }
-    .thumb-preview-inner { display: flex; align-items: center; gap: 16px; }
-    .thumb-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 2px solid rgba(0,245,255,0.3); box-shadow: 0 0 18px rgba(0,245,255,0.15); }
-    .thumb-info { flex: 1; }
-    .thumb-name { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
-    .thumb-size { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-    .thumb-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .thumb-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; background: rgba(0,255,157,0.1); color: var(--neon-green); border: 1px solid rgba(0,255,157,0.25); }
-    .btn-sm { padding: 6px 14px; border-radius: 5px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 5px; }
-    .btn-edit { background: rgba(0,180,255,0.12); color: var(--neon-blue); }
-    .btn-edit:hover { background: rgba(0,180,255,0.22); }
-    .btn-del  { background: rgba(255,68,102,0.10); color: var(--neon-red); }
-    .btn-del:hover  { background: rgba(255,68,102,0.20); }
+    .thumb-preview-inner { display: flex; align-items: center; gap: 14px; }
+    .thumb-img { width: 80px; height: 80px; border-radius: var(--radius-md); object-fit: cover; border: 2px solid var(--border-strong); flex-shrink: 0; }
+    .thumb-info { flex: 1; min-width: 0; }
+    .thumb-name { font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .thumb-size { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); }
+    .thumb-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+    .thumb-badge {
+      font-family: var(--font-mono); font-size: 10px; padding: 2px 8px;
+      border-radius: var(--radius-sm); background: var(--green-bg);
+      color: var(--green); border: 1px solid rgba(63,185,80,0.25);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
 
-    /* ── CROP MODAL ── */
-    .crop-modal-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(2,4,8,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; }
-    .crop-modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
-    .crop-modal { background: var(--deep); border: 1px solid var(--glass-border); border-radius: 16px; width: min(92vw, 760px); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,180,255,0.1); }
-    .crop-modal-header { padding: 18px 24px 16px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .crop-modal-title { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: var(--neon-cyan); display: flex; align-items: center; gap: 8px; }
-    .crop-modal-close { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.2); color: var(--neon-red); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
-    .crop-modal-close:hover { background: rgba(255,68,102,0.2); transform: rotate(90deg); }
-    .crop-ratio-bar { padding: 12px 24px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; background: rgba(255,255,255,0.02); }
-    .crop-ratio-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-right: 6px; }
-    .ratio-btn { padding: 5px 12px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--muted); transition: all .2s; }
-    .ratio-btn:hover { color: var(--text); border-color: rgba(0,180,255,0.3); }
-    .ratio-btn.active { background: rgba(0,180,255,0.12); color: var(--neon-blue); border-color: rgba(0,180,255,0.4); }
-    .crop-canvas-area { flex: 1; overflow: hidden; background: #000; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
-    .crop-canvas-area img { max-width: 100%; max-height: 100%; display: block; }
-    .crop-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.3); pointer-events: none; white-space: nowrap; }
-    .crop-tools-bar { padding: 12px 24px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; background: rgba(255,255,255,0.02); }
-    .crop-tool-btn { padding: 7px 14px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04); color: var(--muted); transition: all .2s; display: flex; align-items: center; gap: 6px; }
-    .crop-tool-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
-    .crop-tool-sep { width: 1px; height: 24px; background: var(--glass-border); margin: 0 4px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; padding-top: 4px; }
+
+    /* ════════════════════════════════
+       CROP MODAL — FULLSCREEN
+    ════════════════════════════════ */
+    .crop-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.88); backdrop-filter: blur(10px);
+      align-items: center; justify-content: center;
+    }
+    .crop-modal-overlay.open { display: flex; animation: fadeUp 0.2s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    .crop-modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      width: min(96vw, 900px);
+      height: 96vh;
+      max-height: 96vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .crop-modal-header {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .crop-modal-title { font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+    .crop-modal-title-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+    .crop-modal-close {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      background: var(--red-bg); border: 1px solid rgba(248,81,73,0.2);
+      color: var(--red); font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .crop-modal-close:hover { background: rgba(248,81,73,0.2); transform: rotate(90deg); }
+
+    .crop-ratio-bar {
+      padding: 8px 18px; display: flex; gap: 5px; align-items: center;
+      flex-wrap: wrap; border-bottom: 1px solid var(--border);
+      flex-shrink: 0; background: var(--bg-base);
+    }
+    .crop-ratio-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--text-tertiary); text-transform: uppercase; margin-right: 4px; }
+    .ratio-btn { padding: 5px 11px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 10px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-secondary); transition: all 0.15s; }
+    .ratio-btn:hover { color: var(--text-primary); border-color: var(--border-strong); }
+    .ratio-btn.active { background: var(--accent-light); color: var(--accent); border-color: rgba(124,92,255,0.3); }
+
+    /* Canvas — takes ALL remaining space */
+    .crop-canvas-area {
+      flex: 1; overflow: hidden; background: #000;
+      min-height: 0; position: relative; display: block;
+    }
+    .crop-canvas-area img { display: block; max-width: 100%; max-height: 100%; width: 100%; }
+    .crop-hint {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-mono); font-size: 9px; color: rgba(255,255,255,0.2);
+      pointer-events: none; white-space: nowrap; z-index: 10;
+    }
+
+    .crop-tools-bar {
+      padding: 8px 18px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      flex-shrink: 0; background: var(--bg-base);
+    }
+    .crop-tool-btn {
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      font-family: var(--font-mono); font-size: 10px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg-elevated);
+      color: var(--text-secondary); transition: all 0.15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .crop-tool-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .crop-tool-sep { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
     .crop-tools-spacer { flex: 1; }
-    .zoom-wrap { display: flex; align-items: center; gap: 8px; }
-    .zoom-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); white-space: nowrap; }
-    input[type=range] { -webkit-appearance: none; appearance: none; width: 100px; height: 3px; background: var(--glass-border); border-radius: 2px; outline: none; cursor: pointer; border: none; padding: 0; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 8px rgba(0,180,255,0.5); cursor: pointer; }
-    input[type=range]:focus { border-color: transparent; }
-    .quality-wrap { display: flex; align-items: center; gap: 8px; }
-    .quality-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); }
-    .quality-val { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--neon-cyan); min-width: 30px; }
-    .crop-action-bar { padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
-    .crop-output-size { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-    .size-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-green); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-    .btn-crop-confirm { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: 800; font-size: 13px; padding: 10px 28px; border-radius: 7px; border: none; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; box-shadow: 0 0 20px rgba(0,245,255,0.2); }
-    .btn-crop-confirm:hover { transform: translateY(-1px); box-shadow: 0 0 28px rgba(0,245,255,0.35); }
-    .btn-crop-cancel { background: transparent; color: var(--muted); border: 1px solid var(--glass-border); border-radius: 7px; padding: 10px 20px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; transition: all .2s; }
-    .btn-crop-cancel:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+    .zoom-wrap { display: flex; align-items: center; gap: 6px; }
+    .zoom-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); white-space: nowrap; }
+
+    input[type=range] {
+      -webkit-appearance: none; appearance: none;
+      width: 90px; height: 3px; background: var(--border-strong);
+      border-radius: 2px; outline: none; cursor: pointer; border: none; padding: 0;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
+      background: var(--accent); cursor: pointer; box-shadow: 0 0 6px rgba(124,92,255,0.4);
+    }
+    input[type=range]:focus { border-color: transparent; box-shadow: none; }
+
+    .quality-wrap { display: flex; align-items: center; gap: 6px; }
+    .quality-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); }
+    .quality-val   { font-family: var(--font-mono); font-size: 11px; color: var(--accent); min-width: 30px; }
+
+    .crop-action-bar {
+      padding: 12px 18px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0;
+    }
+    .crop-output-size { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+    .size-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .btn-crop-confirm {
+      background: var(--accent); color: #fff; font-weight: 600;
+      font-size: 13px; padding: 9px 22px; border-radius: var(--radius-md);
+      border: none; cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 7px; font-family: var(--font-sans);
+      box-shadow: 0 2px 12px rgba(124,92,255,0.35);
+    }
+    .btn-crop-confirm:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-crop-cancel {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 9px 18px; cursor: pointer;
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500; transition: all 0.15s;
+    }
+    .btn-crop-cancel:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 900px) {
+      .sidebar { width: 56px; }
+      .sidebar-header .sidebar-logo-text,
+      .sidebar-header .sidebar-logo-sub,
+      .nav-item span, .nav-group-label { display: none; }
+      .nav-item { padding: 9px; justify-content: center; }
+      .nav-icon { width: auto; }
+      .main { margin-left: 56px; padding: 20px 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.span2 { grid-column: span 1; }
+      .crop-modal { width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; }
+      input[type=range] { width: 65px; }
+    }
   </style>
 </head>
 <body>
@@ -131,22 +438,22 @@
   <div class="crop-modal">
     <div class="crop-modal-header">
       <div class="crop-modal-title">
-        ✂️ Image Crop Studio
-        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);font-weight:400;letter-spacing:2px" id="cropFileName"></span>
+        ✂️ Crop Studio
+        <span class="crop-modal-title-sub" id="cropFileName"></span>
       </div>
       <button class="crop-modal-close" onclick="closeCropModal()">✕</button>
     </div>
 
     <div class="crop-ratio-bar">
       <span class="crop-ratio-label">Ratio</span>
-      <button class="ratio-btn active" onclick="setRatio(1,1,this)" data-label="1:1">⬛ 1:1</button>
-      <button class="ratio-btn" onclick="setRatio(16,9,this)" data-label="16:9">▬ 16:9</button>
-      <button class="ratio-btn" onclick="setRatio(4,3,this)" data-label="4:3">▭ 4:3</button>
-      <button class="ratio-btn" onclick="setRatio(3,4,this)" data-label="3:4">▯ 3:4</button>
-      <button class="ratio-btn" onclick="setRatio(NaN,NaN,this)" data-label="Free">⤢ Free</button>
+      <button class="ratio-btn active" onclick="setRatio(1,1,this)" data-label="1:1">1:1</button>
+      <button class="ratio-btn" onclick="setRatio(16,9,this)" data-label="16:9">16:9</button>
+      <button class="ratio-btn" onclick="setRatio(4,3,this)" data-label="4:3">4:3</button>
+      <button class="ratio-btn" onclick="setRatio(3,4,this)" data-label="3:4">3:4</button>
+      <button class="ratio-btn" onclick="setRatio(NaN,NaN,this)" data-label="Free">Free</button>
       <div style="flex:1"></div>
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Output:</span>
-      <select id="outputSizeSelect" onchange="updateDimLabel()" style="padding:4px 10px;font-size:10px;width:auto;min-width:120px">
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary)">Output</span>
+      <select id="outputSizeSelect" onchange="updateDimLabel()" style="padding:5px 10px;font-size:11px;width:auto;min-width:130px">
         <option value="original">Original Size</option>
         <option value="800">800 × auto</option>
         <option value="600">600 × auto</option>
@@ -156,7 +463,7 @@
       </select>
     </div>
 
-    <div class="crop-canvas-area">
+    <div class="crop-canvas-area" id="cropCanvasArea">
       <img id="cropImage" src="" alt="crop-target" />
       <div class="crop-hint">Drag to reposition · Scroll to zoom · Drag corners to resize</div>
     </div>
@@ -165,13 +472,13 @@
       <button class="crop-tool-btn" onclick="rotateCrop(-90)">↺ -90°</button>
       <button class="crop-tool-btn" onclick="rotateCrop(90)">↻ +90°</button>
       <div class="crop-tool-sep"></div>
-      <button class="crop-tool-btn" onclick="flipCrop('x')">⇆ Flip H</button>
-      <button class="crop-tool-btn" onclick="flipCrop('y')">⇅ Flip V</button>
+      <button class="crop-tool-btn" onclick="flipCrop('x')">⇆ H</button>
+      <button class="crop-tool-btn" onclick="flipCrop('y')">⇅ V</button>
       <div class="crop-tool-sep"></div>
       <button class="crop-tool-btn" onclick="resetCrop()">⟲ Reset</button>
       <div class="crop-tool-sep"></div>
       <div class="zoom-wrap">
-        <span class="zoom-label">🔍 Zoom</span>
+        <span class="zoom-label">Zoom</span>
         <input type="range" id="zoomRange" min="0.1" max="3" step="0.05" value="1" oninput="applyCropZoom(this.value)" />
         <span class="zoom-label" id="zoomVal">1.0×</span>
       </div>
@@ -184,7 +491,10 @@
     </div>
 
     <div class="crop-action-bar">
-      <div class="crop-output-size"><div class="size-dot"></div><span id="cropDimLabel">Ready to crop</span></div>
+      <div class="crop-output-size">
+        <div class="size-dot"></div>
+        <span id="cropDimLabel">Ready to crop</span>
+      </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="btn-crop-cancel" onclick="closeCropModal()">Cancel</button>
         <button class="btn-crop-confirm" onclick="confirmCrop()">✓ Apply Crop</button>
@@ -195,17 +505,37 @@
 
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
 <div class="sidebar">
-  <div class="sidebar-logo">● Admin Panel</div>
-  <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">📋 All Cards</a>
-  <a href="{{ url_for('admin_add') }}" class="nav-item">➕ Add Card</a>
-  <a href="{{ url_for('index') }}" class="nav-item" target="_blank">🌐 View Site</a>
-  <a href="{{ url_for('admin_logout') }}" class="nav-item danger">⬅ Logout</a>
+  <div class="sidebar-header">
+    <div class="sidebar-logo-icon">⚡</div>
+    <div>
+      <div class="sidebar-logo-text">S.S Cyber Hub</div>
+      <div class="sidebar-logo-sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-group-label">Workspace</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="nav-item active">
+      <span class="nav-icon">📋</span><span>All Cards</span>
+    </a>
+    <a href="{{ url_for('admin_add') }}" class="nav-item">
+      <span class="nav-icon">➕</span><span>Add Card</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="{{ url_for('index') }}" class="nav-item" target="_blank">
+      <span class="nav-icon">🌐</span><span>View Site</span>
+    </a>
+    <a href="{{ url_for('admin_logout') }}" class="nav-item danger">
+      <span class="nav-icon">⬅</span><span>Logout</span>
+    </a>
+  </div>
 </div>
 
 <!-- ═══════════════ MAIN ═══════════════ -->
 <div class="main">
 
-  <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
@@ -214,63 +544,83 @@
     {% endif %}
   {% endwith %}
 
-  <h1>Edit Card</h1>
-  <p class="sub">Editing: <span style="color:var(--neon-cyan)">{{ card.title }}</span></p>
+  <div class="page-header">
+    <div>
+      <div class="page-title">Edit Card</div>
+      <div class="page-sub">Editing: <span>{{ card.title }}</span></div>
+    </div>
+  </div>
 
   <form method="POST" enctype="multipart/form-data">
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Title *</label>
-        <input type="text" name="title" value="{{ card.title }}" required />
+    <!-- Basic Info -->
+    <div class="panel-card">
+      <div class="panel-card-title">
+        <div class="panel-card-title-icon">📝</div>
+        Basic Info
       </div>
-      <div class="form-group">
-        <label>Category *</label>
-        <input type="text" name="category" value="{{ card.category }}" required />
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Title <span class="required-star">*</span></label>
+          <input type="text" name="title" value="{{ card.title }}" required />
+        </div>
+        <div class="form-group">
+          <label>Category <span class="required-star">*</span></label>
+          <input type="text" name="category" value="{{ card.category }}" required />
+        </div>
+        <div class="form-group">
+          <label>Icon (Emoji)</label>
+          <input type="text" name="icon" value="{{ card.icon }}" />
+        </div>
+        <div class="form-group">
+          <label>Display Order</label>
+          <input type="number" name="order_index" value="{{ card.order_index }}" min="0" />
+          <p class="hint">Lower number = shown first</p>
+        </div>
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Icon (Emoji)</label>
-        <input type="text" name="icon" value="{{ card.icon }}" />
+    <!-- Content -->
+    <div class="panel-card">
+      <div class="panel-card-title">
+        <div class="panel-card-title-icon">📄</div>
+        Content
       </div>
-      <div class="form-group">
-        <label>Display Order</label>
-        <input type="number" name="order_index" value="{{ card.order_index }}" min="0" />
-        <p class="hint">Lower number = shown first</p>
+      <div class="form-grid">
+        <div class="form-group span2">
+          <label>Short Description <span class="required-star">*</span></label>
+          <textarea name="description" style="min-height:80px" required>{{ card.description }}</textarea>
+        </div>
+        <div class="form-group span2">
+          <label>Full Content <span class="required-star">*</span></label>
+          <textarea name="full_content" class="tall" required>{{ card.full_content }}</textarea>
+          <p class="hint">Supports: ## Heading, **bold**, - bullet lists, blank lines for paragraphs</p>
+        </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Short Description *</label>
-      <textarea name="description" rows="3" style="min-height:80px" required>{{ card.description }}</textarea>
-    </div>
+    <!-- Thumbnail -->
+    <div class="panel-card">
+      <div class="panel-card-title">
+        <div class="panel-card-title-icon">🖼️</div>
+        Thumbnail Image
+        <span style="font-size:11px;font-weight:400;color:var(--text-secondary);margin-left:4px">(optional)</span>
+      </div>
 
-    <div class="form-group">
-      <label>Full Content *</label>
-      <textarea name="full_content" required>{{ card.full_content }}</textarea>
-      <p class="hint">Supports: ## Heading, **bold**, - bullet lists</p>
-    </div>
-
-    <!-- ═══ THUMBNAIL WITH CROP ═══ -->
-    <div class="form-group">
-      <label>Thumbnail Image</label>
-
-      <!-- Current thumbnail agar exist karta hai -->
       {% if card.thumbnail %}
-      <div class="current-thumb">
+      <div class="current-thumb-box">
         <img src="/static/{{ card.thumbnail }}" alt="Current thumbnail" />
         <div class="current-thumb-info">
           <div class="current-thumb-label">Current Thumbnail</div>
           <div class="current-thumb-name">{{ card.thumbnail }}</div>
-          <p class="hint" style="margin-top:4px">Naya image upload karo replace karne ke liye.</p>
+          <div class="current-thumb-badge">⚡ Active</div>
+          <p class="hint" style="margin-top:6px">Naya image upload karo replace karne ke liye.</p>
         </div>
       </div>
       {% endif %}
 
-      <!-- Upload zone -->
-      <div class="img-upload-zone" id="zone-thumb" onclick="triggerUpload()">
+      <!-- FIX: label wraps input — single click on mobile, no conflict -->
+      <label class="img-upload-zone" id="zone-thumb">
         <input type="file" id="file-thumb" name="thumbnail" accept="image/*" onchange="handleFileSelect(event)" />
         <div class="upload-icon">🖼️</div>
         <div class="upload-label">
@@ -283,9 +633,8 @@
           <span class="fmt-chip">GIF</span>
           <span class="fmt-chip">WEBP</span>
         </div>
-      </div>
+      </label>
 
-      <!-- Preview after crop -->
       <div class="thumb-preview-wrap" id="previewWrap">
         <div class="thumb-preview-inner">
           <img class="thumb-img" id="thumbPreview" src="" alt="preview" />
@@ -293,23 +642,22 @@
             <div class="thumb-name" id="thumbName">—</div>
             <div class="thumb-size" id="thumbSize">—</div>
             <div class="thumb-actions">
-              <button type="button" class="btn-sm btn-edit" onclick="recrop()">✂️ Re-Crop</button>
-              <button type="button" class="btn-sm btn-del" onclick="clearImage()">✕ Remove</button>
+              <button type="button" class="btn btn-edit" onclick="recrop()">✂️ Re-Crop</button>
+              <button type="button" class="btn btn-del"  onclick="clearImage()">✕ Remove</button>
               <span class="thumb-badge">✓ Cropped</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Hidden field — crop ka base64 data yahan jayega -->
       <input type="hidden" name="thumbnail_crop_data" id="thumbnail_crop_data" />
-
-      <p class="hint">Agar koi image nahi chuni to purani thumbnail rahegi.</p>
+      <p class="hint" style="margin-top:10px">Agar koi image nahi chuni to purani thumbnail rahegi.</p>
     </div>
 
-    <div style="display:flex;align-items:center;margin-top:8px;">
-      <button type="submit" class="btn-save">💾 Update Card</button>
-      <a href="{{ url_for('admin_dashboard') }}" class="btn-cancel">Cancel</a>
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">💾 Update Card</button>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
     </div>
 
   </form>
@@ -323,35 +671,41 @@ let cropperInstance = null;
 let rawFileDataURL  = null;
 let flipXState = 1, flipYState = 1;
 
-function triggerUpload() {
-  document.getElementById('file-thumb').click();
-}
-
 function handleFileSelect(event) {
   const file = event.target.files[0];
   if (!file) return;
-  if (!file.type.startsWith('image/')) { showFlash('❌ Only image files supported.', 'error'); return; }
-  if (file.size > 10 * 1024 * 1024) { showFlash('❌ Image too large. Max 10MB.', 'error'); return; }
+  if (!file.type.startsWith('image/')) { showFlash('Only image files supported.', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { showFlash('Image too large. Max 10MB.', 'error'); return; }
   const reader = new FileReader();
   reader.onload = (e) => { rawFileDataURL = e.target.result; openCropModal(file.name); };
   reader.readAsDataURL(file);
 }
 
 function openCropModal(fileName) {
-  document.getElementById('cropFileName').textContent = fileName.length > 28 ? fileName.substring(0,28)+'…' : fileName;
+  document.getElementById('cropFileName').textContent =
+    fileName.length > 28 ? fileName.substring(0,28)+'…' : fileName;
   const img = document.getElementById('cropImage');
   img.src = rawFileDataURL;
   document.getElementById('cropOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   flipXState = 1; flipYState = 1;
-  img.onload = () => {
+
+  const initCropper = () => {
     destroyCropper();
     document.getElementById('outputSizeSelect').value = '400';
     cropperInstance = new Cropper(img, {
       aspectRatio: 1,
-      viewMode: 1, dragMode: 'move', autoCropArea: 0.85,
-      restore: false, guides: true, center: true, highlight: false,
-      cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false,
+      viewMode: 2,        // fills container — no black bars
+      dragMode: 'move',
+      autoCropArea: 0.9,  // 90% coverage by default
+      restore: false,
+      guides: true,
+      center: true,
+      highlight: false,
+      background: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: false,
       ready() {
         updateDimLabel();
         document.getElementById('zoomRange').value = 1;
@@ -360,13 +714,17 @@ function openCropModal(fileName) {
       crop() { updateDimLabel(); }
     });
   };
-  if (img.complete && img.naturalWidth) img.onload();
+
+  if (img.complete && img.naturalWidth) { initCropper(); }
+  else { img.onload = initCropper; }
 }
 
 function closeCropModal() {
   document.getElementById('cropOverlay').classList.remove('open');
   document.body.style.overflow = '';
   destroyCropper();
+  const existing = document.getElementById('thumbnail_crop_data').value;
+  if (!existing) document.getElementById('file-thumb').value = '';
 }
 
 function destroyCropper() {
@@ -384,7 +742,7 @@ function rotateCrop(deg) { if (cropperInstance) cropperInstance.rotate(deg); }
 function flipCrop(axis) {
   if (!cropperInstance) return;
   if (axis === 'x') { flipXState *= -1; cropperInstance.scaleX(flipXState); }
-  else { flipYState *= -1; cropperInstance.scaleY(flipYState); }
+  else              { flipYState *= -1; cropperInstance.scaleY(flipYState); }
 }
 
 function resetCrop() {
@@ -401,46 +759,55 @@ function applyCropZoom(val) {
 
 function updateDimLabel() {
   if (!cropperInstance) return;
-  const data = cropperInstance.getCropBoxData();
-  const canvasData = cropperInstance.getCanvasData();
-  const scale = canvasData.naturalWidth / canvasData.width;
-  const w = Math.round(data.width * scale);
-  const h = Math.round(data.height * scale);
-  const sizeVal = document.getElementById('outputSizeSelect').value;
-  let outW = w, outH = h;
-  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (h/w)); }
-  document.getElementById('cropDimLabel').textContent = `${outW} × ${outH} px`;
+  try {
+    const data    = cropperInstance.getData(true);
+    const sizeVal = document.getElementById('outputSizeSelect').value;
+    let outW = data.width, outH = data.height;
+    if (sizeVal !== 'original' && data.width > 0) {
+      outW = parseInt(sizeVal);
+      outH = Math.round(outW * (data.height / data.width));
+    }
+    document.getElementById('cropDimLabel').textContent = `${outW} × ${outH} px`;
+  } catch(e) {}
 }
 
 function confirmCrop() {
   if (!cropperInstance) return;
-  const sizeVal = document.getElementById('outputSizeSelect').value;
-  const quality = parseFloat(document.getElementById('qualityRange').value);
+  const sizeVal  = document.getElementById('outputSizeSelect').value;
+  const quality  = parseFloat(document.getElementById('qualityRange').value);
   const cropData = cropperInstance.getData(true);
   let outW = cropData.width, outH = cropData.height;
-  if (sizeVal !== 'original') { outW = parseInt(sizeVal); outH = Math.round(outW * (cropData.height/cropData.width)); }
-  const canvas = cropperInstance.getCroppedCanvas({ width: outW, height: outH, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
-  if (!canvas) { showFlash('❌ Crop failed.', 'error'); return; }
+  if (sizeVal !== 'original' && cropData.width > 0) {
+    outW = parseInt(sizeVal);
+    outH = Math.round(outW * (cropData.height / cropData.width));
+  }
+  const canvas = cropperInstance.getCroppedCanvas({
+    width: outW, height: outH,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high',
+    fillColor: '#fff'
+  });
+  if (!canvas) { showFlash('Crop failed. Try again.', 'error'); return; }
   const dataURL = canvas.toDataURL('image/jpeg', quality);
 
-  // Hidden field mein store — backend yahan se padhega
   document.getElementById('thumbnail_crop_data').value = dataURL;
-
-  // Preview
   document.getElementById('thumbPreview').src = dataURL;
   const fi = document.getElementById('file-thumb');
   document.getElementById('thumbName').textContent = fi.files[0]?.name || 'image.jpg';
   const bytes = Math.round((dataURL.length * 3) / 4);
-  document.getElementById('thumbSize').textContent = `${outW} × ${outH}px · ${formatBytes(bytes)}`;
+  document.getElementById('thumbSize').textContent =
+    `${outW} × ${outH}px · ${formatBytes(bytes)} · JPEG ${Math.round(quality*100)}%`;
   document.getElementById('previewWrap').classList.add('show');
 
   closeCropModal();
-  showFlash(`✓ Image cropped — ${outW}×${outH}px`, 'success');
+  showFlash(`✓ Cropped — ${outW}×${outH}px`, 'success');
 }
 
 function recrop() {
-  const fi = document.getElementById('file-thumb');
-  openCropModal(fi.files[0]?.name || 'image');
+  if (rawFileDataURL) {
+    const fi = document.getElementById('file-thumb');
+    openCropModal(fi.files[0]?.name || 'image');
+  }
 }
 
 function clearImage() {
@@ -448,6 +815,7 @@ function clearImage() {
   document.getElementById('previewWrap').classList.remove('show');
   document.getElementById('file-thumb').value = '';
   document.getElementById('thumbPreview').src = '';
+  rawFileDataURL = null;
 }
 
 /* Drag & Drop */
@@ -462,23 +830,31 @@ zone.addEventListener('drop', e => {
   reader.readAsDataURL(file);
 });
 
-function formatBytes(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
-  return (bytes/(1024*1024)).toFixed(2) + ' MB';
+document.getElementById('cropOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeCropModal();
+});
+
+function formatBytes(b) {
+  if (b < 1024) return b+' B';
+  if (b < 1024*1024) return (b/1024).toFixed(1)+' KB';
+  return (b/(1024*1024)).toFixed(2)+' MB';
 }
 
 function showFlash(msg, type) {
   const f = document.createElement('div');
   f.className = 'flash ' + type; f.textContent = msg;
-  Object.assign(f.style, { position:'fixed', top:'20px', right:'24px', zIndex:'99999', maxWidth:'340px' });
+  Object.assign(f.style, {
+    position:'fixed', top:'20px', right:'24px',
+    zIndex:'99999', maxWidth:'340px',
+    boxShadow:'0 4px 12px rgba(0,0,0,0.4)',
+    animation:'fadeUp 0.2s ease'
+  });
   document.body.appendChild(f);
-  setTimeout(() => { f.style.transition='opacity .4s'; f.style.opacity='0'; setTimeout(()=>f.remove(),400); }, 3000);
+  setTimeout(() => {
+    f.style.transition = 'opacity 0.3s'; f.style.opacity = '0';
+    setTimeout(() => f.remove(), 300);
+  }, 3000);
 }
-
-document.getElementById('cropOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeCropModal();
-});
 </script>
 </body>
 </html>
